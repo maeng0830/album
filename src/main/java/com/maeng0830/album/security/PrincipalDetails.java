@@ -1,9 +1,7 @@
 package com.maeng0830.album.security;
 
-import com.maeng0830.album.common.exception.AlbumException;
 import com.maeng0830.album.member.domain.MemberStatus;
 import com.maeng0830.album.member.dto.MemberDto;
-import com.maeng0830.album.member.exception.SpringSecurityExceptionCode;
 import java.util.ArrayList;
 import java.util.Collection;
 import lombok.Getter;
@@ -13,7 +11,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Getter
 public class PrincipalDetails implements UserDetails {
 
-	private MemberDto memberDto;
+	private final MemberDto memberDto;
 
 	public PrincipalDetails(MemberDto memberDto) {
 		this.memberDto = memberDto;
@@ -48,7 +46,7 @@ public class PrincipalDetails implements UserDetails {
 
 	@Override
 	public boolean isAccountNonLocked() {
-		return !memberDto.getStatus().equals(MemberStatus.SUSPENSION);
+		return !memberDto.getStatus().equals(MemberStatus.LOCKED);
 	}
 
 	@Override
@@ -58,6 +56,6 @@ public class PrincipalDetails implements UserDetails {
 
 	@Override
 	public boolean isEnabled() {
-		return true;
+		return !memberDto.getStatus().equals(MemberStatus.REQUIRED);
 	}
 }
