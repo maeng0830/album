@@ -1,4 +1,4 @@
-package com.maeng0830.album.security;
+package com.maeng0830.album.security.formlogin;
 
 import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.dto.MemberDto;

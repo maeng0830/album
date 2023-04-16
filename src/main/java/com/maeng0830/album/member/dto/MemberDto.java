@@ -4,6 +4,7 @@ import com.maeng0830.album.common.TimeStamp;
 import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.domain.MemberStatus;
+import com.maeng0830.album.security.dto.LoginType;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,6 +28,7 @@ public class MemberDto extends TimeStamp {
 	private MemberRole role;
 	private String memberImageName;
 	private String memberImagePath;
+	private LoginType loginType;
 
 	public static MemberDto from(Member member) {
 		return MemberDto.builder()
@@ -42,6 +44,7 @@ public class MemberDto extends TimeStamp {
 				.memberImagePath(member.getMemberImagePath())
 				.createdAt(member.getCreatedAt())
 				.modifiedAt(member.getModifiedAt())
+				.loginType(member.getLoginType())
 				.build();
 	}
 }

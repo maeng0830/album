@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum MemberStatus {
-	REQUIRED("인증 필요"),
+	FIRST("첫 로그인"),
 	NORMAL("정상"),
 	LOCKED("정지"),
 	WITHDRAW("탈퇴");

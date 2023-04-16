@@ -1,19 +1,23 @@
 package com.maeng0830.album.security;
 
+import com.maeng0830.album.security.formlogin.handler.FormLoginFailureHandler;
+import com.maeng0830.album.security.formlogin.handler.FormLoginSuccessHandler;
+import com.maeng0830.album.security.oauthlogin.handler.OAuthLoginFailureHandler;
+import com.maeng0830.album.security.oauthlogin.handler.OAuthLoginSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-	private final AuthenticationFailureHandler authenticationFailureHandler;
-	private final AuthenticationSuccessHandler authenticationSuccessHandler;
+	private final FormLoginSuccessHandler formLoginSuccessHandler;
+	private final FormLoginFailureHandler formLoginFailureHandler;
+	private final OAuthLoginSuccessHandler oAuthLoginSuccessHandler;
+	private final OAuthLoginFailureHandler oAuthLoginFailureHandler;
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -27,8 +31,12 @@ public class SecurityConfig {
 				.formLogin()
 				.loginPage("/loginForm")
 				.loginProcessingUrl("/login")
-				.successHandler(authenticationSuccessHandler)
-				.failureHandler(authenticationFailureHandler);
+				.successHandler(formLoginSuccessHandler)
+				.failureHandler(formLoginFailureHandler)
+				.and()
+				.oauth2Login()
+				.successHandler(oAuthLoginSuccessHandler)
+				.failureHandler(oAuthLoginFailureHandler);
 
 		return http.build();
 	}

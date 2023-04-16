@@ -1,20 +1,28 @@
-package com.maeng0830.album.security;
+package com.maeng0830.album.security.formlogin;
 
 import com.maeng0830.album.member.domain.MemberStatus;
 import com.maeng0830.album.member.dto.MemberDto;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 @Getter
-public class PrincipalDetails implements UserDetails {
+public class PrincipalDetails implements UserDetails, OAuth2User {
 
-	private final MemberDto memberDto;
+	private MemberDto memberDto;
+	private Map<String, Object> attributes;
 
 	public PrincipalDetails(MemberDto memberDto) {
 		this.memberDto = memberDto;
+	}
+
+	public PrincipalDetails(MemberDto memberDto, Map<String, Object> attributes) {
+		this.memberDto = memberDto;
+		this.attributes = attributes;
 	}
 
 	@Override
@@ -56,6 +64,18 @@ public class PrincipalDetails implements UserDetails {
 
 	@Override
 	public boolean isEnabled() {
-		return !memberDto.getStatus().equals(MemberStatus.REQUIRED);
+		return !memberDto.getStatus().equals(MemberStatus.FIRST);
+	}
+
+	//OAuth2
+	@Override
+	public Map<String, Object> getAttributes() {
+		return attributes;
+	}
+
+	//OAuth2
+	@Override
+	public String getName() {
+		return String.valueOf(attributes.get("sub"));
 	}
 }

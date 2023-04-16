@@ -1,4 +1,4 @@
-package com.maeng0830.album.security.loginhandler;
+package com.maeng0830.album.security.formlogin.handler;
 
 import java.io.IOException;
 import javax.servlet.RequestDispatcher;
@@ -14,7 +14,7 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.stereotype.Service;
 
 @Service
-public class LoginFailureHandler implements AuthenticationFailureHandler {
+public class FormLoginFailureHandler implements AuthenticationFailureHandler {
 
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
