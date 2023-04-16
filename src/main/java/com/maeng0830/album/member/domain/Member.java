@@ -2,6 +2,7 @@ package com.maeng0830.album.member.domain;
 
 import com.maeng0830.album.common.TimeStamp;
 import com.maeng0830.album.member.dto.MemberDto;
+import com.maeng0830.album.security.dto.LoginType;
 import java.time.LocalDateTime;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -33,6 +34,8 @@ public class Member extends TimeStamp {
 	private MemberRole role;
 	private String memberImageName;
 	private String memberImagePath;
+	@Enumerated(EnumType.STRING)
+	private LoginType loginType;
 
 	public static Member from(MemberDto memberDto) {
 		return Member.builder()

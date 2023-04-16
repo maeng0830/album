@@ -7,6 +7,7 @@ import com.maeng0830.album.member.domain.MemberStatus;
 import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.exception.SpringSecurityExceptionCode;
 import com.maeng0830.album.member.repository.MemberRepository;
+import com.maeng0830.album.security.dto.LoginType;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -35,8 +36,9 @@ public class SpringSecurityService {
 
 		// 비밀번호 암호화, 상태 및 권한 설정 -> DB 저장(회원가입)
 		memberDto.setPassword(passwordEncoder.encode(memberDto.getPassword()));
-		memberDto.setStatus(MemberStatus.REQUIRED);
+		memberDto.setStatus(MemberStatus.FIRST);
 		memberDto.setRole(MemberRole.MEMBER);
+		memberDto.setLoginType(LoginType.FORM);
 		Member saveMember = memberRepository.save(Member.from(memberDto));
 
 		// 회원가입 멤버 반환
