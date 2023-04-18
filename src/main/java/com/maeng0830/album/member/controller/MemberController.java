@@ -1,26 +1,33 @@
 package com.maeng0830.album.member.controller;
 
 import com.maeng0830.album.member.dto.MemberDto;
-import com.maeng0830.album.member.service.SpringSecurityService;
+import com.maeng0830.album.member.service.MemberService;
 import com.maeng0830.album.security.formlogin.PrincipalDetails;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
 public class MemberController {
 
-	private final SpringSecurityService springSecurityService;
+	private final MemberService memberService;
 
 	// 회원 가입
 	@PostMapping("/join")
 	public MemberDto join(@ModelAttribute MemberDto memberDto) {
-		return springSecurityService.join(memberDto);
+		return memberService.join(memberDto);
 	}
 
 	// form login 테스트
@@ -30,6 +37,7 @@ public class MemberController {
 		return principalDetails.getMemberDto();
 	}
 
+	// Oauth2 login 테스트
 	@GetMapping("/oauth-login/test")
 	public MemberDto oauthLoginTest(@AuthenticationPrincipal PrincipalDetails principalDetails) {
 		return principalDetails.getMemberDto();
@@ -46,4 +54,32 @@ public class MemberController {
 			return null;
 		}
 	}
+
+	// 회원 탈퇴
+	@DeleteMapping("/members")
+	public MemberDto withdrawMember(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+		MemberDto memberDto = principalDetails.getMemberDto();
+		return memberService.withdraw(memberDto);
+	}
+
+	// 전체 회원 조회
+	@GetMapping("/members")
+	public List<MemberDto> getMembers() {
+		return memberService.getMembers();
+	}
+
+	// 회원 단건 조회
+	@GetMapping("/members/{id}")
+	public MemberDto getMember(@PathVariable Long id) {
+		return memberService.getMember(id);
+	}
+
+	// 회원 정보 수정(본인)
+	@PutMapping("/members/{id}")
+	public MemberDto modifiedMember(@PathVariable Long id,
+									@RequestPart(value = "memberDto") MemberDto memberDto,
+									@RequestPart(value = "imageFile") MultipartFile imageFile) {
+		return memberService.modifiedMember(id, memberDto, imageFile);
+	}
+
 }

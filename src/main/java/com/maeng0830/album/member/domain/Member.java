@@ -4,6 +4,7 @@ import com.maeng0830.album.common.TimeStamp;
 import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.security.dto.LoginType;
 import java.time.LocalDateTime;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -12,10 +13,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Entity
 @Getter
+@Setter
 @SuperBuilder
 @NoArgsConstructor
 public class Member extends TimeStamp {
@@ -32,8 +35,10 @@ public class Member extends TimeStamp {
 	private MemberStatus status;
 	@Enumerated(EnumType.STRING)
 	private MemberRole role;
-	private String memberImageName;
-	private String memberImagePath;
+
+	@Embedded
+	private MemberImage memberImage;
+
 	@Enumerated(EnumType.STRING)
 	private LoginType loginType;
 
@@ -47,8 +52,7 @@ public class Member extends TimeStamp {
 				.birthDate(memberDto.getBirthDate())
 				.status(memberDto.getStatus())
 				.role(memberDto.getRole())
-				.memberImageName(memberDto.getMemberImageName())
-				.memberImagePath(memberDto.getMemberImagePath())
+				.memberImage(memberDto.getMemberImage())
 				.createdAt(memberDto.getCreatedAt())
 				.modifiedAt(memberDto.getModifiedAt())
 				.build();

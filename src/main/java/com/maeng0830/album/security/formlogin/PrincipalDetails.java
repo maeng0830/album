@@ -31,7 +31,7 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
 		collection.add(new GrantedAuthority() {
 			@Override
 			public String getAuthority() {
-				return memberDto.getRole().name();
+				return memberDto.getRole().toString();
 			}
 		});
 		return collection;
@@ -64,7 +64,7 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
 
 	@Override
 	public boolean isEnabled() {
-		return !memberDto.getStatus().equals(MemberStatus.FIRST);
+		return true;
 	}
 
 	//OAuth2

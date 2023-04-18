@@ -10,12 +10,9 @@ import com.maeng0830.album.security.oauthlogin.userinfo.GoogleUserInfo;
 import com.maeng0830.album.security.oauthlogin.userinfo.NaverUserInfo;
 import com.maeng0830.album.security.oauthlogin.userinfo.OAuthUserInfo;
 import java.util.Optional;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -63,7 +60,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 							.username(oAuthUserInfo.getUsername())
 							.password(passwordEncoder.encode(oauth2Password))
 							.status(MemberStatus.FIRST)
-							.role(MemberRole.MEMBER)
+							.role(MemberRole.ROLE_MEMBER)
 							.loginType(oAuthUserInfo.getLoginType())
 							.build()
 			);

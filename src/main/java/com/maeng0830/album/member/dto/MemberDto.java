@@ -2,6 +2,7 @@ package com.maeng0830.album.member.dto;
 
 import com.maeng0830.album.common.TimeStamp;
 import com.maeng0830.album.member.domain.Member;
+import com.maeng0830.album.member.domain.MemberImage;
 import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.domain.MemberStatus;
 import com.maeng0830.album.security.dto.LoginType;
@@ -26,8 +27,7 @@ public class MemberDto extends TimeStamp {
 	private LocalDateTime birthDate;
 	private MemberStatus status;
 	private MemberRole role;
-	private String memberImageName;
-	private String memberImagePath;
+	private MemberImage memberImage;
 	private LoginType loginType;
 
 	public static MemberDto from(Member member) {
@@ -40,8 +40,7 @@ public class MemberDto extends TimeStamp {
 				.birthDate(member.getBirthDate())
 				.status(member.getStatus())
 				.role(member.getRole())
-				.memberImageName(member.getMemberImageName())
-				.memberImagePath(member.getMemberImagePath())
+				.memberImage(member.getMemberImage())
 				.createdAt(member.getCreatedAt())
 				.modifiedAt(member.getModifiedAt())
 				.loginType(member.getLoginType())
