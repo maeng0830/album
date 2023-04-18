@@ -25,7 +25,7 @@ public class SecurityConfig {
 
 		http.authorizeRequests()
 				.antMatchers("/members/**").access("hasRole('ADMIN') or hasRole('MEMBER')")
-				.antMatchers("**/admin/**").access("hasRole('ADMIN')")
+				.antMatchers("/admin/**").access("hasRole('ADMIN')")
 				.anyRequest().permitAll()
 				.and()
 				.formLogin()
@@ -36,7 +36,10 @@ public class SecurityConfig {
 				.and()
 				.oauth2Login()
 				.successHandler(oAuthLoginSuccessHandler)
-				.failureHandler(oAuthLoginFailureHandler);
+				.failureHandler(oAuthLoginFailureHandler)
+				.and()
+				.logout()
+				.logoutSuccessUrl("/");
 
 		return http.build();
 	}

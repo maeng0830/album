@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum SpringSecurityExceptionCode implements ExceptionCode {
+public enum MemberExceptionCode implements ExceptionCode {
 
 	// 스프링 시큐리티 예외
 	INCORRECT_ID_OR_PASSWORD_MEMBER("아이디 또는 비밀번호가 틀렸습니다."),
@@ -16,6 +16,7 @@ public enum SpringSecurityExceptionCode implements ExceptionCode {
 
 	EXIST_USERNAME("존재하는 아이디입니다."),
 	EXIST_NICKNAME("존재하는 닉네임입니다."),
+	NOT_EXIST_MEMBER("존재하지 않는 회원입니다.")
 	;
 
 	private final String description;

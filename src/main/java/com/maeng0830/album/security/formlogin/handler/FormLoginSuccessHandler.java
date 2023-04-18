@@ -55,9 +55,9 @@ public class FormLoginSuccessHandler implements AuthenticationSuccessHandler {
 			String redirectUrl = getRedirectUrl(savedRequest);
 
 			// 인증 권한에 따라 redirect
-			if (redirectUrl.contains("admin") && loginInfo.getMemberRoles().equals(MemberRole.ADMIN)) {
+			if (redirectUrl.contains("admin") && loginInfo.getMemberRoles().equals(MemberRole.ROLE_ADMIN)) {
 				redirectStrategy.sendRedirect(request, response, redirectUrl);
-			} else if (redirectUrl.contains("admin") && !loginInfo.getMemberRoles().equals(MemberRole.ADMIN)) {
+			} else if (redirectUrl.contains("admin") && !loginInfo.getMemberRoles().equals(MemberRole.ROLE_ADMIN)) {
 				redirectStrategy.sendRedirect(request, response, "/");
 			} else {
 				redirectStrategy.sendRedirect(request, response, getRedirectUrl(savedRequest));
