@@ -19,14 +19,6 @@ public class testData {
 
 	@EventListener(ApplicationReadyEvent.class)
 	public void init() {
-		Member member = Member.builder()
-				.username("member@naver.com")
-				.password(passwordEncoder.encode("123"))
-				.role(MemberRole.ROLE_MEMBER)
-				.status(MemberStatus.NORMAL)
-				.build();
-		memberRepository.save(member);
-
 		Member admin = Member.builder()
 				.username("admin@naver.com")
 				.password(passwordEncoder.encode("123"))
@@ -35,5 +27,15 @@ public class testData {
 				.build();
 
 		memberRepository.save(admin);
+
+		for (int i = 0; i < 10; i++) {
+			Member member = Member.builder()
+					.username((i + 1) + "member@naver.com")
+					.password(passwordEncoder.encode("123"))
+					.role(MemberRole.ROLE_MEMBER)
+					.status(MemberStatus.NORMAL)
+					.build();
+			memberRepository.save(member);
+		}
 	}
 }
