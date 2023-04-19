@@ -1,9 +1,13 @@
 package com.maeng0830.album.member.domain;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.maeng0830.album.common.TimeStamp;
+import com.maeng0830.album.follow.domain.Follow;
 import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.security.dto.LoginType;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -11,6 +15,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -41,6 +46,14 @@ public class Member extends TimeStamp {
 
 	@Enumerated(EnumType.STRING)
 	private LoginType loginType;
+
+	@JsonManagedReference
+	@OneToMany(mappedBy = "follower")
+	private List<Follow> followers = new ArrayList<>();
+
+	@JsonManagedReference
+	@OneToMany(mappedBy = "followee")
+	private List<Follow> followees = new ArrayList<>();
 
 	public static Member from(MemberDto memberDto) {
 		return Member.builder()
