@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: dev
+    active: test
 
   security:
     oauth2:
@@ -53,4 +53,17 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
+    show-sql: true
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: ${test.url}
+    username: ${test.username}
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create
     show-sql: true

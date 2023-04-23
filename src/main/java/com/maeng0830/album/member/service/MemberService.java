@@ -5,6 +5,7 @@ import static com.maeng0830.album.member.exception.MemberExceptionCode.EXIST_USE
 import static com.maeng0830.album.member.exception.MemberExceptionCode.NOT_EXIST_MEMBER;
 
 import com.maeng0830.album.common.exception.AlbumException;
+import com.maeng0830.album.common.filedir.FileDir;
 import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.domain.MemberImage;
 import com.maeng0830.album.member.domain.MemberRole;
@@ -19,7 +20,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,9 +31,7 @@ public class MemberService {
 
 	private final MemberRepository memberRepository;
 	private final BCryptPasswordEncoder passwordEncoder;
-
-	@Value("${dev.file.dir}")
-	private String fileDir;
+	private final FileDir fileDir;
 
 	public MemberDto join(MemberDto memberDto) {
 		// username 존재 여부 확인
@@ -109,9 +107,9 @@ public class MemberService {
 	}
 
 	// 회원 이미지 저장
-	private void saveMemberImage(MultipartFile imageFile, Member findMember) {
+	public void saveMemberImage(MultipartFile imageFile, Member findMember) {
 		if (imageFile != null) {
-			findMember.setMemberImage(new MemberImage(imageFile.getOriginalFilename(), fileDir + imageFile.getOriginalFilename()));
+			findMember.setMemberImage(new MemberImage(imageFile.getOriginalFilename(), fileDir.getDir() + imageFile.getOriginalFilename()));
 
 			try {
 				imageFile.transferTo(new File(findMember.getMemberImage().getMemberImagePath()));
