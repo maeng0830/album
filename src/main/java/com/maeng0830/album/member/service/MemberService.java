@@ -6,8 +6,8 @@ import static com.maeng0830.album.member.exception.MemberExceptionCode.NOT_EXIST
 
 import com.maeng0830.album.common.exception.AlbumException;
 import com.maeng0830.album.common.filedir.FileDir;
+import com.maeng0830.album.common.model.Image;
 import com.maeng0830.album.member.domain.Member;
-import com.maeng0830.album.member.domain.MemberImage;
 import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.domain.MemberStatus;
 import com.maeng0830.album.member.dto.MemberDto;
@@ -109,10 +109,10 @@ public class MemberService {
 	// 회원 이미지 저장
 	public void saveMemberImage(MultipartFile imageFile, Member findMember) {
 		if (imageFile != null) {
-			findMember.setMemberImage(new MemberImage(imageFile.getOriginalFilename(), fileDir.getDir() + imageFile.getOriginalFilename()));
+			findMember.setImage(new Image(imageFile.getOriginalFilename(), fileDir.getDir() + imageFile.getOriginalFilename()));
 
 			try {
-				imageFile.transferTo(new File(findMember.getMemberImage().getMemberImagePath()));
+				imageFile.transferTo(new File(findMember.getImage().getImagePath()));
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}

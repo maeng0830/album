@@ -1,19 +1,18 @@
-package com.maeng0830.album.member.domain;
+package com.maeng0830.album.common.model;
 
 import javax.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Embeddable
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class MemberImage {
+@AllArgsConstructor
+public class Image {
 
-	private String memberImageName;
-	private String memberImagePath;
+	private String imageName;
+	private String imagePath;
 }
