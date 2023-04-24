@@ -7,7 +7,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 import com.maeng0830.album.common.filedir.FileDir;
-import com.maeng0830.album.common.filedir.FileDirConfig;
 import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.domain.MemberStatus;
@@ -28,7 +27,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
@@ -181,11 +179,11 @@ class MemberServiceTest {
 		System.out.println("result.getPhone() = " + result.getPhone());
 		assertThat(result.getBirthDate()).isEqualTo(memberDto.getBirthDate());
 		System.out.println("result.getBirthDate() = " + result.getBirthDate());
-		assertThat(result.getMemberImage().getMemberImageName()).isEqualTo(
+		assertThat(result.getImage().getMemberImageName()).isEqualTo(
 				imageFile.getOriginalFilename());
-		System.out.println("result.getMemberImage().getMemberImageName() = " + result.getMemberImage().getMemberImageName());
-		assertThat(result.getMemberImage().getMemberImagePath()).isEqualTo(filePath);
-		System.out.println("result.getMemberImage().getMemberImagePath() = " + result.getMemberImage().getMemberImagePath());
+		System.out.println("result.getMemberImage().getMemberImageName() = " + result.getImage().getMemberImageName());
+		assertThat(result.getImage().getMemberImagePath()).isEqualTo(filePath);
+		System.out.println("result.getMemberImage().getMemberImagePath() = " + result.getImage().getMemberImagePath());
 		System.out.println("fileDir = " + fileDir.getDir());
 	}
 

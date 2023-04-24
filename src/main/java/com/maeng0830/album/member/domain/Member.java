@@ -2,6 +2,7 @@ package com.maeng0830.album.member.domain;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.maeng0830.album.common.TimeStamp;
+import com.maeng0830.album.common.model.Image;
 import com.maeng0830.album.follow.domain.Follow;
 import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.security.dto.LoginType;
@@ -42,7 +43,7 @@ public class Member extends TimeStamp {
 	private MemberRole role;
 
 	@Embedded
-	private MemberImage memberImage;
+	private Image image;
 
 	@Enumerated(EnumType.STRING)
 	private LoginType loginType;
@@ -65,7 +66,7 @@ public class Member extends TimeStamp {
 				.birthDate(memberDto.getBirthDate())
 				.status(memberDto.getStatus())
 				.role(memberDto.getRole())
-				.memberImage(memberDto.getMemberImage())
+				.image(memberDto.getImage())
 				.createdAt(memberDto.getCreatedAt())
 				.modifiedAt(memberDto.getModifiedAt())
 				.build();

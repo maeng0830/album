@@ -1,14 +1,12 @@
 package com.maeng0830.album.member.dto;
 
 import com.maeng0830.album.common.TimeStamp;
+import com.maeng0830.album.common.model.Image;
 import com.maeng0830.album.member.domain.Member;
-import com.maeng0830.album.member.domain.MemberImage;
 import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.domain.MemberStatus;
 import com.maeng0830.album.security.dto.LoginType;
 import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,7 +25,7 @@ public class MemberDto extends TimeStamp {
 	private LocalDateTime birthDate;
 	private MemberStatus status;
 	private MemberRole role;
-	private MemberImage memberImage;
+	private Image image;
 	private LoginType loginType;
 
 	public static MemberDto from(Member member) {
@@ -40,7 +38,7 @@ public class MemberDto extends TimeStamp {
 				.birthDate(member.getBirthDate())
 				.status(member.getStatus())
 				.role(member.getRole())
-				.memberImage(member.getMemberImage())
+				.image(member.getImage())
 				.createdAt(member.getCreatedAt())
 				.modifiedAt(member.getModifiedAt())
 				.loginType(member.getLoginType())
