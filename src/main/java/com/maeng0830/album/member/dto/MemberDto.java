@@ -1,6 +1,6 @@
 package com.maeng0830.album.member.dto;
 
-import com.maeng0830.album.common.TimeStamp;
+import com.maeng0830.album.common.TimeEntity;
 import com.maeng0830.album.common.model.Image;
 import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.domain.MemberRole;
@@ -16,7 +16,7 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-public class MemberDto extends TimeStamp {
+public class MemberDto extends TimeEntity {
 	private Long id;
 	private String username;
 	private String nickname;

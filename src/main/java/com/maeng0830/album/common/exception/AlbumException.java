@@ -16,4 +16,10 @@ public class AlbumException extends RuntimeException {
 		this.exceptionCode = exceptionCode;
 		this.exceptionMessage = exceptionCode.getMessage();
 	}
+
+	public AlbumException(ExceptionCode exceptionCode, Throwable cause) {
+		super(cause);
+		this.exceptionCode = exceptionCode;
+		this.exceptionMessage = exceptionCode.getMessage();
+	}
 }
