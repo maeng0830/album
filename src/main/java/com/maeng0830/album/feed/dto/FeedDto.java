@@ -1,0 +1,40 @@
+package com.maeng0830.album.feed.dto;
+
+import com.maeng0830.album.common.BaseEntity;
+import com.maeng0830.album.feed.domain.Feed;
+import com.maeng0830.album.feed.domain.FeedStatus;
+import com.maeng0830.album.member.dto.MemberDto;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+
+@SuperBuilder
+@Getter
+@Setter
+@NoArgsConstructor
+public class FeedDto extends BaseEntity {
+	private Long id;
+	private String title;
+	private String content;
+	private int hits;
+	private int commentCount;
+	private FeedStatus status;
+	private MemberDto memberDto;
+
+	public static FeedDto from(Feed feed) {
+		return FeedDto.builder()
+				.id(feed.getId())
+				.title(feed.getTitle())
+				.content(feed.getContent())
+				.hits(feed.getHits())
+				.commentCount(feed.getCommentCount())
+				.status(feed.getStatus())
+				.createdAt(feed.getCreatedAt())
+				.createdBy(feed.getCreatedBy())
+				.modifiedAt(feed.getModifiedAt())
+				.modifiedBy(feed.getModifiedBy())
+				.memberDto(MemberDto.from(feed.getMember()))
+				.build();
+	}
+}

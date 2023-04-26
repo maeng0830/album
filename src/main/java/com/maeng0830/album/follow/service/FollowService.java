@@ -1,6 +1,7 @@
 package com.maeng0830.album.follow.service;
 
 import static com.maeng0830.album.member.exception.MemberExceptionCode.NOT_EXIST_MEMBER;
+import static com.maeng0830.album.member.exception.MemberExceptionCode.REQUIRED_LOGIN;
 
 import com.maeng0830.album.common.exception.AlbumException;
 import com.maeng0830.album.follow.domain.Follow;
@@ -26,7 +27,13 @@ public class FollowService {
 	@Transactional
 	public FollowDto follow(Long followeeId, PrincipalDetails principalDetails) {
 
-		MemberDto loginMemberDto = principalDetails.getMemberDto();
+		MemberDto loginMemberDto;
+
+		try {
+			loginMemberDto = principalDetails.getMemberDto();
+		} catch (NullPointerException e) {
+			throw new AlbumException(REQUIRED_LOGIN, e);
+		}
 
 		log.info("follower 조회");
 		Member follower = memberRepository.findById(loginMemberDto.getId())

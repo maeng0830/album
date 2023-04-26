@@ -1,6 +1,6 @@
 package com.maeng0830.album.feed.domain;
 
-import com.maeng0830.album.common.TimeStamp;
+import com.maeng0830.album.common.TimeEntity;
 import com.maeng0830.album.common.model.Image;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -9,13 +9,15 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Entity
+@Getter
 @SuperBuilder
 @NoArgsConstructor
-public class FeedImage extends TimeStamp {
+public class FeedImage extends TimeEntity {
 
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;

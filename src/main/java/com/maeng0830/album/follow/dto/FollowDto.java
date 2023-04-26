@@ -1,6 +1,6 @@
 package com.maeng0830.album.follow.dto;
 
-import com.maeng0830.album.common.TimeStamp;
+import com.maeng0830.album.common.TimeEntity;
 import com.maeng0830.album.follow.domain.Follow;
 import com.maeng0830.album.member.dto.MemberDto;
 import lombok.AllArgsConstructor;
@@ -14,7 +14,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FollowDto extends TimeStamp {
+public class FollowDto extends TimeEntity {
 
 	private MemberDto follower;
 	private MemberDto followee;

@@ -12,12 +12,13 @@ public enum MemberExceptionCode implements ExceptionCode {
 	INCORRECT_ID_OR_PASSWORD_MEMBER("아이디 또는 비밀번호가 틀렸습니다."),
 	LOCKED_MEMBER("정지된 회원입니다."),
 	INACTIVE_MEMBER("인증이 필요한 회원입니다."),
+	REQUIRED_LOGIN("로그인이 필요합니다."),
 
 
 	EXIST_USERNAME("존재하는 아이디입니다."),
 	EXIST_NICKNAME("존재하는 닉네임입니다."),
-	NOT_EXIST_MEMBER("존재하지 않는 회원입니다.")
-	;
+	NOT_EXIST_MEMBER("존재하지 않는 회원입니다."),
+	NO_AUTHORITY("권한이 없습니다.");
 
 	private final String description;
 
