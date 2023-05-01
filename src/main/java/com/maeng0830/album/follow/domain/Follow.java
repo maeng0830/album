@@ -1,7 +1,7 @@
 package com.maeng0830.album.follow.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.maeng0830.album.common.TimeEntity;
+import com.maeng0830.album.common.model.entity.TimeEntity;
 import com.maeng0830.album.member.domain.Member;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;

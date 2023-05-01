@@ -1,6 +1,6 @@
 package com.maeng0830.album.feed.dto;
 
-import com.maeng0830.album.common.model.Image;
+import com.maeng0830.album.common.model.image.Image;
 import com.maeng0830.album.feed.domain.Feed;
 import com.maeng0830.album.feed.domain.FeedImage;
 import java.util.ArrayList;
@@ -29,7 +29,14 @@ public class FeedResponse {
 		this.createdBy = feed.getCreatedBy();
 
 		for (FeedImage feedImage : feedImages) {
-			this.feedImages.add(feedImage.getImage());
+
+			Image image = Image.builder()
+					.imageOriginalName(feedImage.getImage().getImageOriginalName())
+					.imageStoreName(feedImage.getImage().getImageStoreName())
+					.imagePath(feedImage.getImage().getImagePath())
+					.build();
+
+			this.feedImages.add(image);
 		}
 	}
 }

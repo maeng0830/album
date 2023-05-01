@@ -1,8 +1,8 @@
 package com.maeng0830.album.member.domain;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.maeng0830.album.common.TimeEntity;
-import com.maeng0830.album.common.model.Image;
+import com.maeng0830.album.common.model.entity.TimeEntity;
+import com.maeng0830.album.common.model.image.Image;
 import com.maeng0830.album.follow.domain.Follow;
 import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.security.dto.LoginType;
