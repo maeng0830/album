@@ -1,6 +1,6 @@
 package com.maeng0830.album.feed.dto;
 
-import com.maeng0830.album.common.BaseEntity;
+import com.maeng0830.album.common.model.entity.BaseEntity;
 import com.maeng0830.album.feed.domain.Feed;
 import com.maeng0830.album.feed.domain.FeedStatus;
 import com.maeng0830.album.member.dto.MemberDto;

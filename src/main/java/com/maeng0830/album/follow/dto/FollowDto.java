@@ -1,6 +1,6 @@
 package com.maeng0830.album.follow.dto;
 
-import com.maeng0830.album.common.TimeEntity;
+import com.maeng0830.album.common.model.entity.TimeEntity;
 import com.maeng0830.album.follow.domain.Follow;
 import com.maeng0830.album.member.dto.MemberDto;
 import lombok.AllArgsConstructor;

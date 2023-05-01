@@ -6,7 +6,7 @@ import static com.maeng0830.album.member.exception.MemberExceptionCode.NOT_EXIST
 
 import com.maeng0830.album.common.exception.AlbumException;
 import com.maeng0830.album.common.filedir.FileDir;
-import com.maeng0830.album.common.model.Image;
+import com.maeng0830.album.common.model.image.Image;
 import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.domain.MemberStatus;
@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
@@ -97,6 +98,7 @@ public class MemberService {
 		return MemberDto.from(findMember);
 	}
 
+	@Transactional
 	public MemberDto changeMemberStatus(Long id, MemberStatus memberStatus) {
 		Member findMember = memberRepository.findById(id).orElseThrow(() -> new AlbumException(
 				NOT_EXIST_MEMBER));
@@ -109,7 +111,7 @@ public class MemberService {
 	// 회원 이미지 저장
 	public void saveMemberImage(MultipartFile imageFile, Member findMember) {
 		if (imageFile != null) {
-			findMember.setImage(new Image(imageFile.getOriginalFilename(), fileDir.getDir() + imageFile.getOriginalFilename()));
+			findMember.setImage(new Image(imageFile, fileDir));
 
 			try {
 				imageFile.transferTo(new File(findMember.getImage().getImagePath()));

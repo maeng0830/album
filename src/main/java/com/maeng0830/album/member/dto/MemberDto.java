@@ -1,7 +1,7 @@
 package com.maeng0830.album.member.dto;
 
-import com.maeng0830.album.common.TimeEntity;
-import com.maeng0830.album.common.model.Image;
+import com.maeng0830.album.common.model.entity.TimeEntity;
+import com.maeng0830.album.common.model.image.Image;
 import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.domain.MemberStatus;

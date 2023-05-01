@@ -1,7 +1,10 @@
 package com.maeng0830.album.feed.domain;
 
-import com.maeng0830.album.common.BaseEntity;
+import com.maeng0830.album.common.model.entity.BaseEntity;
+import com.maeng0830.album.feed.dto.FeedDto;
 import com.maeng0830.album.member.domain.Member;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -12,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -38,7 +42,15 @@ public class Feed extends BaseEntity {
 	@JoinColumn(name = "member_id")
 	private Member member;
 
+	@OneToMany(mappedBy = "feed")
+	private List<FeedImage> feedImages = new ArrayList<>();
+
 	public void changeStatus(FeedStatus status) {
 		this.status = status;
+	}
+
+	public void modified(FeedDto feedDto) {
+		this.title = feedDto.getTitle();
+		this.content = feedDto.getContent();
 	}
 }

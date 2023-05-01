@@ -1,6 +1,6 @@
 package com.maeng0830.album.feed.domain;
 
-import com.maeng0830.album.common.TimeEntity;
+import com.maeng0830.album.common.model.entity.TimeEntity;
 import com.maeng0830.album.member.domain.Member;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

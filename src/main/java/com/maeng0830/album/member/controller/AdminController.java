@@ -1,5 +1,8 @@
 package com.maeng0830.album.member.controller;
 
+import com.maeng0830.album.feed.domain.FeedStatus;
+import com.maeng0830.album.feed.dto.FeedDto;
+import com.maeng0830.album.feed.service.FeedService;
 import com.maeng0830.album.member.domain.MemberStatus;
 import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.service.MemberService;
@@ -16,9 +19,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminController {
 
 	private final MemberService memberService;
+	private final FeedService feedService;
 
-	@PutMapping("/members/{id}/status")
-	public MemberDto changeMemberStatus(@PathVariable Long id, @RequestBody MemberStatus memberStatus) {
-		return memberService.changeMemberStatus(id, memberStatus);
+	@PutMapping("/members/{memberId}/status")
+	public MemberDto changeMemberStatus(@PathVariable Long memberId, @RequestBody MemberStatus memberStatus) {
+		return memberService.changeMemberStatus(memberId, memberStatus);
+	}
+
+	@PutMapping("/feeds/{feedId}/status")
+	public FeedDto changeFeedStatus(@PathVariable Long feedId, @RequestBody FeedStatus feedStatus) {
+		return feedService.changeFeedStatus(feedId, feedStatus);
 	}
 }

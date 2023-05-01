@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,12 +25,12 @@ public class FeedController {
 	private final FeedService feedService;
 
 	@GetMapping
-	public List<FeedDto> getFeeds(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+	public List<FeedResponse> getFeeds(@AuthenticationPrincipal PrincipalDetails principalDetails) {
 		return feedService.getFeeds(principalDetails);
 	}
 
 	@GetMapping("/{feedId}")
-	public FeedDto getFeed(@PathVariable Long feedId) {
+	public FeedResponse getFeed(@PathVariable Long feedId) {
 		return feedService.getFeed(feedId);
 	}
 
@@ -42,7 +43,21 @@ public class FeedController {
 
 	@DeleteMapping("/{feedId}")
 	public FeedDto deleteFeed(@PathVariable Long feedId,
-							 @AuthenticationPrincipal PrincipalDetails principalDetails) {
+							  @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		return feedService.deleteFeed(feedId, principalDetails);
+	}
+
+	@PutMapping("/{feedId}")
+	public FeedResponse modifiedFeed(@PathVariable Long feedId,
+									 @RequestPart FeedDto feedDto,
+									 @RequestPart List<MultipartFile> imageFiles,
+									 @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		return feedService.modifiedFeed(feedId, feedDto, imageFiles, principalDetails);
+	}
+
+	@PutMapping("/{feedId}/accuse")
+	public FeedDto accuseFeed(@PathVariable Long feedId,
+							  @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		return feedService.accuseFeed(feedId, principalDetails);
 	}
 }

@@ -1,7 +1,7 @@
 package com.maeng0830.album.feed.domain;
 
-import com.maeng0830.album.common.TimeEntity;
-import com.maeng0830.album.common.model.Image;
+import com.maeng0830.album.common.model.entity.TimeEntity;
+import com.maeng0830.album.common.model.image.Image;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
