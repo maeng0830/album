@@ -1,5 +1,6 @@
 package com.maeng0830.album.feed.controller;
 
+import com.maeng0830.album.feed.dto.FeedAccuseDto;
 import com.maeng0830.album.feed.dto.FeedDto;
 import com.maeng0830.album.feed.dto.FeedResponse;
 import com.maeng0830.album.feed.service.FeedService;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -56,8 +58,9 @@ public class FeedController {
 	}
 
 	@PutMapping("/{feedId}/accuse")
-	public FeedDto accuseFeed(@PathVariable Long feedId,
+	public FeedAccuseDto accuseFeed(@PathVariable Long feedId,
+							  @RequestBody FeedAccuseDto feedAccuseDto,
 							  @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return feedService.accuseFeed(feedId, principalDetails);
+		return feedService.accuseFeed(feedId, feedAccuseDto, principalDetails);
 	}
 }

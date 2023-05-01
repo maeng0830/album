@@ -9,10 +9,13 @@ import com.maeng0830.album.common.exception.AlbumException;
 import com.maeng0830.album.common.filedir.FileDir;
 import com.maeng0830.album.common.model.image.Image;
 import com.maeng0830.album.feed.domain.Feed;
+import com.maeng0830.album.feed.domain.FeedAccuse;
 import com.maeng0830.album.feed.domain.FeedImage;
 import com.maeng0830.album.feed.domain.FeedStatus;
+import com.maeng0830.album.feed.dto.FeedAccuseDto;
 import com.maeng0830.album.feed.dto.FeedDto;
 import com.maeng0830.album.feed.dto.FeedResponse;
+import com.maeng0830.album.feed.repository.FeedAccuseRepository;
 import com.maeng0830.album.feed.repository.FeedImageRepository;
 import com.maeng0830.album.feed.repository.FeedRepository;
 import com.maeng0830.album.follow.domain.Follow;
@@ -39,6 +42,7 @@ public class FeedService {
 
 	private final FeedRepository feedRepository;
 	private final FeedImageRepository feedImageRepository;
+	private final FeedAccuseRepository feedAccuseRepository;
 	private final MemberRepository memberRepository;
 	private final FollowRepository followRepository;
 	private final FileDir fileDir;
@@ -206,17 +210,31 @@ public class FeedService {
 
 	// 피드 신고
 	@Transactional
-	public FeedDto accuseFeed(Long feedId, PrincipalDetails principalDetails) {
+	public FeedAccuseDto accuseFeed(Long feedId, FeedAccuseDto feedAccuseDto, PrincipalDetails principalDetails) {
 
 		// 로그인 여부 확인
-		checkLogin(principalDetails);
+		MemberDto memberDto = checkLogin(principalDetails);
 
+		// 신고 피드 조회 및 상태 변경
 		Feed findFeed = feedRepository.findById(feedId)
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_FEED));
 
 		findFeed.changeStatus(FeedStatus.ACCUSE);
 
-		return FeedDto.from(findFeed);
+		// 신고자 조회
+		Member findMember = memberRepository.findByUsername(memberDto.getUsername())
+				.orElseThrow(() -> new AlbumException(NOT_EXIST_MEMBER));
+
+		// 신고 내역 저장
+		FeedAccuse savedFeedAccuse = feedAccuseRepository.save(
+				FeedAccuse.builder()
+						.content(feedAccuseDto.getContent())
+						.member(findMember)
+						.feed(findFeed)
+						.build()
+		);
+
+		return FeedAccuseDto.from(savedFeedAccuse);
 	}
 
 	// 피드 상태 변경
