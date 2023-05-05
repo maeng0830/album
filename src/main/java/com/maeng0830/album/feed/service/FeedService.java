@@ -3,11 +3,11 @@ package com.maeng0830.album.feed.service;
 import static com.maeng0830.album.feed.exception.FeedExceptionCode.NOT_EXIST_FEED;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.NOT_EXIST_MEMBER;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.NO_AUTHORITY;
-import static com.maeng0830.album.member.exception.MemberExceptionCode.REQUIRED_LOGIN;
 
 import com.maeng0830.album.common.exception.AlbumException;
 import com.maeng0830.album.common.filedir.FileDir;
 import com.maeng0830.album.common.model.image.Image;
+import com.maeng0830.album.common.util.AlbumUtil;
 import com.maeng0830.album.feed.domain.Feed;
 import com.maeng0830.album.feed.domain.FeedAccuse;
 import com.maeng0830.album.feed.domain.FeedImage;
@@ -46,6 +46,7 @@ public class FeedService {
 	private final MemberRepository memberRepository;
 	private final FollowRepository followRepository;
 	private final FileDir fileDir;
+	private final AlbumUtil albumUtil;
 
 	// FeedImage 데이터 등록
 	public void saveFeedImage(List<MultipartFile> imageFiles, Feed findFeed) {
@@ -62,15 +63,6 @@ public class FeedService {
 			}
 
 			feedImageRepository.save(feedImage);
-		}
-	}
-
-	// 로그인 여부 확인
-	public static MemberDto checkLogin(PrincipalDetails principalDetails) {
-		try {
-			return principalDetails.getMemberDto();
-		} catch (NullPointerException e) {
-			throw new AlbumException(REQUIRED_LOGIN, e);
 		}
 	}
 
@@ -127,7 +119,7 @@ public class FeedService {
 							 PrincipalDetails principalDetails) {
 
 		// 로그인 여부 확인
-		MemberDto loginMemberDto = checkLogin(principalDetails);
+		MemberDto loginMemberDto = albumUtil.checkLogin(principalDetails);
 
 		Member loginMember = memberRepository.findById(loginMemberDto.getId())
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_MEMBER));
@@ -158,7 +150,7 @@ public class FeedService {
 	public FeedDto deleteFeed(Long feedId, PrincipalDetails principalDetails) {
 
 		// 로그인 여부 확인
-		MemberDto loginMemberDto = checkLogin(principalDetails);
+		MemberDto loginMemberDto = albumUtil.checkLogin(principalDetails);
 
 		// 목표 피드 데이터 조회
 		Feed findFeed = feedRepository.findById(feedId)
@@ -183,7 +175,7 @@ public class FeedService {
 									 PrincipalDetails principalDetails) {
 
 		// 로그인 여부 확인
-		MemberDto loginMemberDto = checkLogin(principalDetails);
+		MemberDto loginMemberDto = albumUtil.checkLogin(principalDetails);
 
 		// 목표 피드 데이터 조회
 		Feed findFeed = feedRepository.findById(feedId)
@@ -213,7 +205,7 @@ public class FeedService {
 	public FeedAccuseDto accuseFeed(Long feedId, FeedAccuseDto feedAccuseDto, PrincipalDetails principalDetails) {
 
 		// 로그인 여부 확인
-		MemberDto memberDto = checkLogin(principalDetails);
+		MemberDto memberDto = albumUtil.checkLogin(principalDetails);
 
 		// 신고 피드 조회 및 상태 변경
 		Feed findFeed = feedRepository.findById(feedId)
@@ -247,6 +239,4 @@ public class FeedService {
 
 		return FeedDto.from(findFeed);
 	}
-
-
 }

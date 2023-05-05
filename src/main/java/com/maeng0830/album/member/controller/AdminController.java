@@ -1,5 +1,8 @@
 package com.maeng0830.album.member.controller;
 
+import com.maeng0830.album.comment.domain.CommentStatus;
+import com.maeng0830.album.comment.model.response.BasicComment;
+import com.maeng0830.album.comment.service.CommentService;
 import com.maeng0830.album.feed.domain.FeedStatus;
 import com.maeng0830.album.feed.dto.FeedDto;
 import com.maeng0830.album.feed.service.FeedService;
@@ -20,6 +23,7 @@ public class AdminController {
 
 	private final MemberService memberService;
 	private final FeedService feedService;
+	private final CommentService commentService;
 
 	@PutMapping("/members/{memberId}/status")
 	public MemberDto changeMemberStatus(@PathVariable Long memberId, @RequestBody MemberStatus memberStatus) {
@@ -29,5 +33,11 @@ public class AdminController {
 	@PutMapping("/feeds/{feedId}/status")
 	public FeedDto changeFeedStatus(@PathVariable Long feedId, @RequestBody FeedStatus feedStatus) {
 		return feedService.changeFeedStatus(feedId, feedStatus);
+	}
+
+	@PutMapping("/comments/{commentId}/status")
+	public BasicComment changeCommentStatus(@PathVariable Long commentId, @RequestBody
+											CommentStatus commentStatus) {
+		return commentService.changeCommentStatus(commentId, commentStatus);
 	}
 }
