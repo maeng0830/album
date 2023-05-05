@@ -1,5 +1,9 @@
 package com.maeng0830.album;
 
+import com.maeng0830.album.comment.domain.Comment;
+import com.maeng0830.album.comment.domain.CommentStatus;
+import com.maeng0830.album.comment.repository.CommentRepository;
+import com.maeng0830.album.common.exception.AlbumException;
 import com.maeng0830.album.common.filedir.FileDir;
 import com.maeng0830.album.common.model.image.Image;
 import com.maeng0830.album.feed.domain.Feed;
@@ -29,6 +33,7 @@ public class testData {
 	private final FollowRepository followRepository;
 	private final FeedRepository feedRepository;
 	private final FeedImageRepository feedImageRepository;
+	private final CommentRepository commentRepository;
 	private final FileDir fileDir;
 
 	@EventListener(ApplicationReadyEvent.class)
@@ -94,6 +99,47 @@ public class testData {
 						.build();
 
 				feedImageRepository.save(feedImage);
+			}
+		}
+
+		for (int i = 0; i < 2; i++) {
+			Member member = memberRepository.findByUsername((i + 1) + "member@naver.com").get();
+			Feed feed = feedRepository.findById(1L).get();
+
+			Comment comment = Comment.builder()
+					.member(member)
+					.feed(feed)
+					.status(CommentStatus.NORMAL)
+					.content("groupCommentContent")
+					.build();
+
+			comment.saveGroup(null);
+			comment.saveParent(null);
+
+			commentRepository.save(comment);
+		}
+
+		for (int i = 2; i < 10; i++) {
+			Member member = memberRepository.findByUsername((i + 1) + "member@naver.com").get();
+			Feed feed = feedRepository.findById(1L).get();
+
+			Comment comment = Comment.builder()
+					.member(member)
+					.feed(feed)
+					.status(CommentStatus.NORMAL)
+					.content("BasicCommentContent")
+					.build();
+
+			if (i % 2 == 0) {
+				Comment groupComment = commentRepository.findById(1L).get();
+				comment.saveGroup(groupComment);
+				comment.saveParent(groupComment);
+				commentRepository.save(comment);
+			} else {
+				Comment groupComment = commentRepository.findById(2L).get();
+				comment.saveGroup(groupComment);
+				comment.saveParent(groupComment);
+				commentRepository.save(comment);
 			}
 		}
 	}

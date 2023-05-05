@@ -31,11 +31,43 @@ public class Comment extends TimeEntity {
 	@JoinColumn(name = "feed_id")
 	private Feed feed;
 
-	private Long groupId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "group_id")
+	private Comment group;
 
-	private Long parentId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "parent_id")
+	private Comment parent;
 
 	private String content;
 
 	private CommentStatus status;
+
+	public void saveGroup(Comment group) {
+		if (group != null) {
+			this.group = group;
+		} else {
+			this.group = this;
+		}
+	}
+
+	public void saveParent(Comment parent) {
+		if (parent != null) {
+			this.parent = parent;
+		} else {
+			this.parent = this;
+		}
+	}
+
+	public void changeContent(String content) {
+		this.content = content;
+	}
+
+	public void accuseComment() {
+		this.status = CommentStatus.ACCUSE;
+	}
+
+	public void changeStatus(CommentStatus commentStatus) {
+		this.status = commentStatus;
+	}
 }
