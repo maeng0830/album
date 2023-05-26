@@ -1,5 +1,6 @@
 package com.maeng0830.album.feed.service;
 
+import static com.maeng0830.album.feed.domain.FeedStatus.*;
 import static com.maeng0830.album.feed.exception.FeedExceptionCode.NOT_EXIST_FEED;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.NOT_EXIST_MEMBER;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.NO_AUTHORITY;
@@ -71,6 +72,8 @@ public class FeedService {
 
 		boolean loginCheck = principalDetails != null;
 
+		List<FeedStatus> feedStatuses = List.of(NORMAL, ACCUSE);
+
 		//로그인 상태
 		if (loginCheck) {
 			MemberDto memberDto = principalDetails.getMemberDto();
@@ -89,7 +92,8 @@ public class FeedService {
 			followers.stream().map(f -> f.getFollowee().getUsername()).forEach(createdBy::add);
 			followees.stream().map(f -> f.getFollower().getUsername()).forEach(createdBy::add);
 
-			List<Feed> feeds = feedRepository.findByStatusAndCreatedBy(FeedStatus.DELETE,
+
+			List<Feed> feeds = feedRepository.findByStatusAndCreatedBy(feedStatuses,
 					createdBy);
 
 			return feeds.stream().map(f -> new FeedResponse(f, f.getFeedImages()))
@@ -97,7 +101,7 @@ public class FeedService {
 		}
 
 		//비로그인 상태
-		List<Feed> feeds = feedRepository.findFetchJoinByStatusNot(FeedStatus.DELETE);
+		List<Feed> feeds = feedRepository.findFetchJoinByStatus(feedStatuses);
 		System.out.println("feeds.size() = " + feeds.size());
 
 		return feeds.stream().map(f -> new FeedResponse(f, f.getFeedImages()))
@@ -131,7 +135,7 @@ public class FeedService {
 				.hits(0)
 				.commentCount(0)
 				.likeCount(0)
-				.status(FeedStatus.NORMAL)
+				.status(NORMAL)
 				.member(loginMember)
 				.build();
 
@@ -164,7 +168,7 @@ public class FeedService {
 		}
 
 		// Feed 상태 변경
-		findFeed.changeStatus(FeedStatus.DELETE);
+		findFeed.changeStatus(DELETE);
 
 		return FeedDto.from(findFeed);
 	}
@@ -211,7 +215,7 @@ public class FeedService {
 		Feed findFeed = feedRepository.findById(feedId)
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_FEED));
 
-		findFeed.changeStatus(FeedStatus.ACCUSE);
+		findFeed.changeStatus(ACCUSE);
 
 		// 신고자 조회
 		Member findMember = memberRepository.findByUsername(memberDto.getUsername())
