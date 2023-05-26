@@ -179,11 +179,11 @@ class MemberServiceTest {
 		System.out.println("result.getPhone() = " + result.getPhone());
 		assertThat(result.getBirthDate()).isEqualTo(memberDto.getBirthDate());
 		System.out.println("result.getBirthDate() = " + result.getBirthDate());
-		assertThat(result.getImage().getMemberImageName()).isEqualTo(
+		assertThat(result.getImage().getImageOriginalName()).isEqualTo(
 				imageFile.getOriginalFilename());
-		System.out.println("result.getMemberImage().getMemberImageName() = " + result.getImage().getMemberImageName());
-		assertThat(result.getImage().getMemberImagePath()).isEqualTo(filePath);
-		System.out.println("result.getMemberImage().getMemberImagePath() = " + result.getImage().getMemberImagePath());
+		System.out.println("result.getImage().getImageOriginalName() = " + result.getImage().getImageOriginalName());
+		assertThat(result.getImage().getImagePath()).isEqualTo(filePath);
+		System.out.println("result.getImage().getImagePath() = " + result.getImage().getImagePath());
 		System.out.println("fileDir = " + fileDir.getDir());
 	}
 

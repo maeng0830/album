@@ -28,4 +28,8 @@ public class FeedImage extends TimeEntity {
 	@ManyToOne
 	@JoinColumn(name = "feed_id")
 	private Feed feed;
+
+	public void assignFeed(Feed feed) {
+		this.feed = feed;
+	}
 }
