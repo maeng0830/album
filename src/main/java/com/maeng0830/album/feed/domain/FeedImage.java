@@ -4,6 +4,7 @@ import com.maeng0830.album.common.model.entity.TimeEntity;
 import com.maeng0830.album.common.model.image.Image;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -25,7 +26,7 @@ public class FeedImage extends TimeEntity {
 	@Embedded
 	private Image image;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "feed_id")
 	private Feed feed;
 

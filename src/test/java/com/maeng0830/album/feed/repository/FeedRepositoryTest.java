@@ -110,6 +110,7 @@ class FeedRepositoryTest {
 		feed2.addFeedImage(feedImage2);
 
 		feedRepository.saveAll(List.of(feed1, feed2));
+		feedImageRepository.saveAll(List.of(feedImage1, feedImage2));
 
 		// when
 		List<Feed> result1 = feedRepository.findFetchJoinByStatus(
