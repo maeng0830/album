@@ -45,7 +45,7 @@ public class Feed extends BaseEntity {
 	private Member member;
 
 	@Builder.Default
-	@OneToMany(mappedBy = "feed", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "feed")
 	private List<FeedImage> feedImages = new ArrayList<>();
 
 	public void changeStatus(FeedStatus status) {
