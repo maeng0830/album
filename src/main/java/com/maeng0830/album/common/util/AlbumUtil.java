@@ -17,7 +17,7 @@ public class AlbumUtil {
 		try {
 			return principalDetails.getMemberDto();
 		} catch (NullPointerException e) {
-			throw new AlbumException(REQUIRED_LOGIN, e);
+			return null;
 		}
 	}
 

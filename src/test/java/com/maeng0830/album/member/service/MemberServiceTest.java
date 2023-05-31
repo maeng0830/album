@@ -157,14 +157,8 @@ class MemberServiceTest {
 				.birthDate(LocalDateTime.now())
 				.build();
 
-		String name = "imageFile";
-		String originalFilename = "testImage.png";
-		String contentType = "multipart/mixed";
-		String filePath = fileDir.getDir() + originalFilename;
-		FileInputStream fileInputStream = new FileInputStream(new File(filePath));
-
-		MockMultipartFile imageFile = new MockMultipartFile(name,
-				originalFilename, contentType, fileInputStream);
+		MockMultipartFile imageFile = createImageFile("imageFile", "testImage.png",
+				"multipart/mixed", fileDir);
 
 		given(memberRepository.findById(id)).willReturn(
 				Optional.of(Member.builder().id(id).build()));
@@ -174,17 +168,13 @@ class MemberServiceTest {
 
 		//then
 		assertThat(result.getNickname()).isEqualTo(memberDto.getNickname());
-		System.out.println("result.getNickname() = " + result.getNickname());
 		assertThat(result.getPhone()).isEqualTo(memberDto.getPhone());
-		System.out.println("result.getPhone() = " + result.getPhone());
 		assertThat(result.getBirthDate()).isEqualTo(memberDto.getBirthDate());
-		System.out.println("result.getBirthDate() = " + result.getBirthDate());
 		assertThat(result.getImage().getImageOriginalName()).isEqualTo(
 				imageFile.getOriginalFilename());
-		System.out.println("result.getImage().getImageOriginalName() = " + result.getImage().getImageOriginalName());
-		assertThat(result.getImage().getImagePath()).isEqualTo(filePath);
-		System.out.println("result.getImage().getImagePath() = " + result.getImage().getImagePath());
-		System.out.println("fileDir = " + fileDir.getDir());
+		assertThat(result.getImage().getImagePath()).isEqualTo(
+				fileDir.getDir() + result.getImage().getImageOriginalName());
+
 	}
 
 	@DisplayName("회원 상태 수정-성공")
@@ -204,5 +194,15 @@ class MemberServiceTest {
 		//then
 		assertThat(result.getId()).isEqualTo(id);
 		assertThat(result.getStatus()).isEqualTo(memberStatus);
+	}
+
+	private MockMultipartFile createImageFile(String name, String originalFilename,
+											  String contentType, FileDir fileDir)
+			throws IOException {
+		String filePath = fileDir.getDir() + originalFilename;
+		FileInputStream fileInputStream = new FileInputStream(new File(filePath));
+
+		return new MockMultipartFile(name,
+				originalFilename, contentType, fileInputStream);
 	}
 }
