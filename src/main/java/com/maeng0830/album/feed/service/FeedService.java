@@ -4,6 +4,7 @@ import static com.maeng0830.album.feed.domain.FeedStatus.*;
 import static com.maeng0830.album.feed.exception.FeedExceptionCode.NOT_EXIST_FEED;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.NOT_EXIST_MEMBER;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.NO_AUTHORITY;
+import static com.maeng0830.album.member.exception.MemberExceptionCode.REQUIRED_LOGIN;
 
 import com.maeng0830.album.common.exception.AlbumException;
 import com.maeng0830.album.common.filedir.FileDir;
@@ -50,7 +51,7 @@ public class FeedService {
 	private final AlbumUtil albumUtil;
 
 	// FeedImage 데이터 등록
-	public void saveFeedImage(List<MultipartFile> imageFiles, Feed findFeed) {
+	public List<FeedImage> saveFeedImage(List<MultipartFile> imageFiles, Feed findFeed) {
 		for (MultipartFile imageFile : imageFiles) {
 			FeedImage feedImage = FeedImage.builder()
 					.image(new Image(imageFile, fileDir))
@@ -65,19 +66,19 @@ public class FeedService {
 
 			feedImageRepository.save(feedImage);
 		}
+
+		return feedImageRepository.findByFeed_Id(findFeed.getId());
 	}
 
 	// 전체 피드 목록 조회, 로그인 여부에 따라 다른 피드 목록 반환
-	public List<FeedResponse> getFeeds(PrincipalDetails principalDetails) {
+	public List<FeedResponse> getFeeds(MemberDto memberDto) {
 
-		boolean loginCheck = principalDetails != null;
+		boolean loginCheck = memberDto != null;
 
 		List<FeedStatus> feedStatuses = List.of(NORMAL, ACCUSE);
 
 		//로그인 상태
 		if (loginCheck) {
-			MemberDto memberDto = principalDetails.getMemberDto();
-
 			Member loginMember = memberRepository.findById(memberDto.getId())
 					.orElseThrow(() -> new AlbumException(
 							NOT_EXIST_MEMBER));
@@ -98,14 +99,14 @@ public class FeedService {
 
 			return feeds.stream().map(f -> new FeedResponse(f, f.getFeedImages()))
 					.collect(Collectors.toList());
+		} else {
+			//비로그인 상태
+			List<Feed> feeds = feedRepository.findFetchJoinByStatus(feedStatuses);
+			System.out.println("feeds.size() = " + feeds.size());
+
+			return feeds.stream().map(f -> new FeedResponse(f, f.getFeedImages()))
+					.collect(Collectors.toList());
 		}
-
-		//비로그인 상태
-		List<Feed> feeds = feedRepository.findFetchJoinByStatus(feedStatuses);
-		System.out.println("feeds.size() = " + feeds.size());
-
-		return feeds.stream().map(f -> new FeedResponse(f, f.getFeedImages()))
-				.collect(Collectors.toList());
 	}
 
 	// 특정 피드 조회
@@ -120,12 +121,13 @@ public class FeedService {
 
 	// 피드 등록
 	public FeedResponse feed(FeedDto feedDto, List<MultipartFile> imageFiles,
-							 PrincipalDetails principalDetails) {
+							 MemberDto memberDto) {
 
-		// 로그인 여부 확인
-		MemberDto loginMemberDto = albumUtil.checkLogin(principalDetails);
+		if (memberDto == null) {
+			throw new AlbumException(REQUIRED_LOGIN);
+		}
 
-		Member loginMember = memberRepository.findById(loginMemberDto.getId())
+		Member loginMember = memberRepository.findById(memberDto.getId())
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_MEMBER));
 
 		// Feed 데이터 등록
@@ -142,9 +144,7 @@ public class FeedService {
 		feedRepository.save(feed);
 
 		// FeedImage 데이터 등록
-		saveFeedImage(imageFiles, feed);
-
-		List<FeedImage> feedImages = feedImageRepository.findByFeed_Id(feed.getId());
+		List<FeedImage> feedImages = saveFeedImage(imageFiles, feed);
 
 		return new FeedResponse(feed, feedImages);
 	}
@@ -199,7 +199,7 @@ public class FeedService {
 		// 새로운 FeedImage 데이터 등록
 		saveFeedImage(imageFiles, findFeed);
 
-		List<FeedImage> feedImages = feedImageRepository.findByFeed_Id(findFeed.getId());
+		List<FeedImage> feedImages = saveFeedImage(imageFiles, findFeed);
 
 		return new FeedResponse(findFeed, feedImages);
 	}
