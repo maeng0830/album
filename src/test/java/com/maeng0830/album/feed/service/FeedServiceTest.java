@@ -1,18 +1,30 @@
 package com.maeng0830.album.feed.service;
 
 import static com.maeng0830.album.feed.domain.FeedStatus.*;
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.maeng0830.album.feed.domain.FeedStatus.ACCUSE;
+import static com.maeng0830.album.feed.domain.FeedStatus.NORMAL;
+import static com.maeng0830.album.member.domain.MemberRole.*;
+import static com.maeng0830.album.member.exception.MemberExceptionCode.NO_AUTHORITY;
+import static com.maeng0830.album.member.exception.MemberExceptionCode.REQUIRED_LOGIN;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.maeng0830.album.common.exception.AlbumException;
 import com.maeng0830.album.common.filedir.FileDir;
+import com.maeng0830.album.common.model.image.Image;
 import com.maeng0830.album.feed.domain.Feed;
 import com.maeng0830.album.feed.domain.FeedImage;
 import com.maeng0830.album.feed.domain.FeedStatus;
+import com.maeng0830.album.feed.dto.FeedAccuseDto;
+import com.maeng0830.album.feed.dto.FeedDto;
 import com.maeng0830.album.feed.dto.FeedResponse;
+import com.maeng0830.album.feed.repository.FeedImageRepository;
 import com.maeng0830.album.feed.repository.FeedRepository;
 import com.maeng0830.album.follow.domain.Follow;
 import com.maeng0830.album.follow.repository.FollowRepository;
 import com.maeng0830.album.member.domain.Member;
+import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.repository.MemberRepository;
 import java.io.File;
@@ -20,10 +32,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.assertj.core.api.Assertions;
-import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
@@ -44,6 +56,8 @@ class FeedServiceTest {
 	@Autowired
 	private FeedRepository feedRepository;
 	@Autowired
+	private FeedImageRepository feedImageRepository;
+	@Autowired
 	private FollowRepository followRepository;
 
 	@Autowired
@@ -53,11 +67,8 @@ class FeedServiceTest {
 	@Test
 	void saveFeedImage() throws IOException {
 		// given
-		List<MultipartFile> imageFiles = new ArrayList<>();
-		for (int i = 0; i < 3; i++) {
-			imageFiles.add(createImageFile("imageFile", "testImage.png",
-					"multipart/mixed", fileDir));
-		}
+		List<MultipartFile> imageFiles = createImageFiles("imageFile", "testImage.png",
+				"multipart/mixed", fileDir, 3);
 
 		Feed feed = Feed.builder()
 				.status(NORMAL)
@@ -77,7 +88,7 @@ class FeedServiceTest {
 				);
 	}
 
-	@DisplayName("정상 및 신고 상태인 피드 목록을 조회할 수 있다. 로그인 했을 경우, 팔로우 및 팔로워의 피드를 조회한다.")
+	@DisplayName("정상 및 신고 상태인 피드 목록을 조회할 수 있다. 로그인 했을 경우, 팔로워 및 팔로이의 피드를 조회한다.")
 	@Test
 	void getFeeds() {
 		// given
@@ -219,15 +230,312 @@ class FeedServiceTest {
 				.isEqualTo(feed2.getTitle());
 	}
 
-	@DisplayName("로그인 했을 경우, 피드를 등록할 수 있습니다.")
+	@DisplayName("로그인 상태인 경우, 피드를 등록할 수 있습니다.")
 	@Test
-	void feed() {
+	void feed() throws IOException {
 		// given
+		FeedDto feedDto = FeedDto.builder()
+				.title("testTitle")
+				.content("testContent")
+				.build();
+
+		Member loginMember = memberRepository.save(Member.builder()
+				.username("loginMember")
+				.build());
+		MemberDto memberDto = MemberDto.from(loginMember);
+
+		List<MultipartFile> imageFiles = createImageFiles("imageFile", "testImage.png",
+				"multipart/mixed", fileDir, 3);
 
 		// when
+		FeedResponse feedResponse = feedService.feed(feedDto, imageFiles, memberDto);
 
 		// then
+		assertThat(feedResponse)
+				.extracting("title", "content", "hits", "commentCount", "likeCount")
+				.containsExactlyInAnyOrder("testTitle", "testContent", 0, 0, 0);
+
+		assertThat(feedResponse.getFeedImages()).hasSize(3)
+				.extracting("imageOriginalName")
+				.containsExactlyInAnyOrder(
+						imageFiles.get(0).getOriginalFilename(),
+						imageFiles.get(1).getOriginalFilename(),
+						imageFiles.get(2).getOriginalFilename()
+				);
 	}
+
+	@DisplayName("비로그인 상태인 경우, 피드 등록을 할 때 예외가 발생합니다.")
+	@Test
+	void feed_noLogin() throws IOException {
+		// given
+		FeedDto feedDto = FeedDto.builder()
+				.title("testTitle")
+				.content("testContent")
+				.build();
+
+		MemberDto memberDto = null;
+
+		List<MultipartFile> imageFiles = createImageFiles("imageFile", "testImage.png",
+				"multipart/mixed", fileDir, 3);
+
+		// when
+		AlbumException albumException = assertThrows(AlbumException.class,
+				() -> feedService.feed(feedDto, imageFiles, memberDto));
+
+		// then
+		assertThat(albumException.getExceptionCode()).isEqualTo(REQUIRED_LOGIN);
+	}
+
+	@DisplayName("작성자인 경우, 피드를 삭제할 수 있습니다(FeedStatus: DELETE).")
+	@Test
+	void deleteFeed_writer() {
+		// given
+		Member writer = Member.builder()
+				.username("testMember")
+				.role(ROLE_MEMBER)
+				.build();
+		memberRepository.save(writer);
+		MemberDto writerDto = MemberDto.from(writer);
+
+		Feed feed = Feed.builder()
+				.member(writer)
+				.createdBy(writer.getUsername())
+				.build();
+
+		feedRepository.save(feed);
+
+		// when
+		FeedDto feedDto = feedService.deleteFeed(feed.getId(), writerDto);
+
+		// then
+		assertThat(feedDto).extracting("id", "status")
+				.containsExactly(feed.getId(), DELETE);
+	}
+
+	@DisplayName("관리자인 경우, 피드를 삭제할 수 있습니다.")
+	@Test
+	void deleteFeed_admin() {
+		// given
+		Member writer = Member.builder()
+				.username("testMember")
+				.role(ROLE_MEMBER)
+				.build();
+		Member admin = Member.builder()
+				.username("admin")
+				.role(ROLE_ADMIN)
+				.build();
+		memberRepository.saveAll(List.of(writer, admin));
+		MemberDto adminDto = MemberDto.from(admin);
+
+		Feed feed = Feed.builder()
+				.member(writer)
+				.createdBy(writer.getUsername())
+				.build();
+
+		feedRepository.save(feed);
+
+		// when
+		FeedDto feedDto = feedService.deleteFeed(feed.getId(), adminDto);
+
+		// then
+		assertThat(feedDto).extracting("id", "status")
+				.containsExactly(feed.getId(), DELETE);
+	}
+
+	@DisplayName("작성자 또는 관리자가 아닌 경우, 피드 삭제 시 예외가 발생합니다.")
+	@Test
+	void deleteFeed_noWriter_noAdmin() {
+		// given
+		Member writer = Member.builder()
+				.username("testMember")
+				.role(ROLE_MEMBER)
+				.build();
+		Member noWriter = Member.builder()
+				.username("noWriter")
+				.role(ROLE_MEMBER)
+				.build();
+		memberRepository.saveAll(List.of(writer, noWriter));
+		MemberDto noWriterDto = MemberDto.from(noWriter);
+
+		Feed feed = Feed.builder()
+				.member(writer)
+				.createdBy(writer.getUsername())
+				.build();
+
+		feedRepository.save(feed);
+
+		// when
+		AlbumException albumException = assertThrows(AlbumException.class,
+				() -> feedService.deleteFeed(feed.getId(), noWriterDto));
+
+		// then
+		assertThat(albumException.getExceptionCode()).isEqualTo(NO_AUTHORITY);
+	}
+
+	@DisplayName("작성자인 경우, 피드를 수정할 수 있다.")
+	@Test
+	void modifiedFeed() throws IOException {
+	    // given
+		// member 세팅
+		Member writer = Member.builder()
+				.username("writer")
+				.build();
+		memberRepository.save(writer);
+
+		// feed 세팅
+		Feed feed = Feed.builder()
+				.member(writer)
+				.createdBy(writer.getUsername())
+				.title("prevTitle")
+				.content("prevContent")
+				.build();
+		feedRepository.save(feed);
+
+		// feedImage 세팅
+		List<MultipartFile> imageFiles = createImageFiles("imageFile", "prevTestImage.png",
+				"multipart/mixed", fileDir, 3);
+		for (MultipartFile imageFile : imageFiles) {
+			FeedImage feedImage = FeedImage.builder()
+					.image(new Image(imageFile, fileDir))
+					.feed(feed)
+					.build();
+
+			feedImageRepository.save(feedImage);
+		}
+
+		// 변경 데이터 세팅
+		FeedDto feedDto = FeedDto.builder()
+				.title("modTitle")
+				.content("modContent")
+				.build();
+		List<MultipartFile> modImageFiles = createImageFiles("imageFile", "testImage.png",
+				"multipart/mixed", fileDir, 3);
+		MemberDto writerDto = MemberDto.from(writer);
+
+		System.out.println("feed.getId() = " + feed.getId());
+
+		// when
+		FeedResponse feedResponse = feedService.modifiedFeed(feed.getId(), feedDto, modImageFiles,
+				writerDto);
+
+		// then
+		assertThat(feedResponse)
+				.extracting("title", "content")
+				.containsExactly(feedDto.getTitle(), feedDto.getContent());
+		assertThat(feedResponse.getFeedImages()).hasSize(3)
+				.extracting("imageOriginalName")
+				.containsExactlyInAnyOrder(
+						modImageFiles.get(0).getOriginalFilename(),
+						modImageFiles.get(1).getOriginalFilename(),
+						modImageFiles.get(2).getOriginalFilename()
+				);
+	}
+
+	@DisplayName("작성자가 아닌 경우, 피드 수정 시 예외가 발생합니다.")
+	@Test
+	void modifiedFeed_noWriter() {
+		// given
+		// member 세팅
+		Member writer = Member.builder()
+				.username("writer")
+				.build();
+		memberRepository.save(writer);
+
+		// feed 세팅
+		Feed feed = Feed.builder()
+				.member(writer)
+				.createdBy(writer.getUsername())
+				.title("prevTitle")
+				.content("prevContent")
+				.build();
+		feedRepository.save(feed);
+
+		// 변경 데이터 세팅
+		FeedDto feedDto = FeedDto.builder()
+				.title("modTitle")
+				.content("modContent")
+				.build();
+
+		Member noWriter = Member.builder()
+				.username("noWriter")
+				.build();
+		MemberDto noWriterDto = MemberDto.from(noWriter);
+
+		// when
+		AlbumException albumException = assertThrows(AlbumException.class,
+				() -> feedService.modifiedFeed(feed.getId(), feedDto, null,
+						noWriterDto));
+
+		// then
+		assertThat(albumException.getExceptionCode()).isEqualTo(NO_AUTHORITY);
+	}
+
+	@DisplayName("로그인 상태인 경우, 피드를 신고할 수 있다.")
+	@Test
+	void accuseFeed() {
+	    // given
+		// member 세팅
+		Member loginMember = Member.builder()
+				.username("loginMember")
+				.build();
+		Member writer = Member.builder()
+				.username("writer")
+				.build();
+		memberRepository.saveAll(List.of(loginMember, writer));
+		MemberDto loginMemberDto = MemberDto.from(loginMember);
+
+		// feed 세팅
+		Feed feed = Feed.builder()
+				.member(writer)
+				.title("testTitle")
+				.content("testContent")
+				.status(NORMAL)
+				.build();
+		feedRepository.save(feed);
+
+		// feedAccuse 세팅
+		FeedAccuseDto feedAccuseDto = FeedAccuseDto.builder()
+				.content("testContent")
+				.build();
+
+		// when
+		FeedAccuseDto result = feedService.accuseFeed(feed.getId(), feedAccuseDto,
+				loginMemberDto);
+
+		// then
+		assertThat(result)
+				.extracting("content", "feedDto.status")
+				.containsExactlyInAnyOrder(feedAccuseDto.getContent(), ACCUSE);
+	}
+
+	@DisplayName("피드를 특정 상태로 변경할 수 있다.")
+	@CsvSource({"NORMAL", "ACCUSE", "DELETE"})
+	@ParameterizedTest
+	void changeFeedStatus(FeedStatus feedStatus) {
+		// given
+		// member 세팅
+		Member writer = Member.builder()
+				.username("writer")
+				.build();
+		memberRepository.save(writer);
+
+		// feed 세팅
+		Feed feed = Feed.builder()
+				.member(writer)
+				.title("testTitle")
+				.content("testContent")
+				.build();
+		feedRepository.save(feed);
+
+		// when
+		FeedDto feedDto = feedService.changeFeedStatus(feed.getId(), feedStatus);
+
+		// then
+		assertThat(feedDto)
+				.extracting("id", "status")
+				.containsExactlyInAnyOrder(feed.getId(), feedStatus);
+	}
+
 
 	private MockMultipartFile createImageFile(String name, String originalFilename,
 											  String contentType, FileDir fileDir)
@@ -237,5 +545,18 @@ class FeedServiceTest {
 
 		return new MockMultipartFile(name,
 				originalFilename, contentType, fileInputStream);
+	}
+
+	private List<MultipartFile> createImageFiles(String name, String originalFilename,
+												 String contentType, FileDir fileDir, int count)
+			throws IOException {
+		List<MultipartFile> imageFiles = new ArrayList<>();
+
+		for (int i = 0; i < count; i++) {
+			imageFiles.add(createImageFile(name, originalFilename,
+					contentType, fileDir));
+		}
+
+		return imageFiles;
 	}
 }

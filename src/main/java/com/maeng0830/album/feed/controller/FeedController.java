@@ -48,7 +48,7 @@ public class FeedController {
 	@DeleteMapping("/{feedId}")
 	public FeedDto deleteFeed(@PathVariable Long feedId,
 							  @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return feedService.deleteFeed(feedId, principalDetails);
+		return feedService.deleteFeed(feedId, albumUtil.checkLogin(principalDetails));
 	}
 
 	@PutMapping("/{feedId}")
@@ -56,13 +56,13 @@ public class FeedController {
 									 @RequestPart FeedDto feedDto,
 									 @RequestPart List<MultipartFile> imageFiles,
 									 @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return feedService.modifiedFeed(feedId, feedDto, imageFiles, principalDetails);
+		return feedService.modifiedFeed(feedId, feedDto, imageFiles, albumUtil.checkLogin(principalDetails));
 	}
 
 	@PutMapping("/{feedId}/accuse")
 	public FeedAccuseDto accuseFeed(@PathVariable Long feedId,
 									@RequestBody FeedAccuseDto feedAccuseDto,
 									@AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return feedService.accuseFeed(feedId, feedAccuseDto, principalDetails);
+		return feedService.accuseFeed(feedId, feedAccuseDto, albumUtil.checkLogin(principalDetails));
 	}
 }
