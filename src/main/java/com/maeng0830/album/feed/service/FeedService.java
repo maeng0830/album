@@ -151,18 +151,20 @@ public class FeedService {
 
 	// 피드 삭제
 	@Transactional
-	public FeedDto deleteFeed(Long feedId, PrincipalDetails principalDetails) {
+	public FeedDto deleteFeed(Long feedId, MemberDto memberDto) {
 
 		// 로그인 여부 확인
-		MemberDto loginMemberDto = albumUtil.checkLogin(principalDetails);
+		if (memberDto == null) {
+			throw new AlbumException(REQUIRED_LOGIN);
+		}
 
 		// 목표 피드 데이터 조회
 		Feed findFeed = feedRepository.findById(feedId)
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_FEED));
 
 		// 본인 또는 관리자 여부 확인
-		if (!findFeed.getCreatedBy().equals(loginMemberDto.getUsername())
-				&& !loginMemberDto.getRole().equals(
+		if (!findFeed.getCreatedBy().equals(memberDto.getUsername())
+				&& !memberDto.getRole().equals(
 				MemberRole.ROLE_ADMIN)) {
 			throw new AlbumException(NO_AUTHORITY);
 		}
@@ -176,17 +178,19 @@ public class FeedService {
 	// 피드 수정
 	@Transactional
 	public FeedResponse modifiedFeed(Long feedId, FeedDto feedDto, List<MultipartFile> imageFiles,
-									 PrincipalDetails principalDetails) {
+									 MemberDto memberDto) {
 
 		// 로그인 여부 확인
-		MemberDto loginMemberDto = albumUtil.checkLogin(principalDetails);
+		if (memberDto == null) {
+			throw new AlbumException(REQUIRED_LOGIN);
+		}
 
 		// 목표 피드 데이터 조회
 		Feed findFeed = feedRepository.findById(feedId)
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_FEED));
 
 		// 본인 여부 확인
-		if (!findFeed.getCreatedBy().equals(loginMemberDto.getUsername())) {
+		if (!findFeed.getCreatedBy().equals(memberDto.getUsername())) {
 			throw new AlbumException(NO_AUTHORITY);
 		}
 
@@ -197,8 +201,6 @@ public class FeedService {
 		feedImageRepository.deleteFeedImageByFeed_Id(findFeed.getId());
 
 		// 새로운 FeedImage 데이터 등록
-		saveFeedImage(imageFiles, findFeed);
-
 		List<FeedImage> feedImages = saveFeedImage(imageFiles, findFeed);
 
 		return new FeedResponse(findFeed, feedImages);
@@ -206,10 +208,12 @@ public class FeedService {
 
 	// 피드 신고
 	@Transactional
-	public FeedAccuseDto accuseFeed(Long feedId, FeedAccuseDto feedAccuseDto, PrincipalDetails principalDetails) {
+	public FeedAccuseDto accuseFeed(Long feedId, FeedAccuseDto feedAccuseDto, MemberDto memberDto) {
 
 		// 로그인 여부 확인
-		MemberDto memberDto = albumUtil.checkLogin(principalDetails);
+		if (memberDto == null) {
+			throw new AlbumException(REQUIRED_LOGIN);
+		}
 
 		// 신고 피드 조회 및 상태 변경
 		Feed findFeed = feedRepository.findById(feedId)
