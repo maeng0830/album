@@ -174,7 +174,6 @@ class MemberServiceTest {
 				imageFile.getOriginalFilename());
 		assertThat(result.getImage().getImagePath()).isEqualTo(
 				fileDir.getDir() + result.getImage().getImageOriginalName());
-
 	}
 
 	@DisplayName("회원 상태 수정-성공")

@@ -66,7 +66,6 @@ public class FeedService {
 
 			feedImageRepository.save(feedImage);
 		}
-
 		return feedImageRepository.findByFeed_Id(findFeed.getId());
 	}
 
@@ -92,7 +91,6 @@ public class FeedService {
 
 			followers.stream().map(f -> f.getFollowee().getUsername()).forEach(createdBy::add);
 			followees.stream().map(f -> f.getFollower().getUsername()).forEach(createdBy::add);
-
 
 			List<Feed> feeds = feedRepository.findByStatusAndCreatedBy(feedStatuses,
 					createdBy);
