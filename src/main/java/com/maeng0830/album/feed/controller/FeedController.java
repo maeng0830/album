@@ -1,5 +1,6 @@
 package com.maeng0830.album.feed.controller;
 
+import com.maeng0830.album.common.util.AlbumUtil;
 import com.maeng0830.album.feed.dto.FeedAccuseDto;
 import com.maeng0830.album.feed.dto.FeedDto;
 import com.maeng0830.album.feed.dto.FeedResponse;
@@ -25,10 +26,11 @@ import org.springframework.web.multipart.MultipartFile;
 public class FeedController {
 
 	private final FeedService feedService;
+	private final AlbumUtil albumUtil;
 
 	@GetMapping
 	public List<FeedResponse> getFeeds(@AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return feedService.getFeeds(principalDetails);
+		return feedService.getFeeds(albumUtil.checkLogin(principalDetails));
 	}
 
 	@GetMapping("/{feedId}")
@@ -40,13 +42,13 @@ public class FeedController {
 	public FeedResponse feed(@RequestPart FeedDto feedDto,
 							 @RequestPart List<MultipartFile> imageFiles,
 							 @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return feedService.feed(feedDto, imageFiles, principalDetails);
+		return feedService.feed(feedDto, imageFiles, albumUtil.checkLogin(principalDetails));
 	}
 
 	@DeleteMapping("/{feedId}")
 	public FeedDto deleteFeed(@PathVariable Long feedId,
 							  @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return feedService.deleteFeed(feedId, principalDetails);
+		return feedService.deleteFeed(feedId, albumUtil.checkLogin(principalDetails));
 	}
 
 	@PutMapping("/{feedId}")
@@ -54,13 +56,13 @@ public class FeedController {
 									 @RequestPart FeedDto feedDto,
 									 @RequestPart List<MultipartFile> imageFiles,
 									 @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return feedService.modifiedFeed(feedId, feedDto, imageFiles, principalDetails);
+		return feedService.modifiedFeed(feedId, feedDto, imageFiles, albumUtil.checkLogin(principalDetails));
 	}
 
 	@PutMapping("/{feedId}/accuse")
 	public FeedAccuseDto accuseFeed(@PathVariable Long feedId,
-							  @RequestBody FeedAccuseDto feedAccuseDto,
-							  @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return feedService.accuseFeed(feedId, feedAccuseDto, principalDetails);
+									@RequestBody FeedAccuseDto feedAccuseDto,
+									@AuthenticationPrincipal PrincipalDetails principalDetails) {
+		return feedService.accuseFeed(feedId, feedAccuseDto, albumUtil.checkLogin(principalDetails));
 	}
 }

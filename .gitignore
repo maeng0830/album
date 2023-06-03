@@ -39,3 +39,4 @@ out/
 ### 민감 정보 ###
 src/main/resources/env.properties
 src/main/resources/file/**
+src/test/resources/file/**

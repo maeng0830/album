@@ -20,11 +20,13 @@ import com.maeng0830.album.member.repository.MemberRepository;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
+@Profile("dev")
 @RequiredArgsConstructor
 public class testData {
 
