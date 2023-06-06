@@ -4,6 +4,7 @@ import static com.maeng0830.album.comment.exception.CommentExceptionCode.NOT_EXI
 import static com.maeng0830.album.feed.exception.FeedExceptionCode.NOT_EXIST_FEED;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.NOT_EXIST_MEMBER;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.NO_AUTHORITY;
+import static com.maeng0830.album.member.exception.MemberExceptionCode.REQUIRED_LOGIN;
 
 import com.maeng0830.album.comment.domain.Comment;
 import com.maeng0830.album.comment.domain.CommentAccuse;
@@ -20,7 +21,6 @@ import com.maeng0830.album.feed.repository.FeedRepository;
 import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.repository.MemberRepository;
-import com.maeng0830.album.security.formlogin.PrincipalDetails;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -40,9 +40,9 @@ public class CommentService {
 
 	public List<GroupComment> getFeedComments(Long feedId) {
 
-		// 삭제 상태가 아닌 해당 피드의 댓글 조회
+		// 정상, 신고 상태인 해당 피드의 댓글 조회
 		List<Comment> comments = commentRepository.findFetchJoinAll(feedId,
-				CommentStatus.DELETE);
+				List.of(CommentStatus.NORMAL, CommentStatus.ACCUSE));
 
 		// 그룹댓글 리스트 생성
 		List<GroupComment> groupComments = comments.stream()
@@ -82,11 +82,15 @@ public class CommentService {
 	}
 
 	@Transactional
-	public BasicComment comment(BasicComment basicComment, PrincipalDetails principalDetails) {
-		MemberDto loginMemberDto = albumUtil.checkLogin(principalDetails);
+	public BasicComment comment(BasicComment basicComment, MemberDto memberDto) {
+
+		// 로그인 여부 확인
+		if (memberDto == null) {
+			throw new AlbumException(REQUIRED_LOGIN);
+		}
 
 		// 작성자 조회
-		Member loginMember = memberRepository.findById(loginMemberDto.getId())
+		Member loginMember = memberRepository.findById(memberDto.getId())
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_MEMBER));
 
 		// 피드 조회
@@ -127,11 +131,14 @@ public class CommentService {
 
 	@Transactional
 	public BasicComment modifiedComment(BasicComment basicComment,
-										PrincipalDetails principalDetails) {
+										MemberDto memberDto) {
 
-		MemberDto loginMemberDto = albumUtil.checkLogin(principalDetails);
+		// 로그인 여부 확인
+		if (memberDto == null) {
+			throw new AlbumException(REQUIRED_LOGIN);
+		}
 
-		if (!basicComment.getCreatedBy().equals(loginMemberDto.getUsername())) {
+		if (!basicComment.getCreatedBy().equals(memberDto.getUsername())) {
 			throw new AlbumException(NO_AUTHORITY);
 		}
 
@@ -145,11 +152,14 @@ public class CommentService {
 
 	@Transactional
 	public CommentAccuseDto accuseComment(CommentAccuseDto commentAccuseDto,
-										  PrincipalDetails principalDetails) {
+										  MemberDto memberDto) {
 
-		MemberDto loginMemberDto = albumUtil.checkLogin(principalDetails);
+		// 로그인 여부 확인
+		if (memberDto == null) {
+			throw new AlbumException(REQUIRED_LOGIN);
+		}
 
-		Member findMember = memberRepository.findById(loginMemberDto.getId())
+		Member findMember = memberRepository.findById(memberDto.getId())
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_MEMBER));
 
 		Comment findComment = commentRepository.findById(commentAccuseDto.getCommentId())
@@ -170,11 +180,14 @@ public class CommentService {
 
 	@Transactional
 	public BasicComment deleteComment(BasicComment basicComment,
-									  PrincipalDetails principalDetails) {
+									  MemberDto memberDto) {
 
-		MemberDto loginMemberDto = albumUtil.checkLogin(principalDetails);
+		// 로그인 여부 확인
+		if (memberDto == null) {
+			throw new AlbumException(REQUIRED_LOGIN);
+		}
 
-		if (!basicComment.getCreatedBy().equals(loginMemberDto.getUsername())) {
+		if (!basicComment.getCreatedBy().equals(memberDto.getUsername())) {
 			throw new AlbumException(NO_AUTHORITY);
 		}
 
