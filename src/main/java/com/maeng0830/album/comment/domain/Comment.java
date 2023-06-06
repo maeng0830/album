@@ -20,7 +20,8 @@ import lombok.experimental.SuperBuilder;
 @Getter
 public class Comment extends TimeEntity {
 
-	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -61,6 +62,10 @@ public class Comment extends TimeEntity {
 
 	public void changeContent(String content) {
 		this.content = content;
+	}
+
+	public void changeContentForDelete() {
+		this.content = "삭제된 댓글 입니다.";
 	}
 
 	public void accuseComment() {

@@ -15,7 +15,6 @@ import com.maeng0830.album.comment.model.response.GroupComment;
 import com.maeng0830.album.comment.repository.CommentAccuseRepository;
 import com.maeng0830.album.comment.repository.CommentRepository;
 import com.maeng0830.album.common.exception.AlbumException;
-import com.maeng0830.album.common.util.AlbumUtil;
 import com.maeng0830.album.feed.domain.Feed;
 import com.maeng0830.album.feed.repository.FeedRepository;
 import com.maeng0830.album.member.domain.Member;
@@ -36,13 +35,12 @@ public class CommentService {
 	private final CommentAccuseRepository commentAccuseRepository;
 	private final FeedRepository feedRepository;
 	private final MemberRepository memberRepository;
-	private final AlbumUtil albumUtil;
 
 	public List<GroupComment> getFeedComments(Long feedId) {
 
-		// 정상, 신고 상태인 해당 피드의 댓글 조회
+		// 해당 피드의 댓글 조회
 		List<Comment> comments = commentRepository.findFetchJoinAll(feedId,
-				List.of(CommentStatus.NORMAL, CommentStatus.ACCUSE));
+				List.of(CommentStatus.NORMAL, CommentStatus.ACCUSE, CommentStatus.DELETE));
 
 		// 그룹댓글 리스트 생성
 		List<GroupComment> groupComments = comments.stream()
@@ -123,7 +121,6 @@ public class CommentService {
 		}
 		comment.saveParent(parent);
 
-
 		commentRepository.save(comment);
 
 		return BasicComment.from(comment);
@@ -138,12 +135,12 @@ public class CommentService {
 			throw new AlbumException(REQUIRED_LOGIN);
 		}
 
-		if (!basicComment.getCreatedBy().equals(memberDto.getUsername())) {
-			throw new AlbumException(NO_AUTHORITY);
-		}
-
 		Comment findComment = commentRepository.findById(basicComment.getId())
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_COMMENT));
+
+		if (!findComment.getMember().getUsername().equals(memberDto.getUsername())) {
+			throw new AlbumException(NO_AUTHORITY);
+		}
 
 		findComment.changeContent(basicComment.getContent());
 
@@ -187,13 +184,14 @@ public class CommentService {
 			throw new AlbumException(REQUIRED_LOGIN);
 		}
 
-		if (!basicComment.getCreatedBy().equals(memberDto.getUsername())) {
-			throw new AlbumException(NO_AUTHORITY);
-		}
-
 		Comment findComment = commentRepository.findById(basicComment.getId())
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_COMMENT));
 
+		if (!findComment.getMember().getUsername().equals(memberDto.getUsername())) {
+			throw new AlbumException(NO_AUTHORITY);
+		}
+
+		findComment.changeContentForDelete();
 		findComment.changeStatus(CommentStatus.DELETE);
 
 		return BasicComment.from(findComment);
