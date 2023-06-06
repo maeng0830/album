@@ -1,10 +1,10 @@
 package com.maeng0830.album.comment.controller;
 
 import com.maeng0830.album.comment.model.dto.CommentAccuseDto;
-import com.maeng0830.album.comment.model.dto.CommentDto;
-import com.maeng0830.album.comment.model.response.GroupComment;
 import com.maeng0830.album.comment.model.response.BasicComment;
+import com.maeng0830.album.comment.model.response.GroupComment;
 import com.maeng0830.album.comment.service.CommentService;
+import com.maeng0830.album.common.util.AlbumUtil;
 import com.maeng0830.album.security.formlogin.PrincipalDetails;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CommentController {
 
 	private final CommentService commentService;
+	private final AlbumUtil albumUtil;
 
 	@GetMapping()
 	public List<GroupComment> getFeedComments(Long feedId) {
@@ -37,21 +38,21 @@ public class CommentController {
 
 	@PostMapping()
 	public BasicComment comment(@RequestBody BasicComment basicComment, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return commentService.comment(basicComment, principalDetails);
+		return commentService.comment(basicComment, albumUtil.checkLogin(principalDetails));
 	}
 
 	@PutMapping()
 	public BasicComment modifiedComment(@RequestBody BasicComment basicComment, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return commentService.modifiedComment(basicComment, principalDetails);
+		return commentService.modifiedComment(basicComment, albumUtil.checkLogin(principalDetails));
 	}
 
 	@PutMapping("/accuse")
 	public CommentAccuseDto accuseComment(@RequestBody CommentAccuseDto commentAccuseDto, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return commentService.accuseComment(commentAccuseDto, principalDetails);
+		return commentService.accuseComment(commentAccuseDto, albumUtil.checkLogin(principalDetails));
 	}
 
 	@DeleteMapping()
 	public BasicComment deleteComment(@RequestBody BasicComment basicComment, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return commentService.deleteComment(basicComment, principalDetails);
+		return commentService.deleteComment(basicComment, albumUtil.checkLogin(principalDetails));
 	}
 }

@@ -1,13 +1,7 @@
 package com.maeng0830.album.common.util;
 
-import static com.maeng0830.album.member.exception.MemberExceptionCode.REQUIRED_LOGIN;
-
-import com.maeng0830.album.common.exception.AlbumException;
 import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.security.formlogin.PrincipalDetails;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 
 public class AlbumUtil {
