@@ -36,14 +36,13 @@ public class MemberService {
 
 	public MemberDto join(MemberDto memberDto) {
 		// username 존재 여부 확인
-		Optional<Member> optionalMember = memberRepository.findByUsernameOrNickname(
+		List<Member> members = memberRepository.findByUsernameOrNickname(
 				memberDto.getUsername(), memberDto.getNickname());
-		if (optionalMember.isPresent()) {
-			Member member = optionalMember.get();
 
+		for (Member member : members) {
 			if (memberDto.getUsername().equals(member.getUsername())) {
 				throw new AlbumException(EXIST_USERNAME);
-			} else {
+			} else if (memberDto.getNickname().equals(member.getNickname())) {
 				throw new AlbumException(EXIST_NICKNAME);
 			}
 		}
