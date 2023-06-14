@@ -57,8 +57,10 @@ class MemberServiceTest {
 				.password("123")
 				.build();
 
+		List<Member> members = new ArrayList<>();
+
 		given(memberRepository.findByUsernameOrNickname(anyString(), anyString()))
-				.willReturn(Optional.empty());
+				.willReturn(members);
 
 		Member member = Member.builder()
 				.id(1L)
