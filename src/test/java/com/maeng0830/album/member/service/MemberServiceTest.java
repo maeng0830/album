@@ -1,6 +1,10 @@
 package com.maeng0830.album.member.service;
 
+import static com.maeng0830.album.member.domain.MemberRole.*;
+import static com.maeng0830.album.member.domain.MemberStatus.*;
+import static com.maeng0830.album.security.dto.LoginType.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -21,33 +25,40 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
-@ActiveProfiles({"test"})
-@ExtendWith(MockitoExtension.class)
+@Transactional
+@ActiveProfiles("test")
+@SpringBootTest
 class MemberServiceTest {
 
-	@InjectMocks
+	@Autowired
 	private MemberService memberService;
 
-	@Mock
+	@Autowired
 	private MemberRepository memberRepository;
 
-	@Spy
+	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
 
-	@Spy
+	@Autowired
 	private FileDir fileDir;
 
-	@DisplayName("회원가입-성공")
+	@DisplayName("회원가입을 할 수 있다.")
 	@Test
 	public void join() {
 		// given
@@ -57,54 +68,40 @@ class MemberServiceTest {
 				.password("123")
 				.build();
 
-		List<Member> members = new ArrayList<>();
-
-		given(memberRepository.findByUsernameOrNickname(anyString(), anyString()))
-				.willReturn(members);
-
-		Member member = Member.builder()
-				.id(1L)
-				.username(memberDto.getUsername())
-				.nickname(memberDto.getNickname())
-				.password(passwordEncoder.encode(memberDto.getPassword()))
-				.status(MemberStatus.FIRST)
-				.role(MemberRole.ROLE_MEMBER)
-				.loginType(LoginType.FORM)
-				.build();
-
-		given(memberRepository.save(any())).willReturn(member);
-
 		//when
 		MemberDto result = memberService.join(memberDto);
 
 		//then
-		assertThat(result).usingRecursiveComparison().isEqualTo(MemberDto.from(member));
+		assertThat(result)
+				.extracting("username", "nickname", "status", "role", "loginType")
+				.containsExactlyInAnyOrder(
+						memberDto.getUsername(),
+						memberDto.getNickname(),
+						FIRST,
+						ROLE_MEMBER,
+						FORM);
+		assertThat(passwordEncoder.matches(memberDto.getPassword(), result.getPassword()))
+				.isTrue();
 	}
 
-	@DisplayName("회원 탈퇴-성공")
+	@DisplayName("본인인 경우, 회원을 탈퇴할 수 있다(WITHDRAW).")
 	@Test
 	public void withdraw() {
 		//given
-		MemberDto memberDto = MemberDto.builder()
-				.id(1L)
-				.status(MemberStatus.NORMAL)
-				.build();
-
 		Member member = Member.builder()
-				.id(memberDto.getId())
-				.status(memberDto.getStatus())
 				.build();
+		memberRepository.save(member);
 
-		given(memberRepository.findById(anyLong())).willReturn(Optional.of(member));
+		MemberDto memberDto = MemberDto.from(member);
 
 		//when
 		MemberDto result = memberService.withdraw(memberDto);
 
 		//then
-		assertThat(result.getStatus()).isEqualTo(MemberStatus.WITHDRAW);
+		assertThat(result.getStatus()).isEqualTo(WITHDRAW);
 	}
 
-	@DisplayName("회원 목록 조회-성공")
+	@DisplayName("전체 회원 목록을 조회할 수 있다.")
 	@Test
 	public void getMembers() {
 		//given
@@ -112,13 +109,12 @@ class MemberServiceTest {
 
 		for (int i = 0; i < 10; i++) {
 			Member member = Member.builder()
-					.id((long) (i + 1))
 					.build();
 
 			members.add(member);
 		}
 
-		given(memberRepository.findAll()).willReturn(members);
+		memberRepository.saveAll(members);
 
 		//when
 		List<MemberDto> result = memberService.getMembers();
@@ -128,74 +124,80 @@ class MemberServiceTest {
 		assertThat(result.get(0)).isInstanceOf(MemberDto.class);
 	}
 
-	@DisplayName("특정 회원 조회-성공")
+	@DisplayName("주어진 ID에 해당하는 회원을 조회할 수 있다.")
 	@Test
 	public void getMember() {
 		//given
-		long id = 1L;
-		Member member = Member.builder()
-				.id(1L)
+		Member member1 = Member.builder()
+				.build();
+		Member member2 = Member.builder()
+				.build();
+		Member member3 = Member.builder()
 				.build();
 
-		given(memberRepository.findById(id)).willReturn(Optional.of(member));
+		memberRepository.saveAll(List.of(member1, member2, member3));
 
 		//when
-		MemberDto result = memberService.getMember(id);
+		MemberDto result = memberService.getMember(member2.getId());
 
 		//then
 		assertThat(result).isInstanceOf(MemberDto.class);
-		assertThat(result.getId()).isEqualTo(member.getId());
+		assertThat(result).usingRecursiveComparison().isEqualTo(MemberDto.from(member2));
 	}
 
-	@DisplayName("회원 정보 수정-성공")
+	@DisplayName("본인인 경우, 회원 정보를 수정할 수 있다.")
 	@Test
 	public void modifiedMember() throws IOException {
 		//given
-		long id = 1L;
-
-		MemberDto memberDto = MemberDto.builder()
-				.nickname("testNickName")
+		Member loginMember = Member.builder()
+				.nickname("prevNickname")
 				.phone("010-0000-0000")
+				.birthDate(LocalDateTime.now())
+				.build();
+		memberRepository.save(loginMember);
+		MemberDto loginMemberDto = MemberDto.from(loginMember);
+
+		MemberDto modifiedMemberDto = MemberDto.builder()
+				.nickname("nextNickname")
+				.phone("010-1111-1111")
 				.birthDate(LocalDateTime.now())
 				.build();
 
 		MockMultipartFile imageFile = createImageFile("imageFile", "testImage.png",
 				"multipart/mixed", fileDir);
 
-		given(memberRepository.findById(id)).willReturn(
-				Optional.of(Member.builder().id(id).build()));
-
 		//when
-		MemberDto result = memberService.modifiedMember(id, memberDto, imageFile);
+		MemberDto result = memberService.modifiedMember(loginMemberDto, modifiedMemberDto,
+				imageFile);
 
 		//then
-		assertThat(result.getNickname()).isEqualTo(memberDto.getNickname());
-		assertThat(result.getPhone()).isEqualTo(memberDto.getPhone());
-		assertThat(result.getBirthDate()).isEqualTo(memberDto.getBirthDate());
-		assertThat(result.getImage().getImageOriginalName()).isEqualTo(
-				imageFile.getOriginalFilename());
-		assertThat(result.getImage().getImagePath()).isEqualTo(
-				fileDir.getDir() + result.getImage().getImageOriginalName());
-
+		assertThat(result.getNickname())
+				.isEqualTo(modifiedMemberDto.getNickname());
+		assertThat(result.getPhone())
+				.isEqualTo(modifiedMemberDto.getPhone());
+		assertThat(result.getBirthDate())
+				.isEqualTo(modifiedMemberDto.getBirthDate());
+		assertThat(result.getImage().getImageOriginalName())
+				.isEqualTo(imageFile.getOriginalFilename());
+		assertThat(result.getImage().getImagePath())
+				.isEqualTo(fileDir.getDir() + result.getImage().getImageStoreName());
 	}
 
-	@DisplayName("회원 상태 수정-성공")
-	@Test
-	public void changeMemberStatus() {
+	@DisplayName("회원 상태를 수정할 수 있다.")
+	@CsvSource({"FIRST", "NORMAL", "LOCKED", "WITHDRAW"})
+	@ParameterizedTest
+	public void changeMemberStatus(MemberStatus status) {
 		//given
-		long id = 1L;
-		MemberStatus memberStatus = MemberStatus.LOCKED;
-
-		given(memberRepository.findById(id)).willReturn(Optional.of(Member.builder()
-				.id(id)
-				.build()));
+		Member member = Member.builder()
+				.build();
+		memberRepository.save(member);
 
 		//when
-		MemberDto result = memberService.changeMemberStatus(id, memberStatus);
+		MemberDto result = memberService.changeMemberStatus(member.getId(), status);
 
 		//then
-		assertThat(result.getId()).isEqualTo(id);
-		assertThat(result.getStatus()).isEqualTo(memberStatus);
+		assertThat(result.getId()).isEqualTo(member.getId());
+		assertThat(result.getStatus()).isEqualTo(status);
 	}
 
 	private MockMultipartFile createImageFile(String name, String originalFilename,

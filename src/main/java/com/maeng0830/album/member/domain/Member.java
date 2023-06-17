@@ -66,6 +66,7 @@ public class Member extends TimeEntity {
 				.birthDate(memberDto.getBirthDate())
 				.status(memberDto.getStatus())
 				.role(memberDto.getRole())
+				.loginType(memberDto.getLoginType())
 				.image(memberDto.getImage())
 				.createdAt(memberDto.getCreatedAt())
 				.modifiedAt(memberDto.getModifiedAt())
