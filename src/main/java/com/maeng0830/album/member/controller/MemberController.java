@@ -1,5 +1,6 @@
 package com.maeng0830.album.member.controller;
 
+import com.maeng0830.album.common.util.AlbumUtil;
 import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.service.MemberService;
 import com.maeng0830.album.security.formlogin.PrincipalDetails;
@@ -23,6 +24,8 @@ public class MemberController {
 
 	private final MemberService memberService;
 
+	private final AlbumUtil albumUtil;
+
 	// 회원 가입
 	@PostMapping("/join")
 	public MemberDto join(@ModelAttribute MemberDto memberDto) {
@@ -45,20 +48,14 @@ public class MemberController {
 	// 로그인 예외 발생 시 호출
 	@PostMapping("/loginForm")
 	public String loginForm(HttpServletRequest request) {
-		String loginFailMsg = String.valueOf(request.getAttribute("loginFailMsg"));
 
-		if (loginFailMsg != null) {
-			return loginFailMsg;
-		} else {
-			return null;
-		}
+		return String.valueOf(request.getAttribute("loginFailMsg"));
 	}
 
 	// 회원 탈퇴
 	@DeleteMapping("/members")
 	public MemberDto withdrawMember(@AuthenticationPrincipal PrincipalDetails principalDetails) {
-		MemberDto memberDto = principalDetails.getMemberDto();
-		return memberService.withdraw(memberDto);
+		return memberService.withdraw(albumUtil.checkLogin(principalDetails));
 	}
 
 	// 전체 회원 조회
@@ -74,11 +71,11 @@ public class MemberController {
 	}
 
 	// 회원 정보 수정(본인)
-	@PutMapping("/members/{id}")
-	public MemberDto modifiedMember(@PathVariable Long id,
+	@PutMapping("/members")
+	public MemberDto modifiedMember(@AuthenticationPrincipal PrincipalDetails principalDetails,
 									@RequestPart(value = "memberDto") MemberDto memberDto,
 									@RequestPart(value = "imageFile") MultipartFile imageFile) {
-		return memberService.modifiedMember(id, memberDto, imageFile);
+		return memberService.modifiedMember(albumUtil.checkLogin(principalDetails), memberDto, imageFile);
 	}
 
 }

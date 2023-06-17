@@ -3,6 +3,7 @@ package com.maeng0830.album.member.service;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.EXIST_NICKNAME;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.EXIST_USERNAME;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.NOT_EXIST_MEMBER;
+import static com.maeng0830.album.member.exception.MemberExceptionCode.REQUIRED_LOGIN;
 
 import com.maeng0830.album.common.exception.AlbumException;
 import com.maeng0830.album.common.filedir.FileDir;
@@ -48,17 +49,28 @@ public class MemberService {
 		}
 
 		// 비밀번호 암호화, 상태 및 권한 설정 -> DB 저장(회원가입)
-		memberDto.setPassword(passwordEncoder.encode(memberDto.getPassword()));
-		memberDto.setStatus(MemberStatus.FIRST);
-		memberDto.setRole(MemberRole.ROLE_MEMBER);
-		memberDto.setLoginType(LoginType.FORM);
-		Member saveMember = memberRepository.save(Member.from(memberDto));
+		Member member = Member.builder()
+				.username(memberDto.getUsername())
+				.nickname(memberDto.getNickname())
+				.password(passwordEncoder.encode(memberDto.getPassword()))
+				.phone(memberDto.getPhone())
+				.birthDate(memberDto.getBirthDate())
+				.status(MemberStatus.FIRST)
+				.role(MemberRole.ROLE_MEMBER)
+				.loginType(LoginType.FORM)
+				.build();
+
+		Member saveMember = memberRepository.save(member);
 
 		// 회원가입 멤버 반환
 		return MemberDto.from(saveMember);
 	}
 
 	public MemberDto withdraw(MemberDto memberDto) {
+
+		if (memberDto == null) {
+			throw new AlbumException(REQUIRED_LOGIN);
+		}
 
 		Member findMember = memberRepository.findById(memberDto.getId())
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_MEMBER));
@@ -80,16 +92,23 @@ public class MemberService {
 		return MemberDto.from(findMember);
 	}
 
-	public MemberDto modifiedMember(Long id, MemberDto memberDto, MultipartFile imageFile) {
-		Member findMember = memberRepository.findById(id).orElseThrow(() -> new AlbumException(
-				NOT_EXIST_MEMBER));
+	public MemberDto modifiedMember(MemberDto loginMemberDto,
+									MemberDto modifiedMemberDto,
+									MultipartFile imageFile) {
+		if (loginMemberDto == null) {
+			throw new AlbumException(REQUIRED_LOGIN);
+		}
+
+		Member findMember = memberRepository.findById(loginMemberDto.getId())
+				.orElseThrow(() -> new AlbumException(
+						NOT_EXIST_MEMBER));
 
 		log.info("이미지= {}", imageFile.getOriginalFilename());
 
 		// json 요청 데이터 처리
-		findMember.setNickname(memberDto.getNickname());
-		findMember.setPhone(memberDto.getPhone());
-		findMember.setBirthDate(memberDto.getBirthDate());
+		findMember.setNickname(modifiedMemberDto.getNickname());
+		findMember.setPhone(modifiedMemberDto.getPhone());
+		findMember.setBirthDate(modifiedMemberDto.getBirthDate());
 
 		// multipart 요청 데이터(회원 이미지) 처리
 		saveMemberImage(imageFile, findMember);
