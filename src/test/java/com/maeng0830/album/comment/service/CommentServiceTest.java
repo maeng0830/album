@@ -5,8 +5,8 @@ import static com.maeng0830.album.comment.domain.CommentStatus.DELETE;
 import static com.maeng0830.album.comment.domain.CommentStatus.NORMAL;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.NO_AUTHORITY;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.maeng0830.album.comment.domain.Comment;
 import com.maeng0830.album.comment.domain.CommentStatus;
@@ -333,11 +333,11 @@ class CommentServiceTest {
 				.build();
 
 		// when
-		AlbumException albumException = assertThrows(AlbumException.class,
-				() -> commentService.modifiedComment(basicComment, memberDto));
 
 		// then
-		assertThat(albumException.getExceptionCode()).isEqualTo(NO_AUTHORITY);
+		assertThatThrownBy(() -> commentService.modifiedComment(basicComment, memberDto))
+				.isInstanceOf(AlbumException.class)
+				.hasMessage(NO_AUTHORITY.getMessage());
 	}
 
 	@DisplayName("로그인 상태인 경우, 댓글을 신고할 수 있다.")
@@ -465,11 +465,11 @@ class CommentServiceTest {
 		MemberDto memberDto = MemberDto.from(noWriter);
 
 		// when
-		AlbumException albumException = assertThrows(AlbumException.class,
-				() -> commentService.deleteComment(basicComment, memberDto));
 
 		// then
-		assertThat(albumException.getExceptionCode()).isEqualTo(NO_AUTHORITY);
+		assertThatThrownBy(() -> commentService.deleteComment(basicComment, memberDto))
+				.isInstanceOf(AlbumException.class)
+				.hasMessage(NO_AUTHORITY.getMessage());
 	}
 
 	@DisplayName("댓글을 특정 상태로 변경할 수 있다.")

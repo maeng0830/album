@@ -2,6 +2,7 @@ package com.maeng0830.album.follow.service;
 
 import static com.maeng0830.album.follow.exception.FollowExceptionCode.NOT_EXIST_FOLLOW;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.maeng0830.album.common.exception.AlbumException;
 import com.maeng0830.album.follow.domain.Follow;
@@ -11,7 +12,6 @@ import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.repository.MemberRepository;
 import java.util.List;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,11 +93,10 @@ class FollowServiceTest {
 		MemberDto followerDto = MemberDto.from(follower);
 
 		//when
-		AlbumException albumException = Assertions.assertThrows(AlbumException.class,
-				() -> followService.cancelFollow(followee.getId(), followerDto));
 
 		//then
-		assertThat(albumException.getExceptionCode())
-				.isEqualTo(NOT_EXIST_FOLLOW);
+		assertThatThrownBy(() -> followService.cancelFollow(followee.getId(), followerDto))
+				.isInstanceOf(AlbumException.class)
+				.hasMessage(NOT_EXIST_FOLLOW.getMessage());
 	}
 }
