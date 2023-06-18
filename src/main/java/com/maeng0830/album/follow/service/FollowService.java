@@ -1,11 +1,13 @@
 package com.maeng0830.album.follow.service;
 
+import static com.maeng0830.album.follow.exception.FollowExceptionCode.*;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.NOT_EXIST_MEMBER;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.REQUIRED_LOGIN;
 
 import com.maeng0830.album.common.exception.AlbumException;
 import com.maeng0830.album.follow.domain.Follow;
 import com.maeng0830.album.follow.dto.FollowDto;
+import com.maeng0830.album.follow.exception.FollowExceptionCode;
 import com.maeng0830.album.follow.repository.FollowRepository;
 import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.dto.MemberDto;
@@ -25,18 +27,14 @@ public class FollowService {
 	private final MemberRepository memberRepository;
 
 	@Transactional
-	public FollowDto follow(Long followeeId, PrincipalDetails principalDetails) {
+	public FollowDto follow(Long followeeId, MemberDto memberDto) {
 
-		MemberDto loginMemberDto;
-
-		try {
-			loginMemberDto = principalDetails.getMemberDto();
-		} catch (NullPointerException e) {
-			throw new AlbumException(REQUIRED_LOGIN, e);
+		if (memberDto == null) {
+			throw new AlbumException(REQUIRED_LOGIN);
 		}
 
 		log.info("follower 조회");
-		Member follower = memberRepository.findById(loginMemberDto.getId())
+		Member follower = memberRepository.findById(memberDto.getId())
 				.orElseThrow(() -> new AlbumException(
 						NOT_EXIST_MEMBER));
 
@@ -50,14 +48,13 @@ public class FollowService {
 				.followee(followee)
 				.build());
 
-		log.info("Entity->DTO");
 		return FollowDto.from(follow);
 	}
 
-	public String cancelFollow(Long followeeId, PrincipalDetails principalDetails) {
+	public String cancelFollow(Long followeeId, MemberDto memberDto) {
 
 		log.info("follower 조회");
-		Member follower = memberRepository.findById(principalDetails.getMemberDto().getId())
+		Member follower = memberRepository.findById(memberDto.getId())
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_MEMBER));
 
 		log.info("followee 조회");
@@ -65,7 +62,13 @@ public class FollowService {
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_MEMBER));
 
 		log.info("팔로우 삭제");
-		followRepository.deleteByFollowerAndFollowee(follower, followee);
-		return String.format("%s님이 %s님에 대한 팔로우를 취소하였습니다.", follower.getUsername(), followee.getUsername());
+		int count = followRepository.deleteByFollowerAndFollowee(follower, followee);
+		System.out.println("count = " + count);
+
+		if (count == 0) {
+			throw new AlbumException(NOT_EXIST_FOLLOW);
+		} else {
+			return String.format("%s님이 %s님에 대한 팔로우를 취소하였습니다.", follower.getUsername(), followee.getUsername());
+		}
 	}
 }
