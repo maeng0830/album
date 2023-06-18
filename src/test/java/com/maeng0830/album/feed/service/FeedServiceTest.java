@@ -1,12 +1,14 @@
 package com.maeng0830.album.feed.service;
 
-import static com.maeng0830.album.feed.domain.FeedStatus.*;
 import static com.maeng0830.album.feed.domain.FeedStatus.ACCUSE;
+import static com.maeng0830.album.feed.domain.FeedStatus.DELETE;
 import static com.maeng0830.album.feed.domain.FeedStatus.NORMAL;
-import static com.maeng0830.album.member.domain.MemberRole.*;
+import static com.maeng0830.album.member.domain.MemberRole.ROLE_ADMIN;
+import static com.maeng0830.album.member.domain.MemberRole.ROLE_MEMBER;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.NO_AUTHORITY;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.REQUIRED_LOGIN;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -24,7 +26,6 @@ import com.maeng0830.album.feed.repository.FeedRepository;
 import com.maeng0830.album.follow.domain.Follow;
 import com.maeng0830.album.follow.repository.FollowRepository;
 import com.maeng0830.album.member.domain.Member;
-import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.repository.MemberRepository;
 import java.io.File;
@@ -279,11 +280,11 @@ class FeedServiceTest {
 				"multipart/mixed", fileDir, 3);
 
 		// when
-		AlbumException albumException = assertThrows(AlbumException.class,
-				() -> feedService.feed(feedDto, imageFiles, memberDto));
 
 		// then
-		assertThat(albumException.getExceptionCode()).isEqualTo(REQUIRED_LOGIN);
+		assertThatThrownBy(() -> feedService.feed(feedDto, imageFiles, memberDto))
+				.isInstanceOf(AlbumException.class)
+				.hasMessage(REQUIRED_LOGIN.getMessage());
 	}
 
 	@DisplayName("작성자인 경우, 피드를 삭제할 수 있습니다(FeedStatus: DELETE).")
@@ -369,7 +370,7 @@ class FeedServiceTest {
 				() -> feedService.deleteFeed(feed.getId(), noWriterDto));
 
 		// then
-		assertThat(albumException.getExceptionCode()).isEqualTo(NO_AUTHORITY);
+		assertThat(albumException.getCode()).isEqualTo(NO_AUTHORITY);
 	}
 
 	@DisplayName("작성자인 경우, 피드를 수정할 수 있다.")
@@ -462,12 +463,12 @@ class FeedServiceTest {
 		MemberDto noWriterDto = MemberDto.from(noWriter);
 
 		// when
-		AlbumException albumException = assertThrows(AlbumException.class,
-				() -> feedService.modifiedFeed(feed.getId(), feedDto, null,
-						noWriterDto));
 
 		// then
-		assertThat(albumException.getExceptionCode()).isEqualTo(NO_AUTHORITY);
+		assertThatThrownBy(() -> feedService.modifiedFeed(feed.getId(), feedDto, null,
+				noWriterDto))
+				.isInstanceOf(AlbumException.class)
+				.hasMessage(NO_AUTHORITY.getMessage());
 	}
 
 	@DisplayName("로그인 상태인 경우, 피드를 신고할 수 있다.")

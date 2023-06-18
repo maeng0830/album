@@ -8,6 +8,6 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(AlbumException.class)
 	public ExceptionResponse albumExceptionHandler(AlbumException e) {
-		return new ExceptionResponse(e.getExceptionCode(), e.getExceptionMessage());
+		return new ExceptionResponse(e.getCode(), e.getMessage());
 	}
 }
