@@ -1,106 +1,103 @@
 package com.maeng0830.album.follow.service;
 
+import static com.maeng0830.album.follow.exception.FollowExceptionCode.NOT_EXIST_FOLLOW;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.verify;
 
+import com.maeng0830.album.common.exception.AlbumException;
 import com.maeng0830.album.follow.domain.Follow;
 import com.maeng0830.album.follow.dto.FollowDto;
 import com.maeng0830.album.follow.repository.FollowRepository;
 import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.repository.MemberRepository;
-import com.maeng0830.album.security.formlogin.PrincipalDetails;
-import java.util.Optional;
+import java.util.List;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
-@ActiveProfiles({"test"})
-@ExtendWith(MockitoExtension.class)
+@ActiveProfiles("test")
+@Transactional
+@SpringBootTest
 class FollowServiceTest {
 
-	@InjectMocks
+	@Autowired
 	private FollowService followService;
 
-	@Mock
+	@Autowired
 	private FollowRepository followRepository;
 
-	@Mock
+	@Autowired
 	private MemberRepository memberRepository;
 
-	@DisplayName("팔로우-성공")
+	@DisplayName("로그인 상태인 경우, 주어진 ID의 회원에게 팔로우할 수 있다.")
 	@Test
 	public void follow() {
 		//given
-		long followeeId = 1L;
-
-		PrincipalDetails principalDetails = new PrincipalDetails(MemberDto.builder()
-				.id(2L)
-				.build());
-
 		Member follower = Member.builder()
-				.id(principalDetails.getMemberDto().getId())
 				.build();
-
 		Member followee = Member.builder()
-				.id(followeeId)
 				.build();
+		memberRepository.saveAll(List.of(follower, followee));
 
-		Follow follow = Follow.builder()
-				.follower(follower)
-				.followee(followee)
-				.build();
-
-		given(memberRepository.findById(principalDetails.getMemberDto().getId()))
-				.willReturn(Optional.of(follower));
-
-		given(memberRepository.findById(followeeId))
-				.willReturn(Optional.of(followee));
-
-		given(followRepository.save(any())).willReturn(follow);
+		MemberDto followerDto = MemberDto.from(follower);
 
 		//when
-		FollowDto result = followService.follow(followeeId, principalDetails);
+		FollowDto result = followService.follow(followee.getId(), followerDto);
 
 		//then
-		assertThat(result.getFollower()).usingRecursiveComparison().isEqualTo(MemberDto.from(follow.getFollower()));
-		assertThat(result.getFollowee()).usingRecursiveComparison().isEqualTo(MemberDto.from(follow.getFollowee()));
+		assertThat(result.getFollower()).usingRecursiveComparison()
+				.isEqualTo(MemberDto.from(follower));
+		assertThat(result.getFollowee()).usingRecursiveComparison()
+				.isEqualTo(MemberDto.from(followee));
 	}
 
-	@DisplayName("팔로우 취소-성공")
+	@DisplayName("로그인 상태인 경우, 주어진 ID의 회원에 대한 팔로우를 취소할 수 있다.")
 	@Test
 	public void cancelFollow() {
 		//given
-		long followeeId = 1L;
+		Member follower = Member.builder()
+				.build();
+		Member followee = Member.builder()
+				.build();
+		memberRepository.saveAll(List.of(follower, followee));
 
-		PrincipalDetails principalDetails = new PrincipalDetails(MemberDto.builder()
-				.id(2L)
+		followRepository.save(Follow.builder()
+				.follower(follower)
+				.followee(followee)
 				.build());
 
+		MemberDto followerDto = MemberDto.from(follower);
+
+		//when
+		String result = followService.cancelFollow(followee.getId(), followerDto);
+
+		//then
+		assertThat(result).isEqualTo(
+				String.format("%s님이 %s님에 대한 팔로우를 취소하였습니다.", follower.getUsername(), followee.getUsername()));
+	}
+
+	@DisplayName("주어진 ID의 회원에 대한 팔로우를 취소할 때, 팔로우가 존재하지 않는다면 예외가 발생한다.")
+	@Test
+	public void cancelFollow_notExistFollow() {
+		//given
 		Member follower = Member.builder()
-				.id(principalDetails.getMemberDto().getId())
 				.build();
-
 		Member followee = Member.builder()
-				.id(followeeId)
 				.build();
+		memberRepository.saveAll(List.of(follower, followee));
 
-		given(memberRepository.findById(principalDetails.getMemberDto().getId()))
-				.willReturn(Optional.of(follower));
+		MemberDto followerDto = MemberDto.from(follower);
 
-		given(memberRepository.findById(followeeId))
-				.willReturn(Optional.of(followee));
+		//when
+		AlbumException albumException = Assertions.assertThrows(AlbumException.class,
+				() -> followService.cancelFollow(followee.getId(), followerDto));
 
-		String result = followService.cancelFollow(followeeId, principalDetails);
-
-		verify(followRepository).deleteByFollowerAndFollowee(follower, followee);
-
-		assertThat(result).isEqualTo(String.format("%s님이 %s님에 대한 팔로우를 취소하였습니다.", follower.getUsername(), followee.getUsername()));
+		//then
+		assertThat(albumException.getExceptionCode())
+				.isEqualTo(NOT_EXIST_FOLLOW);
 	}
 }

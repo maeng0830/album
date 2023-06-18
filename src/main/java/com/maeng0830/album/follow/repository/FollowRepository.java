@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface FollowRepository extends JpaRepository<Follow, Long> {
 
 	@Transactional
-	void deleteByFollowerAndFollowee(Member follower, Member followee);
+	int deleteByFollowerAndFollowee(Member follower, Member followee);
 
 	@Query("select f from Follow f left join fetch f.followee where f.follower = :follower")
 	List<Follow> findByFollower(Member follower);

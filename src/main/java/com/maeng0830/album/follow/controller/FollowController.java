@@ -1,5 +1,6 @@
 package com.maeng0830.album.follow.controller;
 
+import com.maeng0830.album.common.util.AlbumUtil;
 import com.maeng0830.album.follow.dto.FollowDto;
 import com.maeng0830.album.follow.service.FollowService;
 import com.maeng0830.album.security.formlogin.PrincipalDetails;
@@ -17,17 +18,20 @@ public class FollowController {
 
 	private final FollowService followService;
 
+	private final AlbumUtil albumUtil;
+
 	// 팔로우 하기
 	@PostMapping("/follows/{followeeId}")
 	public FollowDto follow(@PathVariable Long followeeId,
 							@AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return followService.follow(followeeId, principalDetails);
+
+		return followService.follow(followeeId, albumUtil.checkLogin(principalDetails));
 	}
 
 	// 팔로우 끊기
 	@DeleteMapping("/follows/{followeeId}")
 	public String cancelFollow(@PathVariable Long followeeId,
 							   @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return followService.cancelFollow(followeeId, principalDetails);
+		return followService.cancelFollow(followeeId, albumUtil.checkLogin(principalDetails));
 	}
 }
