@@ -1,6 +1,8 @@
 package com.maeng0830.album.feed.service;
 
-import static com.maeng0830.album.feed.domain.FeedStatus.*;
+import static com.maeng0830.album.feed.domain.FeedStatus.ACCUSE;
+import static com.maeng0830.album.feed.domain.FeedStatus.DELETE;
+import static com.maeng0830.album.feed.domain.FeedStatus.NORMAL;
 import static com.maeng0830.album.feed.exception.FeedExceptionCode.NOT_EXIST_FEED;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.NOT_EXIST_MEMBER;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.NO_AUTHORITY;
@@ -26,7 +28,6 @@ import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.repository.MemberRepository;
-import com.maeng0830.album.security.formlogin.PrincipalDetails;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
@@ -83,19 +84,20 @@ public class FeedService {
 					.orElseThrow(() -> new AlbumException(
 							NOT_EXIST_MEMBER));
 
-			// 로그인 회원이 팔로우 하는 회원
-			List<Follow> followers = followRepository.findByFollower(loginMember);
-			// 로그인 회원을 팔로우 하는 회원
-			List<Follow> followees = followRepository.findByFollowee(loginMember);
+			// 로그인 회원이 팔로우 하는 회원, 로그인 회원을 팔로우하는 회원 조회
+			List<Follow> members = followRepository.searchByFollowerOrFollowee(loginMember, loginMember);
 
+			// 로그인 회원과 팔로우 관계를 가진 회원의 username 목록
 			Set<String> createdBy = new HashSet<>();
 
-			followers.stream().map(f -> f.getFollowee().getUsername()).forEach(createdBy::add);
-			followees.stream().map(f -> f.getFollower().getUsername()).forEach(createdBy::add);
+			members.stream()
+					.filter(f -> !f.getFollowee().getUsername().equals(loginMember.getUsername()))
+					.map(f -> f.getFollowee().getUsername()).forEach(createdBy::add);
+			members.stream()
+					.filter(f -> !f.getFollower().getUsername().equals(loginMember.getUsername()))
+					.map(f -> f.getFollower().getUsername()).forEach(createdBy::add);
 
-
-			List<Feed> feeds = feedRepository.findByStatusAndCreatedBy(feedStatuses,
-					createdBy);
+			List<Feed> feeds = feedRepository.findByStatusAndCreatedBy(feedStatuses, createdBy);
 
 			return feeds.stream().map(f -> new FeedResponse(f, f.getFeedImages()))
 					.collect(Collectors.toList());

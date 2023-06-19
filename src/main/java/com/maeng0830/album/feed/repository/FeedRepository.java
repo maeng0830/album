@@ -10,10 +10,11 @@ import org.springframework.data.repository.query.Param;
 
 public interface FeedRepository extends JpaRepository<Feed, Long> {
 
-
+	// todo: queryDsl 적용
 	@Query("select f from Feed f left join fetch f.feedImages where f.status in :status and f.createdBy in :createdBy")
 	List<Feed> findByStatusAndCreatedBy(@Param("status") Collection<FeedStatus> status, @Param("createdBy") Collection<String> createdBy);
 
+	// todo: queryDsl 적용
 	@Query("select f from Feed f left join fetch f.feedImages where f.status in :status")
 	List<Feed> findFetchJoinByStatus(@Param("status") Collection<FeedStatus> status);
 }

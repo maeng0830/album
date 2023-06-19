@@ -17,6 +17,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -48,10 +49,12 @@ public class Member extends TimeEntity {
 	@Enumerated(EnumType.STRING)
 	private LoginType loginType;
 
+	@Builder.Default
 	@JsonManagedReference
 	@OneToMany(mappedBy = "follower")
 	private List<Follow> followers = new ArrayList<>();
 
+	@Builder.Default
 	@JsonManagedReference
 	@OneToMany(mappedBy = "followee")
 	private List<Follow> followees = new ArrayList<>();
