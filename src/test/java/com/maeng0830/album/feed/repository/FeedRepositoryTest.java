@@ -25,10 +25,31 @@ class FeedRepositoryTest {
 	@Autowired
 	private FeedImageRepository feedImageRepository;
 
-	@DisplayName("피드 상태 및 피드 작성자와 일치하는 피드를 조회한다")
+	@DisplayName("피드 상태 및 피드 작성자와 일치하는 피드와 피드이미지를 함께 조회한다")
 	@Test
-	void findByStatusAndCreatedBy() {
+	void searchByStatusAndCreatedBy() {
 		// given
+		// Image 세팅
+		Image image1 = Image.builder()
+				.imageOriginalName("testImageOriginalName1")
+				.imageStoreName("testImageStoreName1")
+				.imagePath("testImagePath1")
+				.build();
+		Image image2 = Image.builder()
+				.imageOriginalName("testImageOriginalName2")
+				.imageStoreName("testImageStoreName2")
+				.imagePath("testImagePath2")
+				.build();
+
+		// FeedImage 세팅
+		FeedImage feedImage1 = FeedImage.builder()
+				.image(image1)
+				.build();
+		FeedImage feedImage2 = FeedImage.builder()
+				.image(image2)
+				.build();
+
+		// Feed 세팅
 		Feed feed1 = Feed.builder()
 				.status(NORMAL)
 				.createdBy("memberA")
@@ -54,108 +75,33 @@ class FeedRepositoryTest {
 				.createdBy("memberB")
 				.build();
 
+		feed1.addFeedImage(feedImage1);
+		feed5.addFeedImage(feedImage2);
 		feedRepository.saveAll(List.of(feed1, feed2, feed3, feed4, feed5, feed6));
+		feedImageRepository.saveAll(List.of(feedImage1, feedImage2));
+
 
 		// when
-		List<Feed> result1 = feedRepository.findByStatusAndCreatedBy(List.of(NORMAL, ACCUSE),
+		List<Feed> result1 = feedRepository.searchByStatusAndCreatedBy(List.of(NORMAL, ACCUSE),
 				List.of("memberA"));
-		List<Feed> result2 = feedRepository.findByStatusAndCreatedBy(List.of(ACCUSE, DELETE),
+		List<Feed> result2 = feedRepository.searchByStatusAndCreatedBy(List.of(ACCUSE, DELETE),
 				List.of("memberA", "memberB"));
 
 		// then
 		assertThat(result1).hasSize(2)
-				.extracting("status", "createdBy")
+				.extracting("status", "createdBy", "feedImages")
 				.containsExactlyInAnyOrder(
-						tuple(NORMAL, "memberA"),
-						tuple(ACCUSE, "memberA")
+						tuple(NORMAL, "memberA", feed1.getFeedImages()),
+						tuple(ACCUSE, "memberA", feed2.getFeedImages())
 				);
 
 		assertThat(result2).hasSize(4)
-				.extracting("status", "createdBy")
+				.extracting("status", "createdBy", "feedImages")
 				.containsExactlyInAnyOrder(
-						tuple(ACCUSE, "memberA"),
-						tuple(ACCUSE, "memberB"),
-						tuple(DELETE, "memberA"),
-						tuple(DELETE, "memberB")
-				);
-	}
-
-	@DisplayName("피드 상태와 일치하는 피드 목록을 피드이미지와 함께 조회한다.")
-	@Test
-	void findFetchJoinByStatusNot() {
-		// given
-		Image image1 = Image.builder()
-				.imageOriginalName("testImageOriginalName1")
-				.imageStoreName("testImageStoreName1")
-				.imagePath("testImagePath1")
-				.build();
-		Image image2 = Image.builder()
-				.imageOriginalName("testImageOriginalName2")
-				.imageStoreName("testImageStoreName2")
-				.imagePath("testImagePath2")
-				.build();
-
-		FeedImage feedImage1 = FeedImage.builder()
-				.image(image1)
-				.build();
-		FeedImage feedImage2 = FeedImage.builder()
-				.image(image2)
-				.build();
-
-		Feed feed1 = new Feed();
-		feed1.changeStatus(NORMAL);
-		feed1.addFeedImage(feedImage1);
-		Feed feed2 = new Feed();
-		feed2.changeStatus(ACCUSE);
-		feed2.addFeedImage(feedImage2);
-
-		feedRepository.saveAll(List.of(feed1, feed2));
-		feedImageRepository.saveAll(List.of(feedImage1, feedImage2));
-
-		// when
-		List<Feed> result1 = feedRepository.findFetchJoinByStatus(
-				List.of(feed1.getStatus()));
-
-		List<Feed> result2 = feedRepository.findFetchJoinByStatus(
-				List.of(feed2.getStatus()));
-
-		List<Feed> result3 = feedRepository.findFetchJoinByStatus(
-				List.of(feed1.getStatus(), feed2.getStatus()));
-
-		// then
-		// result1
-		assertThat(result1).hasSize(1)
-				.extracting("status")
-				.containsExactlyInAnyOrder(NORMAL);
-		assertThat(result1.get(0).getFeedImages()).hasSize(1)
-				.extracting("image.imageOriginalName", "image.imageStoreName", "image.imagePath")
-				.containsExactlyInAnyOrder(
-						tuple(image1.getImageOriginalName(), image1.getImageStoreName(), image1.getImagePath())
-				);
-
-		// result2
-		assertThat(result2).hasSize(1)
-				.extracting("status")
-				.containsExactlyInAnyOrder(ACCUSE);
-		assertThat(result2.get(0).getFeedImages()).hasSize(1)
-				.extracting("image.imageOriginalName", "image.imageStoreName", "image.imagePath")
-				.containsExactlyInAnyOrder(
-						tuple(image2.getImageOriginalName(), image2.getImageStoreName(), image2.getImagePath())
-				);
-
-		// result3
-		assertThat(result3).hasSize(2)
-				.extracting("status")
-				.containsExactlyInAnyOrder(ACCUSE, NORMAL);
-		assertThat(result3.get(0).getFeedImages()).hasSize(1)
-				.extracting("image.imageOriginalName", "image.imageStoreName", "image.imagePath")
-				.containsExactlyInAnyOrder(
-						tuple(image1.getImageOriginalName(), image1.getImageStoreName(), image1.getImagePath())
-				);
-		assertThat(result3.get(1).getFeedImages()).hasSize(1)
-				.extracting("image.imageOriginalName", "image.imageStoreName", "image.imagePath")
-				.containsExactlyInAnyOrder(
-						tuple(image2.getImageOriginalName(), image2.getImageStoreName(), image2.getImagePath())
+						tuple(ACCUSE, "memberA", feed2.getFeedImages()),
+						tuple(DELETE, "memberA", feed3.getFeedImages()),
+						tuple(ACCUSE, "memberB", feed5.getFeedImages()),
+						tuple(DELETE, "memberB", feed6.getFeedImages())
 				);
 	}
 }
