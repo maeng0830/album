@@ -7,13 +7,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
 import com.maeng0830.album.comment.domain.Comment;
+import com.maeng0830.album.comment.domain.CommentStatus;
 import com.maeng0830.album.feed.domain.Feed;
 import com.maeng0830.album.feed.repository.FeedRepository;
+import com.maeng0830.album.member.domain.Member;
+import com.maeng0830.album.member.repository.MemberRepository;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,88 +30,191 @@ class CommentRepositoryTest {
 	private CommentRepository commentRepository;
 	@Autowired
 	private FeedRepository feedRepository;
+	@Autowired
+	private MemberRepository memberRepository;
 
-	@DisplayName("주어진 피드 아이디 및 피드 상태에 해당하는 코멘트를 조회한다.")
+	@DisplayName("피드 아이디에 해당하는 그룹 댓글을 조회할 수 있다.")
 	@Test
-	void findFetchJoinAll() {
-		// given
-		// Feed 세팅
-		Feed feed1 = Feed.builder()
-				.title("feed1Title")
+	void findGroupComment() {
+	    // given
+		// Member 세팅
+		Member member = Member.builder()
+				.username("testMember")
 				.build();
-		Feed feed2 = Feed.builder()
-				.title("feed2Title")
-				.build();
-		feedRepository.saveAll(List.of(feed1, feed2));
+		memberRepository.save(member);
 
-		// Comment 세팅
-		Comment feed1_normal = Comment.builder()
+		// Feed 세팅
+		Feed feed = Feed.builder()
+				.title("testFeed")
+				.build();
+		feedRepository.save(feed);
+
+		// comment 세팅
+		Comment groupCommentNormal = Comment.builder()
+				.member(member)
+				.content("groupCommentNormal")
 				.status(NORMAL)
-				.feed(feed1)
+				.feed(feed)
 				.build();
-		Comment feed1_accuse = Comment.builder()
+		groupCommentNormal.saveGroup(groupCommentNormal);
+		groupCommentNormal.saveParent(groupCommentNormal);
+
+		Comment groupCommentAccuse = Comment.builder()
+				.member(member)
+				.content("groupCommentAccuse")
 				.status(ACCUSE)
-				.feed(feed1)
+				.feed(feed)
 				.build();
-		Comment feed1_delete = Comment.builder()
+		groupCommentAccuse.saveGroup(groupCommentAccuse);
+		groupCommentAccuse.saveParent(groupCommentAccuse);
+
+		Comment groupCommentDelete = Comment.builder()
+				.member(member)
+				.content("groupCommentDelete")
 				.status(DELETE)
-				.feed(feed1)
+				.feed(feed)
 				.build();
-		Comment feed2_normal = Comment.builder()
+		groupCommentDelete.saveGroup(groupCommentDelete);
+		groupCommentDelete.saveParent(groupCommentDelete);
+
+		Comment basicCommentNormal_GN = Comment.builder()
+				.member(member)
+				.content("basicCommentNormal_GN")
 				.status(NORMAL)
-				.feed(feed2)
+				.feed(feed)
 				.build();
-		Comment feed2_accuse = Comment.builder()
+		basicCommentNormal_GN.saveGroup(groupCommentNormal);
+		basicCommentNormal_GN.saveParent(groupCommentNormal);
+
+		Comment basicCommentAccuse_GN = Comment.builder()
+				.member(member)
+				.content("basicCommentAccuse_GN")
 				.status(ACCUSE)
-				.feed(feed2)
+				.feed(feed)
 				.build();
-		Comment feed2_delete = Comment.builder()
+		basicCommentAccuse_GN.saveGroup(groupCommentNormal);
+		basicCommentAccuse_GN.saveParent(groupCommentNormal);
+
+		Comment basicCommentDelete_BN = Comment.builder()
+				.member(member)
+				.content("basicCommentDelete_BN")
 				.status(DELETE)
-				.feed(feed2)
+				.feed(feed)
 				.build();
+		basicCommentDelete_BN.saveGroup(groupCommentNormal);
+		basicCommentDelete_BN.saveParent(basicCommentNormal_GN);
+
 		commentRepository.saveAll(
-				List.of(feed1_normal, feed1_accuse, feed1_delete, feed2_normal, feed2_accuse,
-						feed2_delete));
+				List.of(groupCommentNormal, groupCommentAccuse, groupCommentDelete,
+						basicCommentNormal_GN, basicCommentAccuse_GN, basicCommentDelete_BN));
+
+		// paging 세팅
+		PageRequest pageRequest = PageRequest.of(0, 20);
+		List<CommentStatus> status = List.of(NORMAL, ACCUSE, DELETE);
 
 		// when
-		List<Comment> result1 = commentRepository.findFetchJoinAll(feed1.getId(),
-				List.of(NORMAL));
-		List<Comment> result2 = commentRepository.findFetchJoinAll(feed1.getId(),
-				List.of(NORMAL, ACCUSE));
-		List<Comment> result3 = commentRepository.findFetchJoinAll(feed1.getId(),
-				List.of(NORMAL, ACCUSE, DELETE));
-		List<Comment> result4 = commentRepository.findFetchJoinAll(feed2.getId(),
-				List.of(NORMAL, ACCUSE, DELETE));
+		List<Comment> groupComment = commentRepository.findGroupComment(feed.getId(), status,
+				pageRequest);
 
 		// then
-		// result1
-		assertThat(result1).hasSize(1)
-				.extracting("status", "feed")
-				.containsExactlyInAnyOrder(
-						tuple(NORMAL, feed1)
+		assertThat(groupComment).hasSize(3)
+				.extracting("content")
+				.containsExactly(
+						groupCommentNormal.getContent(),
+						groupCommentAccuse.getContent(),
+						groupCommentDelete.getContent()
 				);
-		// result2
-		assertThat(result2).hasSize(2)
-				.extracting("status", "feed")
-				.containsExactlyInAnyOrder(
-						tuple(NORMAL, feed1),
-						tuple(ACCUSE, feed1)
-				);
-		// result3
-		assertThat(result3).hasSize(3)
-				.extracting("status", "feed")
-				.containsExactlyInAnyOrder(
-						tuple(NORMAL, feed1),
-						tuple(ACCUSE, feed1),
-						tuple(DELETE, feed1)
-				);
-		// result4
-		assertThat(result4).hasSize(3)
-				.extracting("status", "feed")
-				.containsExactlyInAnyOrder(
-						tuple(NORMAL, feed2),
-						tuple(ACCUSE, feed2),
-						tuple(DELETE, feed2)
+	}
+
+	@DisplayName("피드 아이디에 해당하는 베이직 댓글을 조회할 수 있다.")
+	@Test
+	void findBasicComment() {
+		// given
+		// Member 세팅
+		Member member = Member.builder()
+				.username("testMember")
+				.build();
+		memberRepository.save(member);
+
+		// Feed 세팅
+		Feed feed = Feed.builder()
+				.title("testFeed")
+				.build();
+		feedRepository.save(feed);
+
+		// comment 세팅
+		Comment groupCommentNormal = Comment.builder()
+				.member(member)
+				.content("groupCommentNormal")
+				.status(NORMAL)
+				.feed(feed)
+				.build();
+		groupCommentNormal.saveGroup(groupCommentNormal);
+		groupCommentNormal.saveParent(groupCommentNormal);
+
+		Comment groupCommentAccuse = Comment.builder()
+				.member(member)
+				.content("groupCommentAccuse")
+				.status(ACCUSE)
+				.feed(feed)
+				.build();
+		groupCommentAccuse.saveGroup(groupCommentAccuse);
+		groupCommentAccuse.saveParent(groupCommentAccuse);
+
+		Comment groupCommentDelete = Comment.builder()
+				.member(member)
+				.content("groupCommentDelete")
+				.status(DELETE)
+				.feed(feed)
+				.build();
+		groupCommentDelete.saveGroup(groupCommentDelete);
+		groupCommentDelete.saveParent(groupCommentDelete);
+
+		Comment basicCommentNormal_GN = Comment.builder()
+				.member(member)
+				.content("basicCommentNormal_GN")
+				.status(NORMAL)
+				.feed(feed)
+				.build();
+		basicCommentNormal_GN.saveGroup(groupCommentNormal);
+		basicCommentNormal_GN.saveParent(groupCommentNormal);
+
+		Comment basicCommentAccuse_GN = Comment.builder()
+				.member(member)
+				.content("basicCommentAccuse_GN")
+				.status(ACCUSE)
+				.feed(feed)
+				.build();
+		basicCommentAccuse_GN.saveGroup(groupCommentNormal);
+		basicCommentAccuse_GN.saveParent(groupCommentNormal);
+
+		Comment basicCommentDelete_BN = Comment.builder()
+				.member(member)
+				.content("basicCommentDelete_BN")
+				.status(DELETE)
+				.feed(feed)
+				.build();
+		basicCommentDelete_BN.saveGroup(groupCommentNormal);
+		basicCommentDelete_BN.saveParent(basicCommentNormal_GN);
+
+		commentRepository.saveAll(
+				List.of(groupCommentNormal, groupCommentAccuse, groupCommentDelete,
+						basicCommentNormal_GN, basicCommentAccuse_GN, basicCommentDelete_BN));
+
+		// paging 세팅
+		PageRequest pageRequest = PageRequest.of(0, 20);
+		List<CommentStatus> status = List.of(NORMAL, ACCUSE, DELETE);
+
+		// when
+		List<Comment> basicComment = commentRepository.findBasicComment(feed.getId(), status, 0L, 2L);
+
+		// then
+		assertThat(basicComment).hasSize(3)
+				.extracting("content")
+				.containsExactly(
+						basicCommentNormal_GN.getContent(),
+						basicCommentAccuse_GN.getContent(),
+						basicCommentDelete_BN.getContent()
 				);
 	}
 }

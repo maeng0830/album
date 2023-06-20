@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,31 +37,23 @@ public class CommentService {
 	private final FeedRepository feedRepository;
 	private final MemberRepository memberRepository;
 
-	public List<GroupComment> getFeedComments(Long feedId) {
+	public List<GroupComment> getFeedComments(Long feedId, Pageable pageable) {
+		// 조회하고자 하는 댓글 상태
+		List<CommentStatus> statuses = List.of(CommentStatus.NORMAL, CommentStatus.ACCUSE,
+				CommentStatus.DELETE);
 
-		// 해당 피드의 댓글 조회
-		List<Comment> comments = commentRepository.findFetchJoinAll(feedId,
-				List.of(CommentStatus.NORMAL, CommentStatus.ACCUSE, CommentStatus.DELETE));
-
-		// 그룹댓글 리스트 생성
-		List<GroupComment> groupComments = comments.stream()
-				.filter(c -> Objects.equals(c.getId(), c.getGroup().getId()))
-				.map(GroupComment::from)
-				.collect(Collectors.toList());
-
-		for (GroupComment groupComment : groupComments) {
-			System.out.println("groupComment = " + groupComment);
-		}
+		// 해당 피드의 그룹 댓글 조회
+		List<GroupComment> groupComments =
+				commentRepository.findGroupComment(feedId, statuses, pageable)
+						.stream().map(GroupComment::from).collect(Collectors.toList());
 
 		// 자식댓글 리스트 생성
-		List<BasicComment> basicComments = comments.stream()
-				.filter(c -> !Objects.equals(c.getId(), c.getGroup().getId()))
-				.map(BasicComment::from)
-				.collect(Collectors.toList());
-
-		for (BasicComment basicComment : basicComments) {
-			System.out.println("basicComment = " + basicComment);
-		}
+		List<BasicComment> basicComments = commentRepository
+				.findBasicComment(
+						feedId, statuses, groupComments.get(0).getId(),
+						groupComments.get(groupComments.size() - 1).getId()
+				)
+				.stream().map(BasicComment::from).collect(Collectors.toList());
 
 		// 그룹댓글 리스트  <- 자식댓글 리스트
 		groupComments.forEach(g -> g.setBasicComments(

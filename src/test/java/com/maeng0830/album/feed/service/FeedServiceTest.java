@@ -39,6 +39,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
@@ -138,8 +139,11 @@ class FeedServiceTest {
 				.build();
 		feedRepository.saveAll(List.of(followerFeed, followeeFeed, noRelationFeed));
 
+		// Paging 세팅
+		PageRequest pageRequest = PageRequest.of(0, 20);
+
 		// when
-		List<FeedResponse> feeds = feedService.getFeeds(MemberDto.from(loginMember));
+		List<FeedResponse> feeds = feedService.getFeeds(MemberDto.from(loginMember), pageRequest);
 
 		// then
 		assertThat(feeds).hasSize(2)
@@ -197,8 +201,11 @@ class FeedServiceTest {
 				.build();
 		feedRepository.saveAll(List.of(followerFeed, followeeFeed, noRelationFeed));
 
+		// Paging 세팅
+		PageRequest pageRequest = PageRequest.of(0, 20);
+
 		// when
-		List<FeedResponse> feeds = feedService.getFeeds(null);
+		List<FeedResponse> feeds = feedService.getFeeds(null, pageRequest);
 
 		// then
 		assertThat(feeds).hasSize(3)

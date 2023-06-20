@@ -8,6 +8,7 @@ import com.maeng0830.album.feed.service.FeedService;
 import com.maeng0830.album.security.formlogin.PrincipalDetails;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,8 +30,8 @@ public class FeedController {
 	private final AlbumUtil albumUtil;
 
 	@GetMapping
-	public List<FeedResponse> getFeeds(@AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return feedService.getFeeds(albumUtil.checkLogin(principalDetails));
+	public List<FeedResponse> getFeeds(@AuthenticationPrincipal PrincipalDetails principalDetails, Pageable pageable) {
+		return feedService.getFeeds(albumUtil.checkLogin(principalDetails), pageable);
 	}
 
 	@GetMapping("/{feedId}")
