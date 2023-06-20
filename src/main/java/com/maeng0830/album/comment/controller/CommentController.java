@@ -8,6 +8,7 @@ import com.maeng0830.album.common.util.AlbumUtil;
 import com.maeng0830.album.security.formlogin.PrincipalDetails;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,8 +28,8 @@ public class CommentController {
 	private final AlbumUtil albumUtil;
 
 	@GetMapping()
-	public List<GroupComment> getFeedComments(Long feedId) {
-		return commentService.getFeedComments(feedId);
+	public List<GroupComment> getFeedComments(Long feedId, Pageable pageable) {
+		return commentService.getFeedComments(feedId, pageable);
 	}
 
 	@GetMapping("/{commentId}")

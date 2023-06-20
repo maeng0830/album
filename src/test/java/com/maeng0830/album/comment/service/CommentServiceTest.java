@@ -27,6 +27,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -119,8 +120,11 @@ class CommentServiceTest {
 				List.of(groupCommentNormal, groupCommentAccuse, groupCommentDelete,
 						basicCommentNormal_GN, basicCommentAccuse_GN, basicCommentDelete_BN));
 
+		// paging 세팅
+		PageRequest pageRequest = PageRequest.of(0, 20);
+
 		// when
-		List<GroupComment> groupComments = commentService.getFeedComments(feed.getId());
+		List<GroupComment> groupComments = commentService.getFeedComments(feed.getId(), pageRequest);
 
 		// then
 		assertThat(groupComments).hasSize(3)

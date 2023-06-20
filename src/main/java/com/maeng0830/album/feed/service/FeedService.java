@@ -35,6 +35,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -72,20 +79,22 @@ public class FeedService {
 	}
 
 	// 전체 피드 목록 조회, 로그인 여부에 따라 다른 피드 목록 반환
-	public List<FeedResponse> getFeeds(MemberDto memberDto) {
+	public List<FeedResponse> getFeeds(MemberDto memberDto, Pageable pageable) {
 
-		boolean loginCheck = memberDto != null;
+		PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+				Sort.by(Direction.DESC, "likeCount"));
 
 		List<FeedStatus> feedStatuses = List.of(NORMAL, ACCUSE);
 
 		//로그인 상태
-		if (loginCheck) {
+		if (memberDto != null) {
 			Member loginMember = memberRepository.findById(memberDto.getId())
 					.orElseThrow(() -> new AlbumException(
 							NOT_EXIST_MEMBER));
 
 			// 로그인 회원이 팔로우 하는 회원, 로그인 회원을 팔로우하는 회원 조회
-			List<Follow> members = followRepository.searchByFollowerOrFollowee(loginMember, loginMember);
+			List<Follow> members = followRepository.searchByFollowerOrFollowee(loginMember,
+					loginMember);
 
 			// 로그인 회원과 팔로우 관계를 가진 회원의 username 목록
 			Set<String> createdBy = new HashSet<>();
@@ -97,14 +106,15 @@ public class FeedService {
 					.filter(f -> !f.getFollower().getUsername().equals(loginMember.getUsername()))
 					.map(f -> f.getFollower().getUsername()).forEach(createdBy::add);
 
-			List<Feed> feeds = feedRepository.searchByStatusAndCreatedBy(feedStatuses, createdBy);
+			Page<Feed> feeds = feedRepository.searchByStatusAndCreatedBy(feedStatuses, createdBy,
+					pageRequest);
 
 			return feeds.stream().map(f -> new FeedResponse(f, f.getFeedImages()))
 					.collect(Collectors.toList());
 		} else {
 			//비로그인 상태
-			List<Feed> feeds = feedRepository.searchByStatusAndCreatedBy(feedStatuses, null);
-			System.out.println("feeds.size() = " + feeds.size());
+			Page<Feed> feeds = feedRepository.searchByStatusAndCreatedBy(feedStatuses, null,
+					pageRequest);
 
 			return feeds.stream().map(f -> new FeedResponse(f, f.getFeedImages()))
 					.collect(Collectors.toList());
