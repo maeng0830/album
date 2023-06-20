@@ -97,13 +97,13 @@ public class FeedService {
 					.filter(f -> !f.getFollower().getUsername().equals(loginMember.getUsername()))
 					.map(f -> f.getFollower().getUsername()).forEach(createdBy::add);
 
-			List<Feed> feeds = feedRepository.findByStatusAndCreatedBy(feedStatuses, createdBy);
+			List<Feed> feeds = feedRepository.searchByStatusAndCreatedBy(feedStatuses, createdBy);
 
 			return feeds.stream().map(f -> new FeedResponse(f, f.getFeedImages()))
 					.collect(Collectors.toList());
 		} else {
 			//비로그인 상태
-			List<Feed> feeds = feedRepository.findFetchJoinByStatus(feedStatuses);
+			List<Feed> feeds = feedRepository.searchByStatusAndCreatedBy(feedStatuses, null);
 			System.out.println("feeds.size() = " + feeds.size());
 
 			return feeds.stream().map(f -> new FeedResponse(f, f.getFeedImages()))
