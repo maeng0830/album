@@ -4,9 +4,12 @@ import com.maeng0830.album.common.util.AlbumUtil;
 import com.maeng0830.album.feed.dto.FeedAccuseDto;
 import com.maeng0830.album.feed.dto.FeedDto;
 import com.maeng0830.album.feed.dto.FeedResponse;
+import com.maeng0830.album.feed.dto.request.FeedAccuseRequestForm;
+import com.maeng0830.album.feed.dto.request.FeedRequestForm;
 import com.maeng0830.album.feed.service.FeedService;
 import com.maeng0830.album.security.formlogin.PrincipalDetails;
 import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -39,11 +42,12 @@ public class FeedController {
 		return feedService.getFeed(feedId);
 	}
 
+	// todo: FeedRequestForm - done
 	@PostMapping
-	public FeedResponse feed(@RequestPart FeedDto feedDto,
+	public FeedResponse feed(@Valid @RequestPart FeedRequestForm feedRequestForm,
 							 @RequestPart List<MultipartFile> imageFiles,
 							 @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return feedService.feed(feedDto, imageFiles, albumUtil.checkLogin(principalDetails));
+		return feedService.feed(feedRequestForm, imageFiles, albumUtil.checkLogin(principalDetails));
 	}
 
 	@DeleteMapping("/{feedId}")
@@ -52,18 +56,20 @@ public class FeedController {
 		return feedService.deleteFeed(feedId, albumUtil.checkLogin(principalDetails));
 	}
 
+	// todo: FeedRequestForm - done
 	@PutMapping("/{feedId}")
 	public FeedResponse modifiedFeed(@PathVariable Long feedId,
-									 @RequestPart FeedDto feedDto,
+									 @Valid @RequestPart FeedRequestForm feedRequestForm,
 									 @RequestPart List<MultipartFile> imageFiles,
 									 @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return feedService.modifiedFeed(feedId, feedDto, imageFiles, albumUtil.checkLogin(principalDetails));
+		return feedService.modifiedFeed(feedId, feedRequestForm, imageFiles, albumUtil.checkLogin(principalDetails));
 	}
 
+	// todo: FeedAccuseRequestForm - done
 	@PutMapping("/{feedId}/accuse")
 	public FeedAccuseDto accuseFeed(@PathVariable Long feedId,
-									@RequestBody FeedAccuseDto feedAccuseDto,
+									@Valid @RequestBody FeedAccuseRequestForm feedAccuseRequestForm,
 									@AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return feedService.accuseFeed(feedId, feedAccuseDto, albumUtil.checkLogin(principalDetails));
+		return feedService.accuseFeed(feedId, feedAccuseRequestForm, albumUtil.checkLogin(principalDetails));
 	}
 }

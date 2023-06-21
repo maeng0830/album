@@ -3,6 +3,7 @@ package com.maeng0830.album.member.service;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.EXIST_NICKNAME;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.EXIST_USERNAME;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.NOT_EXIST_MEMBER;
+import static com.maeng0830.album.member.exception.MemberExceptionCode.NOT_SAME_PASSWORD_REPASSWORD;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.REQUIRED_LOGIN;
 
 import com.maeng0830.album.common.exception.AlbumException;
@@ -12,6 +13,8 @@ import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.domain.MemberStatus;
 import com.maeng0830.album.member.dto.MemberDto;
+import com.maeng0830.album.member.dto.request.MemberJoinForm;
+import com.maeng0830.album.member.dto.request.MemberModifiedForm;
 import com.maeng0830.album.member.repository.MemberRepository;
 import com.maeng0830.album.security.dto.LoginType;
 import java.io.File;
@@ -35,26 +38,26 @@ public class MemberService {
 	private final BCryptPasswordEncoder passwordEncoder;
 	private final FileDir fileDir;
 
-	public MemberDto join(MemberDto memberDto) {
+	public MemberDto join(MemberJoinForm memberJoinForm) {
 		// username 존재 여부 확인
 		List<Member> members = memberRepository.findByUsernameOrNickname(
-				memberDto.getUsername(), memberDto.getNickname());
+				memberJoinForm.getUsername(), memberJoinForm.getNickname());
 
 		for (Member member : members) {
-			if (memberDto.getUsername().equals(member.getUsername())) {
+			if (memberJoinForm.getUsername().equals(member.getUsername())) {
 				throw new AlbumException(EXIST_USERNAME);
-			} else if (memberDto.getNickname().equals(member.getNickname())) {
+			} else if (memberJoinForm.getNickname().equals(member.getNickname())) {
 				throw new AlbumException(EXIST_NICKNAME);
 			}
 		}
 
 		// 비밀번호 암호화, 상태 및 권한 설정 -> DB 저장(회원가입)
 		Member member = Member.builder()
-				.username(memberDto.getUsername())
-				.nickname(memberDto.getNickname())
-				.password(passwordEncoder.encode(memberDto.getPassword()))
-				.phone(memberDto.getPhone())
-				.birthDate(memberDto.getBirthDate())
+				.username(memberJoinForm.getUsername())
+				.nickname(memberJoinForm.getNickname())
+				.password(passwordEncoder.encode(memberJoinForm.getPassword()))
+				.phone(memberJoinForm.getPhone())
+				.birthDate(memberJoinForm.getBirthDate())
 				.status(MemberStatus.FIRST)
 				.role(MemberRole.ROLE_MEMBER)
 				.loginType(LoginType.FORM)
@@ -93,7 +96,7 @@ public class MemberService {
 	}
 
 	public MemberDto modifiedMember(MemberDto loginMemberDto,
-									MemberDto modifiedMemberDto,
+									MemberModifiedForm memberModifiedForm,
 									MultipartFile imageFile) {
 		if (loginMemberDto == null) {
 			throw new AlbumException(REQUIRED_LOGIN);
@@ -106,9 +109,15 @@ public class MemberService {
 		log.info("이미지= {}", imageFile.getOriginalFilename());
 
 		// json 요청 데이터 처리
-		findMember.setNickname(modifiedMemberDto.getNickname());
-		findMember.setPhone(modifiedMemberDto.getPhone());
-		findMember.setBirthDate(modifiedMemberDto.getBirthDate());
+		findMember.setNickname(memberModifiedForm.getNickname());
+		findMember.setPhone(memberModifiedForm.getPhone());
+
+		// 비밀번호 확인
+		if (memberModifiedForm.getPassword().equals(memberModifiedForm.getRePassword())) {
+			findMember.setPassword(passwordEncoder.encode(memberModifiedForm.getPassword()));
+		} else {
+			throw new AlbumException(NOT_SAME_PASSWORD_REPASSWORD);
+		}
 
 		// multipart 요청 데이터(회원 이미지) 처리
 		saveMemberImage(imageFile, findMember);

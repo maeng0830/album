@@ -1,7 +1,7 @@
 package com.maeng0830.album.member.controller;
 
 import com.maeng0830.album.comment.domain.CommentStatus;
-import com.maeng0830.album.comment.model.response.BasicComment;
+import com.maeng0830.album.comment.dto.response.BasicComment;
 import com.maeng0830.album.comment.service.CommentService;
 import com.maeng0830.album.feed.domain.FeedStatus;
 import com.maeng0830.album.feed.dto.FeedDto;

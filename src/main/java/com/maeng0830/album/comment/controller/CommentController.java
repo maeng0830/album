@@ -1,12 +1,16 @@
 package com.maeng0830.album.comment.controller;
 
-import com.maeng0830.album.comment.model.dto.CommentAccuseDto;
-import com.maeng0830.album.comment.model.response.BasicComment;
-import com.maeng0830.album.comment.model.response.GroupComment;
+import com.maeng0830.album.comment.dto.CommentAccuseDto;
+import com.maeng0830.album.comment.dto.request.CommentAccuseForm;
+import com.maeng0830.album.comment.dto.request.CommentModifiedForm;
+import com.maeng0830.album.comment.dto.request.CommentPostForm;
+import com.maeng0830.album.comment.dto.response.BasicComment;
+import com.maeng0830.album.comment.dto.response.GroupComment;
 import com.maeng0830.album.comment.service.CommentService;
 import com.maeng0830.album.common.util.AlbumUtil;
 import com.maeng0830.album.security.formlogin.PrincipalDetails;
 import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -37,19 +41,22 @@ public class CommentController {
 		return commentService.getComment(commentId);
 	}
 
+	// todo: CommentPostForm - done
 	@PostMapping()
-	public BasicComment comment(@RequestBody BasicComment basicComment, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return commentService.comment(basicComment, albumUtil.checkLogin(principalDetails));
+	public BasicComment comment(@Valid @RequestBody CommentPostForm commentPostForm, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		return commentService.comment(commentPostForm, albumUtil.checkLogin(principalDetails));
 	}
 
+	// todo: CommentModifiedForm - done
 	@PutMapping()
-	public BasicComment modifiedComment(@RequestBody BasicComment basicComment, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return commentService.modifiedComment(basicComment, albumUtil.checkLogin(principalDetails));
+	public BasicComment modifiedComment(@Valid @RequestBody CommentModifiedForm commentModifiedForm, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		return commentService.modifiedComment(commentModifiedForm, albumUtil.checkLogin(principalDetails));
 	}
 
+	// todo: commentAccuseForm - done
 	@PutMapping("/accuse")
-	public CommentAccuseDto accuseComment(@RequestBody CommentAccuseDto commentAccuseDto, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return commentService.accuseComment(commentAccuseDto, albumUtil.checkLogin(principalDetails));
+	public CommentAccuseDto accuseComment(@Valid @RequestBody CommentAccuseForm commentAccuseForm, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		return commentService.accuseComment(commentAccuseForm, albumUtil.checkLogin(principalDetails));
 	}
 
 	@DeleteMapping()

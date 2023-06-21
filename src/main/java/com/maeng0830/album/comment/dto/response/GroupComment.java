@@ -1,4 +1,4 @@
-package com.maeng0830.album.comment.model.response;
+package com.maeng0830.album.comment.dto.response;
 
 import com.maeng0830.album.comment.domain.Comment;
 import com.maeng0830.album.comment.domain.CommentStatus;

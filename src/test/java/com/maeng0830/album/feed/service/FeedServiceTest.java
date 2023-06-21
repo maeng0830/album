@@ -21,6 +21,8 @@ import com.maeng0830.album.feed.domain.FeedStatus;
 import com.maeng0830.album.feed.dto.FeedAccuseDto;
 import com.maeng0830.album.feed.dto.FeedDto;
 import com.maeng0830.album.feed.dto.FeedResponse;
+import com.maeng0830.album.feed.dto.request.FeedAccuseRequestForm;
+import com.maeng0830.album.feed.dto.request.FeedRequestForm;
 import com.maeng0830.album.feed.repository.FeedImageRepository;
 import com.maeng0830.album.feed.repository.FeedRepository;
 import com.maeng0830.album.follow.domain.Follow;
@@ -242,7 +244,7 @@ class FeedServiceTest {
 	@Test
 	void feed() throws IOException {
 		// given
-		FeedDto feedDto = FeedDto.builder()
+		FeedRequestForm feedRequestForm = FeedRequestForm.builder()
 				.title("testTitle")
 				.content("testContent")
 				.build();
@@ -256,7 +258,7 @@ class FeedServiceTest {
 				"multipart/mixed", fileDir, 3);
 
 		// when
-		FeedResponse feedResponse = feedService.feed(feedDto, imageFiles, memberDto);
+		FeedResponse feedResponse = feedService.feed(feedRequestForm, imageFiles, memberDto);
 
 		// then
 		assertThat(feedResponse)
@@ -276,7 +278,7 @@ class FeedServiceTest {
 	@Test
 	void feed_noLogin() throws IOException {
 		// given
-		FeedDto feedDto = FeedDto.builder()
+		FeedRequestForm feedRequestForm = FeedRequestForm.builder()
 				.title("testTitle")
 				.content("testContent")
 				.build();
@@ -289,7 +291,7 @@ class FeedServiceTest {
 		// when
 
 		// then
-		assertThatThrownBy(() -> feedService.feed(feedDto, imageFiles, memberDto))
+		assertThatThrownBy(() -> feedService.feed(feedRequestForm, imageFiles, memberDto))
 				.isInstanceOf(AlbumException.class)
 				.hasMessage(REQUIRED_LOGIN.getMessage());
 	}
@@ -412,7 +414,7 @@ class FeedServiceTest {
 		}
 
 		// 변경 데이터 세팅
-		FeedDto feedDto = FeedDto.builder()
+		FeedRequestForm feedRequestForm = FeedRequestForm.builder()
 				.title("modTitle")
 				.content("modContent")
 				.build();
@@ -423,13 +425,13 @@ class FeedServiceTest {
 		System.out.println("feed.getId() = " + feed.getId());
 
 		// when
-		FeedResponse feedResponse = feedService.modifiedFeed(feed.getId(), feedDto, modImageFiles,
+		FeedResponse feedResponse = feedService.modifiedFeed(feed.getId(), feedRequestForm, modImageFiles,
 				writerDto);
 
 		// then
 		assertThat(feedResponse)
 				.extracting("title", "content")
-				.containsExactly(feedDto.getTitle(), feedDto.getContent());
+				.containsExactly(feedRequestForm.getTitle(), feedRequestForm.getContent());
 		assertThat(feedResponse.getFeedImages()).hasSize(3)
 				.extracting("imageOriginalName")
 				.containsExactlyInAnyOrder(
@@ -459,7 +461,7 @@ class FeedServiceTest {
 		feedRepository.save(feed);
 
 		// 변경 데이터 세팅
-		FeedDto feedDto = FeedDto.builder()
+		FeedRequestForm feedRequestForm = FeedRequestForm.builder()
 				.title("modTitle")
 				.content("modContent")
 				.build();
@@ -472,7 +474,7 @@ class FeedServiceTest {
 		// when
 
 		// then
-		assertThatThrownBy(() -> feedService.modifiedFeed(feed.getId(), feedDto, null,
+		assertThatThrownBy(() -> feedService.modifiedFeed(feed.getId(), feedRequestForm, null,
 				noWriterDto))
 				.isInstanceOf(AlbumException.class)
 				.hasMessage(NO_AUTHORITY.getMessage());
@@ -502,18 +504,18 @@ class FeedServiceTest {
 		feedRepository.save(feed);
 
 		// feedAccuse 세팅
-		FeedAccuseDto feedAccuseDto = FeedAccuseDto.builder()
+		FeedAccuseRequestForm feedAccuseRequestForm = FeedAccuseRequestForm.builder()
 				.content("testContent")
 				.build();
 
 		// when
-		FeedAccuseDto result = feedService.accuseFeed(feed.getId(), feedAccuseDto,
+		FeedAccuseDto result = feedService.accuseFeed(feed.getId(), feedAccuseRequestForm,
 				loginMemberDto);
 
 		// then
 		assertThat(result)
 				.extracting("content", "feedDto.status")
-				.containsExactlyInAnyOrder(feedAccuseDto.getContent(), ACCUSE);
+				.containsExactlyInAnyOrder(feedAccuseRequestForm.getContent(), ACCUSE);
 	}
 
 	@DisplayName("피드를 특정 상태로 변경할 수 있다.")
