@@ -15,6 +15,8 @@ import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.domain.MemberStatus;
 import com.maeng0830.album.member.dto.MemberDto;
+import com.maeng0830.album.member.dto.request.MemberJoinForm;
+import com.maeng0830.album.member.dto.request.MemberModifiedForm;
 import com.maeng0830.album.member.repository.MemberRepository;
 import com.maeng0830.album.security.dto.LoginType;
 import java.io.File;
@@ -62,25 +64,25 @@ class MemberServiceTest {
 	@Test
 	public void join() {
 		// given
-		MemberDto memberDto = MemberDto.builder()
+		MemberJoinForm memberJoinForm = MemberJoinForm.builder()
 				.username("test@naver.com")
 				.nickname("testNickname")
 				.password("123")
 				.build();
 
 		//when
-		MemberDto result = memberService.join(memberDto);
+		MemberDto result = memberService.join(memberJoinForm);
 
 		//then
 		assertThat(result)
 				.extracting("username", "nickname", "status", "role", "loginType")
 				.containsExactlyInAnyOrder(
-						memberDto.getUsername(),
-						memberDto.getNickname(),
+						memberJoinForm.getUsername(),
+						memberJoinForm.getNickname(),
 						FIRST,
 						ROLE_MEMBER,
 						FORM);
-		assertThat(passwordEncoder.matches(memberDto.getPassword(), result.getPassword()))
+		assertThat(passwordEncoder.matches(memberJoinForm.getPassword(), result.getPassword()))
 				.isTrue();
 	}
 
@@ -152,31 +154,32 @@ class MemberServiceTest {
 		Member loginMember = Member.builder()
 				.nickname("prevNickname")
 				.phone("010-0000-0000")
-				.birthDate(LocalDateTime.now())
+				.password(passwordEncoder.encode("123"))
 				.build();
 		memberRepository.save(loginMember);
 		MemberDto loginMemberDto = MemberDto.from(loginMember);
 
-		MemberDto modifiedMemberDto = MemberDto.builder()
+		MemberModifiedForm memberModifiedForm = MemberModifiedForm.builder()
 				.nickname("nextNickname")
 				.phone("010-1111-1111")
-				.birthDate(LocalDateTime.now())
+				.password("456")
+				.rePassword("456")
 				.build();
 
 		MockMultipartFile imageFile = createImageFile("imageFile", "testImage.png",
 				"multipart/mixed", fileDir);
 
 		//when
-		MemberDto result = memberService.modifiedMember(loginMemberDto, modifiedMemberDto,
+		MemberDto result = memberService.modifiedMember(loginMemberDto, memberModifiedForm,
 				imageFile);
 
 		//then
 		assertThat(result.getNickname())
-				.isEqualTo(modifiedMemberDto.getNickname());
+				.isEqualTo(memberModifiedForm.getNickname());
 		assertThat(result.getPhone())
-				.isEqualTo(modifiedMemberDto.getPhone());
-		assertThat(result.getBirthDate())
-				.isEqualTo(modifiedMemberDto.getBirthDate());
+				.isEqualTo(memberModifiedForm.getPhone());
+		assertThat(passwordEncoder.matches("456", result.getPassword()))
+				.isTrue();
 		assertThat(result.getImage().getImageOriginalName())
 				.isEqualTo(imageFile.getOriginalFilename());
 		assertThat(result.getImage().getImagePath())

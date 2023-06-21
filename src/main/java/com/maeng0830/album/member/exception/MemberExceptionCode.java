@@ -1,6 +1,6 @@
 package com.maeng0830.album.member.exception;
 
-import com.maeng0830.album.common.exception.ExceptionCode;
+import com.maeng0830.album.common.exception.code.ExceptionCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -13,6 +13,7 @@ public enum MemberExceptionCode implements ExceptionCode {
 	LOCKED_MEMBER("정지된 회원입니다."),
 	INACTIVE_MEMBER("인증이 필요한 회원입니다."),
 	REQUIRED_LOGIN("로그인이 필요합니다."),
+	NOT_SAME_PASSWORD_REPASSWORD("비밀번호와 확인 비밀번호가 일치하지 않습니다."),
 
 
 	EXIST_USERNAME("존재하는 아이디입니다."),

@@ -9,9 +9,12 @@ import static com.maeng0830.album.member.exception.MemberExceptionCode.REQUIRED_
 import com.maeng0830.album.comment.domain.Comment;
 import com.maeng0830.album.comment.domain.CommentAccuse;
 import com.maeng0830.album.comment.domain.CommentStatus;
-import com.maeng0830.album.comment.model.dto.CommentAccuseDto;
-import com.maeng0830.album.comment.model.response.BasicComment;
-import com.maeng0830.album.comment.model.response.GroupComment;
+import com.maeng0830.album.comment.dto.CommentAccuseDto;
+import com.maeng0830.album.comment.dto.request.CommentAccuseForm;
+import com.maeng0830.album.comment.dto.request.CommentModifiedForm;
+import com.maeng0830.album.comment.dto.request.CommentPostForm;
+import com.maeng0830.album.comment.dto.response.BasicComment;
+import com.maeng0830.album.comment.dto.response.GroupComment;
 import com.maeng0830.album.comment.repository.CommentAccuseRepository;
 import com.maeng0830.album.comment.repository.CommentRepository;
 import com.maeng0830.album.common.exception.AlbumException;
@@ -21,7 +24,6 @@ import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.repository.MemberRepository;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -73,7 +75,7 @@ public class CommentService {
 	}
 
 	@Transactional
-	public BasicComment comment(BasicComment basicComment, MemberDto memberDto) {
+	public BasicComment comment(CommentPostForm commentPostForm, MemberDto memberDto) {
 
 		// 로그인 여부 확인
 		if (memberDto == null) {
@@ -85,22 +87,22 @@ public class CommentService {
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_MEMBER));
 
 		// 피드 조회
-		Feed findFeed = feedRepository.findById(basicComment.getFeedId())
+		Feed findFeed = feedRepository.findById(commentPostForm.getFeedId())
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_FEED));
 
 		// 저장할 댓글
 		Comment comment = Comment.builder()
 				.member(loginMember)
 				.feed(findFeed)
-				.content(basicComment.getContent())
+				.content(commentPostForm.getContent())
 				.status(CommentStatus.NORMAL)
 				.build();
 
 		// 그룹 댓글 조회
 		// 그룹 댓글이 없을 경우, 본인을 저장
 		Comment group = null;
-		if (basicComment.getGroupId() != null) {
-			group = commentRepository.findById(basicComment.getGroupId())
+		if (commentPostForm.getGroupId() != null) {
+			group = commentRepository.findById(commentPostForm.getGroupId())
 					.orElseThrow(() -> new AlbumException(NOT_EXIST_COMMENT));
 		}
 		comment.saveGroup(group);
@@ -108,8 +110,8 @@ public class CommentService {
 		// 부모 댓글 조회 및 저장
 		// 부모 댓글이 없을 경우, 본인을 저장
 		Comment parent = null;
-		if (basicComment.getParentId() != null) {
-			parent = commentRepository.findById(basicComment.getParentId())
+		if (commentPostForm.getParentId() != null) {
+			parent = commentRepository.findById(commentPostForm.getParentId())
 					.orElseThrow(() -> new AlbumException(NOT_EXIST_COMMENT));
 		}
 		comment.saveParent(parent);
@@ -120,7 +122,7 @@ public class CommentService {
 	}
 
 	@Transactional
-	public BasicComment modifiedComment(BasicComment basicComment,
+	public BasicComment modifiedComment(CommentModifiedForm commentModifiedForm,
 										MemberDto memberDto) {
 
 		// 로그인 여부 확인
@@ -128,20 +130,20 @@ public class CommentService {
 			throw new AlbumException(REQUIRED_LOGIN);
 		}
 
-		Comment findComment = commentRepository.findById(basicComment.getId())
+		Comment findComment = commentRepository.findById(commentModifiedForm.getId())
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_COMMENT));
 
 		if (!findComment.getMember().getUsername().equals(memberDto.getUsername())) {
 			throw new AlbumException(NO_AUTHORITY);
 		}
 
-		findComment.changeContent(basicComment.getContent());
+		findComment.changeContent(commentModifiedForm.getContent());
 
 		return BasicComment.from(findComment);
 	}
 
 	@Transactional
-	public CommentAccuseDto accuseComment(CommentAccuseDto commentAccuseDto,
+	public CommentAccuseDto accuseComment(CommentAccuseForm commentAccuseForm,
 										  MemberDto memberDto) {
 
 		// 로그인 여부 확인
@@ -152,7 +154,7 @@ public class CommentService {
 		Member findMember = memberRepository.findById(memberDto.getId())
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_MEMBER));
 
-		Comment findComment = commentRepository.findById(commentAccuseDto.getCommentId())
+		Comment findComment = commentRepository.findById(commentAccuseForm.getCommentId())
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_COMMENT));
 
 		findComment.accuseComment();
@@ -160,7 +162,7 @@ public class CommentService {
 		CommentAccuse commentAccuse = CommentAccuse.builder()
 				.comment(findComment)
 				.member(findMember)
-				.content(commentAccuseDto.getContent())
+				.content(commentAccuseForm.getContent())
 				.build();
 
 		commentAccuseRepository.save(commentAccuse);

@@ -1,6 +1,6 @@
 package com.maeng0830.album.feed.exception;
 
-import com.maeng0830.album.common.exception.ExceptionCode;
+import com.maeng0830.album.common.exception.code.ExceptionCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -14,6 +14,6 @@ public enum FeedExceptionCode implements ExceptionCode {
 
 	@Override
 	public String getMessage() {
-		return null;
+		return this.description;
 	}
 }

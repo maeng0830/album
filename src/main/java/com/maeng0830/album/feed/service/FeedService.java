@@ -19,6 +19,8 @@ import com.maeng0830.album.feed.domain.FeedStatus;
 import com.maeng0830.album.feed.dto.FeedAccuseDto;
 import com.maeng0830.album.feed.dto.FeedDto;
 import com.maeng0830.album.feed.dto.FeedResponse;
+import com.maeng0830.album.feed.dto.request.FeedAccuseRequestForm;
+import com.maeng0830.album.feed.dto.request.FeedRequestForm;
 import com.maeng0830.album.feed.repository.FeedAccuseRepository;
 import com.maeng0830.album.feed.repository.FeedImageRepository;
 import com.maeng0830.album.feed.repository.FeedRepository;
@@ -40,8 +42,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.domain.Sort.Order;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -132,7 +132,7 @@ public class FeedService {
 	}
 
 	// 피드 등록
-	public FeedResponse feed(FeedDto feedDto, List<MultipartFile> imageFiles,
+	public FeedResponse feed(FeedRequestForm feedRequestForm, List<MultipartFile> imageFiles,
 							 MemberDto memberDto) {
 
 		if (memberDto == null) {
@@ -144,8 +144,8 @@ public class FeedService {
 
 		// Feed 데이터 등록
 		Feed feed = Feed.builder()
-				.title(feedDto.getTitle())
-				.content(feedDto.getContent())
+				.title(feedRequestForm.getTitle())
+				.content(feedRequestForm.getContent())
 				.hits(0)
 				.commentCount(0)
 				.likeCount(0)
@@ -189,7 +189,7 @@ public class FeedService {
 
 	// 피드 수정
 	@Transactional
-	public FeedResponse modifiedFeed(Long feedId, FeedDto feedDto, List<MultipartFile> imageFiles,
+	public FeedResponse modifiedFeed(Long feedId, FeedRequestForm feedRequestForm, List<MultipartFile> imageFiles,
 									 MemberDto memberDto) {
 
 		// 로그인 여부 확인
@@ -207,7 +207,7 @@ public class FeedService {
 		}
 
 		// Feed 데이터 수정
-		findFeed.modified(feedDto);
+		findFeed.modified(feedRequestForm);
 
 		// 이전 FeedImage 데이터 삭제
 		feedImageRepository.deleteFeedImageByFeed_Id(findFeed.getId());
@@ -220,7 +220,7 @@ public class FeedService {
 
 	// 피드 신고
 	@Transactional
-	public FeedAccuseDto accuseFeed(Long feedId, FeedAccuseDto feedAccuseDto, MemberDto memberDto) {
+	public FeedAccuseDto accuseFeed(Long feedId, FeedAccuseRequestForm feedAccuseRequestForm, MemberDto memberDto) {
 
 		// 로그인 여부 확인
 		if (memberDto == null) {
@@ -240,7 +240,7 @@ public class FeedService {
 		// 신고 내역 저장
 		FeedAccuse savedFeedAccuse = feedAccuseRepository.save(
 				FeedAccuse.builder()
-						.content(feedAccuseDto.getContent())
+						.content(feedAccuseRequestForm.getContent())
 						.member(findMember)
 						.feed(findFeed)
 						.build()

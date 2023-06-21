@@ -1,5 +1,6 @@
 package com.maeng0830.album.common.exception;
 
+import com.maeng0830.album.common.exception.code.ExceptionCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

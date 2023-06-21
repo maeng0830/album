@@ -10,9 +10,12 @@ import static org.assertj.core.api.Assertions.tuple;
 
 import com.maeng0830.album.comment.domain.Comment;
 import com.maeng0830.album.comment.domain.CommentStatus;
-import com.maeng0830.album.comment.model.dto.CommentAccuseDto;
-import com.maeng0830.album.comment.model.response.BasicComment;
-import com.maeng0830.album.comment.model.response.GroupComment;
+import com.maeng0830.album.comment.dto.CommentAccuseDto;
+import com.maeng0830.album.comment.dto.request.CommentAccuseForm;
+import com.maeng0830.album.comment.dto.request.CommentModifiedForm;
+import com.maeng0830.album.comment.dto.request.CommentPostForm;
+import com.maeng0830.album.comment.dto.response.BasicComment;
+import com.maeng0830.album.comment.dto.response.GroupComment;
 import com.maeng0830.album.comment.repository.CommentRepository;
 import com.maeng0830.album.common.exception.AlbumException;
 import com.maeng0830.album.feed.domain.Feed;
@@ -232,30 +235,30 @@ class CommentServiceTest {
 		commentRepository.save(comment);
 
 		// BasicComment 세팅
-		BasicComment basicComment1 = BasicComment.builder()
+		CommentPostForm commentPostForm1 = CommentPostForm.builder()
 				.feedId(feed.getId())
-				.content("basicComment1")
+				.content("commentPostForm1")
 				.build();
 
-		BasicComment basicComment2 = BasicComment.builder()
+		CommentPostForm commentPostForm2 = CommentPostForm.builder()
 				.feedId(feed.getId())
-				.content("basicComment2")
+				.content("commentPostForm2")
 				.groupId(comment.getId())
 				.parentId(comment.getId())
 				.build();
 
 		// when
-		BasicComment result1 = commentService.comment(basicComment1, memberDto);
-		BasicComment result2 = commentService.comment(basicComment2, memberDto);
+		BasicComment result1 = commentService.comment(commentPostForm1, memberDto);
+		BasicComment result2 = commentService.comment(commentPostForm2, memberDto);
 
 		// then
 		assertThat(result1).extracting("content", "groupId", "parentId", "feedId")
-				.containsExactlyInAnyOrder(basicComment1.getContent(), result1.getId(),
-						result1.getId(), basicComment1.getFeedId());
+				.containsExactlyInAnyOrder(commentPostForm1.getContent(), result1.getId(),
+						result1.getId(), commentPostForm1.getFeedId());
 
 		assertThat(result2).extracting("content", "groupId", "parentId", "feedId")
-				.containsExactly(basicComment2.getContent(), basicComment2.getGroupId(),
-						basicComment2.getParentId(), basicComment2.getFeedId());
+				.containsExactly(commentPostForm2.getContent(), commentPostForm2.getGroupId(),
+						commentPostForm2.getParentId(), commentPostForm2.getFeedId());
 	}
 
 	@DisplayName("작성자인 경우, 댓글을 수정할 수 있다.")
@@ -285,18 +288,18 @@ class CommentServiceTest {
 		commentRepository.save(comment);
 
 		// BasicComment 세팅
-		BasicComment basicComment = BasicComment.builder()
+		CommentModifiedForm commentModifiedForm = CommentModifiedForm.builder()
 				.id(comment.getId())
 				.content("modifiedContent")
 				.build();
 
 		// when
-		BasicComment result = commentService.modifiedComment(basicComment, memberDto);
+		BasicComment result = commentService.modifiedComment(commentModifiedForm, memberDto);
 
 		// then
 		assertThat(result)
 				.extracting("id", "content")
-				.containsExactlyInAnyOrder(comment.getId(), basicComment.getContent());
+				.containsExactlyInAnyOrder(comment.getId(), commentModifiedForm.getContent());
 	}
 
 	@DisplayName("작성자가 아닌 경우, 댓글 수정 시 예외가 발생한다.")
@@ -325,10 +328,9 @@ class CommentServiceTest {
 		commentRepository.save(comment);
 
 		// BasicComment 세팅
-		BasicComment basicComment = BasicComment.builder()
+		CommentModifiedForm commentModifiedForm = CommentModifiedForm.builder()
 				.id(comment.getId())
 				.content("modifiedContent")
-				.createdBy(member.getUsername())
 				.build();
 
 		// MemberDto 세팅
@@ -339,7 +341,7 @@ class CommentServiceTest {
 		// when
 
 		// then
-		assertThatThrownBy(() -> commentService.modifiedComment(basicComment, memberDto))
+		assertThatThrownBy(() -> commentService.modifiedComment(commentModifiedForm, memberDto))
 				.isInstanceOf(AlbumException.class)
 				.hasMessage(NO_AUTHORITY.getMessage());
 	}
@@ -373,7 +375,7 @@ class CommentServiceTest {
 		commentRepository.save(comment);
 
 		// CommentAccuseDto 세팅
-		CommentAccuseDto commentAccuseDto = CommentAccuseDto.builder()
+		CommentAccuseForm commentAccuseForm = CommentAccuseForm.builder()
 				.commentId(comment.getId())
 				.content("testContent")
 				.build();
@@ -382,13 +384,13 @@ class CommentServiceTest {
 		MemberDto memberDto = MemberDto.from(noWriter);
 
 		// when
-		CommentAccuseDto result = commentService.accuseComment(commentAccuseDto,
+		CommentAccuseDto result = commentService.accuseComment(commentAccuseForm,
 				memberDto);
 
 		// then
 		assertThat(result).extracting("commentId", "memberId", "content")
 				.containsExactlyInAnyOrder(comment.getId(), noWriter.getId(),
-						commentAccuseDto.getContent());
+						commentAccuseForm.getContent());
 	}
 
 	@DisplayName("작성자인 경우, 댓글을 삭제할 수 있다.")

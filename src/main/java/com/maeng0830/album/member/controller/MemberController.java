@@ -2,10 +2,13 @@ package com.maeng0830.album.member.controller;
 
 import com.maeng0830.album.common.util.AlbumUtil;
 import com.maeng0830.album.member.dto.MemberDto;
+import com.maeng0830.album.member.dto.request.MemberJoinForm;
+import com.maeng0830.album.member.dto.request.MemberModifiedForm;
 import com.maeng0830.album.member.service.MemberService;
 import com.maeng0830.album.security.formlogin.PrincipalDetails;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,10 +29,11 @@ public class MemberController {
 
 	private final AlbumUtil albumUtil;
 
+	// todo: MemberJoinForm - done
 	// 회원 가입
 	@PostMapping("/join")
-	public MemberDto join(@ModelAttribute MemberDto memberDto) {
-		return memberService.join(memberDto);
+	public MemberDto join(@Valid @ModelAttribute MemberJoinForm memberJoinForm) {
+		return memberService.join(memberJoinForm);
 	}
 
 	// form login 테스트
@@ -70,12 +74,13 @@ public class MemberController {
 		return memberService.getMember(id);
 	}
 
+	// todo: memberModifiedFrom - done
 	// 회원 정보 수정(본인)
 	@PutMapping("/members")
 	public MemberDto modifiedMember(@AuthenticationPrincipal PrincipalDetails principalDetails,
-									@RequestPart(value = "memberDto") MemberDto memberDto,
+									@Valid @RequestPart(value = "memberModifiedForm") MemberModifiedForm memberModifiedForm,
 									@RequestPart(value = "imageFile") MultipartFile imageFile) {
-		return memberService.modifiedMember(albumUtil.checkLogin(principalDetails), memberDto, imageFile);
+		return memberService.modifiedMember(albumUtil.checkLogin(principalDetails), memberModifiedForm, imageFile);
 	}
 
 }

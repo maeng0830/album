@@ -2,6 +2,7 @@ package com.maeng0830.album.feed.domain;
 
 import com.maeng0830.album.common.model.entity.BaseEntity;
 import com.maeng0830.album.feed.dto.FeedDto;
+import com.maeng0830.album.feed.dto.request.FeedRequestForm;
 import com.maeng0830.album.member.domain.Member;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,8 +58,8 @@ public class Feed extends BaseEntity {
 		feedImage.assignFeed(this);
 	}
 
-	public void modified(FeedDto feedDto) {
-		this.title = feedDto.getTitle();
-		this.content = feedDto.getContent();
+	public void modified(FeedRequestForm feedRequestForm) {
+		this.title = feedRequestForm.getTitle();
+		this.content = feedRequestForm.getContent();
 	}
 }

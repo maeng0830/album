@@ -1,8 +1,7 @@
-package com.maeng0830.album.comment.model.dto;
+package com.maeng0830.album.comment.dto;
 
 import com.maeng0830.album.comment.domain.CommentAccuse;
 import com.maeng0830.album.common.model.entity.TimeEntity;
-import com.maeng0830.album.member.dto.MemberDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

@@ -1,4 +1,4 @@
-package com.maeng0830.album.comment.model.dto;
+package com.maeng0830.album.comment.dto;
 
 import com.maeng0830.album.comment.domain.CommentStatus;
 import com.maeng0830.album.common.model.entity.TimeEntity;
