@@ -3,17 +3,22 @@ package com.maeng0830.album.common.exception;
 import com.maeng0830.album.common.exception.bindexception.BindExceptionResponse;
 import com.maeng0830.album.common.exception.code.ApiExceptionCode;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+@RequiredArgsConstructor
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+	private final MessageSource messageSource;
 
 	@ExceptionHandler(AlbumException.class)
 	public ExceptionResponse albumExceptionHandler(AlbumException e) {
@@ -37,7 +42,7 @@ public class GlobalExceptionHandler {
 	public List<BindExceptionResponse> bindException(BindException e) {
 		return e.getBindingResult().getAllErrors()
 				.stream()
-				.map(error -> new BindExceptionResponse(error.getCode(), error.getDefaultMessage()))
+				.map(error -> new BindExceptionResponse(error.getCode(), messageSource.getMessage(error, Locale.KOREA)))
 				.collect(Collectors.toList());
 	}
 }

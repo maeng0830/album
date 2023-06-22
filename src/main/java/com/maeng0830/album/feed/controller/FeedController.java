@@ -42,7 +42,6 @@ public class FeedController {
 		return feedService.getFeed(feedId);
 	}
 
-	// todo: FeedRequestForm - done
 	@PostMapping
 	public FeedResponse feed(@Valid @RequestPart FeedRequestForm feedRequestForm,
 							 @RequestPart List<MultipartFile> imageFiles,
@@ -56,7 +55,6 @@ public class FeedController {
 		return feedService.deleteFeed(feedId, albumUtil.checkLogin(principalDetails));
 	}
 
-	// todo: FeedRequestForm - done
 	@PutMapping("/{feedId}")
 	public FeedResponse modifiedFeed(@PathVariable Long feedId,
 									 @Valid @RequestPart FeedRequestForm feedRequestForm,
@@ -65,7 +63,6 @@ public class FeedController {
 		return feedService.modifiedFeed(feedId, feedRequestForm, imageFiles, albumUtil.checkLogin(principalDetails));
 	}
 
-	// todo: FeedAccuseRequestForm - done
 	@PutMapping("/{feedId}/accuse")
 	public FeedAccuseDto accuseFeed(@PathVariable Long feedId,
 									@Valid @RequestBody FeedAccuseRequestForm feedAccuseRequestForm,
