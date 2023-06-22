@@ -2,6 +2,7 @@ package com.maeng0830.album.member.dto.request;
 
 import java.time.LocalDateTime;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +19,7 @@ public class MemberJoinForm {
 	private String password;
 	@NotBlank
 	private String phone;
-	@NotBlank
+	@NotNull
 	private LocalDateTime birthDate;
 
 	@Builder

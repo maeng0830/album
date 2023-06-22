@@ -41,19 +41,16 @@ public class CommentController {
 		return commentService.getComment(commentId);
 	}
 
-	// todo: CommentPostForm - done
 	@PostMapping()
 	public BasicComment comment(@Valid @RequestBody CommentPostForm commentPostForm, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		return commentService.comment(commentPostForm, albumUtil.checkLogin(principalDetails));
 	}
 
-	// todo: CommentModifiedForm - done
 	@PutMapping()
 	public BasicComment modifiedComment(@Valid @RequestBody CommentModifiedForm commentModifiedForm, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		return commentService.modifiedComment(commentModifiedForm, albumUtil.checkLogin(principalDetails));
 	}
 
-	// todo: commentAccuseForm - done
 	@PutMapping("/accuse")
 	public CommentAccuseDto accuseComment(@Valid @RequestBody CommentAccuseForm commentAccuseForm, @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		return commentService.accuseComment(commentAccuseForm, albumUtil.checkLogin(principalDetails));

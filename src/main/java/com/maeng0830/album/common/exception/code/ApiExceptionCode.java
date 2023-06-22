@@ -12,7 +12,7 @@ public enum ApiExceptionCode implements ExceptionCode {
 
 	@Override
 	public String getMessage() {
-		return null;
+		return this.description;
 	}
 }
 

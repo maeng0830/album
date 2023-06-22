@@ -29,7 +29,6 @@ public class MemberController {
 
 	private final AlbumUtil albumUtil;
 
-	// todo: MemberJoinForm - done
 	// 회원 가입
 	@PostMapping("/join")
 	public MemberDto join(@Valid @ModelAttribute MemberJoinForm memberJoinForm) {
@@ -74,7 +73,6 @@ public class MemberController {
 		return memberService.getMember(id);
 	}
 
-	// todo: memberModifiedFrom - done
 	// 회원 정보 수정(본인)
 	@PutMapping("/members")
 	public MemberDto modifiedMember(@AuthenticationPrincipal PrincipalDetails principalDetails,
