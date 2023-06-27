@@ -17,6 +17,7 @@ import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.domain.MemberStatus;
 import com.maeng0830.album.member.repository.MemberRepository;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -44,6 +45,9 @@ public class testData {
 		Member admin = Member.builder()
 				.username("admin@naver.com")
 				.password(passwordEncoder.encode("123"))
+				.nickname("admin")
+				.birthDate(LocalDateTime.now())
+				.phone("010-0000-0000")
 				.role(MemberRole.ROLE_ADMIN)
 				.status(MemberStatus.NORMAL)
 				.build();
