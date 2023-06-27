@@ -25,6 +25,10 @@ public class PrincipalDetails implements UserDetails, OAuth2User {
 		this.attributes = attributes;
 	}
 
+	public MemberDto getMemberDto() {
+		return this.memberDto;
+	}
+
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		Collection<GrantedAuthority> collection = new ArrayList<>();

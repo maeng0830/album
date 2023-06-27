@@ -77,7 +77,7 @@ public class MemberController {
 	@PutMapping("/members")
 	public MemberDto modifiedMember(@AuthenticationPrincipal PrincipalDetails principalDetails,
 									@Valid @RequestPart(value = "memberModifiedForm") MemberModifiedForm memberModifiedForm,
-									@RequestPart(value = "imageFile") MultipartFile imageFile) {
+									@RequestPart(value = "imageFile", required = false) MultipartFile imageFile) {
 		return memberService.modifiedMember(albumUtil.checkLogin(principalDetails), memberModifiedForm, imageFile);
 	}
 
