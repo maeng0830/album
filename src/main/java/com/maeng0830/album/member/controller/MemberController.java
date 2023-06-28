@@ -4,6 +4,7 @@ import com.maeng0830.album.common.util.AlbumUtil;
 import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.dto.request.MemberJoinForm;
 import com.maeng0830.album.member.dto.request.MemberModifiedForm;
+import com.maeng0830.album.member.dto.request.MemberPasswordModifiedForm;
 import com.maeng0830.album.member.service.MemberService;
 import com.maeng0830.album.security.formlogin.PrincipalDetails;
 import java.util.List;
@@ -73,12 +74,19 @@ public class MemberController {
 		return memberService.getMember(id);
 	}
 
-	// 회원 정보 수정(본인)
+	// 회원 정보 수정(본인)-nickname, phone, image
 	@PutMapping("/members")
 	public MemberDto modifiedMember(@AuthenticationPrincipal PrincipalDetails principalDetails,
 									@Valid @RequestPart(value = "memberModifiedForm") MemberModifiedForm memberModifiedForm,
 									@RequestPart(value = "imageFile", required = false) MultipartFile imageFile) {
+		System.out.println("MemberController.modifiedMember");
 		return memberService.modifiedMember(albumUtil.checkLogin(principalDetails), memberModifiedForm, imageFile);
 	}
 
+	// 회원 비밀번호 수정(본인)
+	@PutMapping("/members/password")
+	public MemberDto modifiedMemberPassword(@AuthenticationPrincipal PrincipalDetails principalDetails,
+											@Valid @RequestPart(value = "memberPasswordModifiedForm") MemberPasswordModifiedForm memberPasswordModifiedForm) {
+		return memberService.modifiedMemberPassword(albumUtil.checkLogin(principalDetails), memberPasswordModifiedForm);
+	}
 }

@@ -1,5 +1,6 @@
 package com.maeng0830.album.member.service;
 
+import static com.maeng0830.album.member.exception.MemberExceptionCode.*;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.EXIST_NICKNAME;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.EXIST_USERNAME;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.NOT_EXIST_MEMBER;
@@ -15,6 +16,8 @@ import com.maeng0830.album.member.domain.MemberStatus;
 import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.dto.request.MemberJoinForm;
 import com.maeng0830.album.member.dto.request.MemberModifiedForm;
+import com.maeng0830.album.member.dto.request.MemberPasswordModifiedForm;
+import com.maeng0830.album.member.exception.MemberExceptionCode;
 import com.maeng0830.album.member.repository.MemberRepository;
 import com.maeng0830.album.security.dto.LoginType;
 import java.io.File;
@@ -94,6 +97,7 @@ public class MemberService {
 		return MemberDto.from(findMember);
 	}
 
+	@Transactional
 	public MemberDto modifiedMember(MemberDto loginMemberDto,
 									MemberModifiedForm memberModifiedForm,
 									MultipartFile imageFile) {
@@ -105,21 +109,37 @@ public class MemberService {
 				.orElseThrow(() -> new AlbumException(
 						NOT_EXIST_MEMBER));
 
-		log.info("이미지= {}", imageFile.getOriginalFilename());
-
 		// json 요청 데이터 처리
 		findMember.setNickname(memberModifiedForm.getNickname());
 		findMember.setPhone(memberModifiedForm.getPhone());
 
+		// multipart 요청 데이터(회원 이미지) 처리
+		saveMemberImage(imageFile, findMember);
+
+		return MemberDto.from(findMember);
+	}
+
+	public MemberDto modifiedMemberPassword(MemberDto loginMemberDto,
+											MemberPasswordModifiedForm memberPasswordModifiedForm) {
+		if (loginMemberDto == null) {
+			throw new AlbumException(REQUIRED_LOGIN);
+		}
+
+		Member findMember = memberRepository.findById(loginMemberDto.getId())
+				.orElseThrow(() -> new AlbumException(
+						NOT_EXIST_MEMBER));
+
 		// 비밀번호 확인
-		if (memberModifiedForm.getPassword().equals(memberModifiedForm.getRePassword())) {
-			findMember.setPassword(passwordEncoder.encode(memberModifiedForm.getPassword()));
+		if (memberPasswordModifiedForm.getModPassword().equals(memberPasswordModifiedForm.getCheckedModPassword())) {
+			if (passwordEncoder.matches(memberPasswordModifiedForm.getCurrentPassword(),
+					findMember.getPassword())) {
+				findMember.setPassword(passwordEncoder.encode(memberPasswordModifiedForm.getModPassword()));
+			} else {
+				throw new AlbumException(INCORRECT_PASSWORD);
+			}
 		} else {
 			throw new AlbumException(NOT_SAME_PASSWORD_REPASSWORD);
 		}
-
-		// multipart 요청 데이터(회원 이미지) 처리
-		saveMemberImage(imageFile, findMember);
 
 		return MemberDto.from(findMember);
 	}
@@ -146,4 +166,6 @@ public class MemberService {
 			}
 		}
 	}
+
+
 }
