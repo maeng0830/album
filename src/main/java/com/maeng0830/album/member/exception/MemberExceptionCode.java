@@ -14,6 +14,7 @@ public enum MemberExceptionCode implements ExceptionCode {
 	INACTIVE_MEMBER("인증이 필요한 회원입니다."),
 	REQUIRED_LOGIN("로그인이 필요합니다."),
 	NOT_SAME_PASSWORD_REPASSWORD("비밀번호와 확인 비밀번호가 일치하지 않습니다."),
+	INCORRECT_PASSWORD("현재 비밀번호가 틀렸습니다."),
 
 
 	EXIST_USERNAME("존재하는 아이디입니다."),
