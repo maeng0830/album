@@ -19,7 +19,11 @@ public class FeedResponse {
 	private int hits;
 	private int commentCount;
 	private int likeCount;
+
 	private String createdBy;
+	private Long createdById;
+	private Image createdByImage;
+
 	private List<Image> feedImages = new ArrayList<>();
 
 	public FeedResponse(Feed feed, List<FeedImage> feedImages) {
@@ -28,7 +32,10 @@ public class FeedResponse {
 		this.hits = feed.getHits();
 		this.commentCount = feed.getCommentCount();
 		this.likeCount = feed.getLikeCount();
+
 		this.createdBy = feed.getCreatedBy();
+		this.createdById = feed.getMember().getId();
+		this.createdByImage = feed.getMember().getImage();
 
 		for (FeedImage feedImage : feedImages) {
 
