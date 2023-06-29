@@ -116,6 +116,8 @@ public class FeedService {
 			Page<Feed> feeds = feedRepository.searchByStatusAndCreatedBy(feedStatuses, null,
 					pageRequest);
 
+			System.out.println("메소드 완료!");
+
 			return feeds.stream().map(f -> new FeedResponse(f, f.getFeedImages()))
 					.collect(Collectors.toList());
 		}

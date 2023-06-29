@@ -6,10 +6,12 @@ import com.maeng0830.album.feed.domain.FeedImage;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class FeedResponse {
 
 	private String title;

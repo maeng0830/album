@@ -75,4 +75,8 @@ public class Member extends TimeEntity {
 				.modifiedAt(memberDto.getModifiedAt())
 				.build();
 	}
+
+	public void changeStatus(MemberStatus status) {
+		this.status = status;
+	}
 }

@@ -17,6 +17,10 @@ import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.domain.MemberStatus;
 import com.maeng0830.album.member.repository.MemberRepository;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +44,7 @@ public class testData {
 	private final FileDir fileDir;
 
 	@EventListener(ApplicationReadyEvent.class)
-	public void init() {
+	public void init() throws FileNotFoundException {
 		// 관리자 데이터 추가
 		Member admin = Member.builder()
 				.username("admin@naver.com")
@@ -79,12 +83,14 @@ public class testData {
 			Feed feed;
 			if (i < 5) {
 				feed = feedRepository.save(Feed.builder()
+						.title("title" + i)
 						.member(member)
 						.createdBy(member.getUsername())
 						.status(FeedStatus.NORMAL)
 						.build());
 			} else {
 				feed = feedRepository.save(Feed.builder()
+						.title("title" + i)
 						.member(member)
 						.createdBy("NOT_follow" + member.getUsername())
 						.status(FeedStatus.NORMAL)

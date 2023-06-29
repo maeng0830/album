@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -86,7 +87,7 @@ public class MemberController {
 	// 회원 비밀번호 수정(본인)
 	@PutMapping("/members/password")
 	public MemberDto modifiedMemberPassword(@AuthenticationPrincipal PrincipalDetails principalDetails,
-											@Valid @RequestPart(value = "memberPasswordModifiedForm") MemberPasswordModifiedForm memberPasswordModifiedForm) {
+											@Valid @RequestBody MemberPasswordModifiedForm memberPasswordModifiedForm) {
 		return memberService.modifiedMemberPassword(albumUtil.checkLogin(principalDetails), memberPasswordModifiedForm);
 	}
 }
