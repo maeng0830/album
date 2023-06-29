@@ -162,8 +162,6 @@ class MemberServiceTest {
 		MemberModifiedForm memberModifiedForm = MemberModifiedForm.builder()
 				.nickname("nextNickname")
 				.phone("010-1111-1111")
-				.password("456")
-				.rePassword("456")
 				.build();
 
 		MockMultipartFile imageFile = createImageFile("imageFile", "testImage.png",
@@ -178,8 +176,6 @@ class MemberServiceTest {
 				.isEqualTo(memberModifiedForm.getNickname());
 		assertThat(result.getPhone())
 				.isEqualTo(memberModifiedForm.getPhone());
-		assertThat(passwordEncoder.matches("456", result.getPassword()))
-				.isTrue();
 		assertThat(result.getImage().getImageOriginalName())
 				.isEqualTo(imageFile.getOriginalFilename());
 		assertThat(result.getImage().getImagePath())

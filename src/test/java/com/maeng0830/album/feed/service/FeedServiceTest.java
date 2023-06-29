@@ -221,13 +221,20 @@ class FeedServiceTest {
 	@Test
 	void getFeed() {
 		// given
+		Member member = Member.builder()
+				.build();
+		memberRepository.save(member);
+
 		Feed feed1 = Feed.builder()
+				.member(member)
 				.title("feed1")
 				.build();
 		Feed feed2 = Feed.builder()
+				.member(member)
 				.title("feed1")
 				.build();
 		Feed feed3 = Feed.builder()
+				.member(member)
 				.title("feed1")
 				.build();
 		feedRepository.saveAll(List.of(feed1, feed2, feed3));
