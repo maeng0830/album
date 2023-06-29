@@ -32,7 +32,7 @@ public class FeedController {
 	private final FeedService feedService;
 	private final AlbumUtil albumUtil;
 
-	@GetMapping
+	@GetMapping()
 	public List<FeedResponse> getFeeds(@AuthenticationPrincipal PrincipalDetails principalDetails, Pageable pageable) {
 		return feedService.getFeeds(albumUtil.checkLogin(principalDetails), pageable);
 	}

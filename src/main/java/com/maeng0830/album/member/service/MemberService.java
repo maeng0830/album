@@ -119,6 +119,7 @@ public class MemberService {
 		return MemberDto.from(findMember);
 	}
 
+	@Transactional
 	public MemberDto modifiedMemberPassword(MemberDto loginMemberDto,
 											MemberPasswordModifiedForm memberPasswordModifiedForm) {
 		if (loginMemberDto == null) {

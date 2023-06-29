@@ -1,14 +1,20 @@
 package com.maeng0830.album.security.formlogin.handler;
 
+import static com.maeng0830.album.member.domain.MemberStatus.*;
+import static com.maeng0830.album.member.exception.MemberExceptionCode.*;
+
+import com.maeng0830.album.common.exception.AlbumException;
+import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.domain.MemberRole;
-import com.maeng0830.album.member.domain.MemberStatus;
 import com.maeng0830.album.member.dto.MemberDto;
+import com.maeng0830.album.member.repository.MemberRepository;
 import com.maeng0830.album.security.dto.LoginInfo;
 import com.maeng0830.album.security.formlogin.PrincipalDetails;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.DefaultRedirectStrategy;
@@ -20,7 +26,10 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class FormLoginSuccessHandler implements AuthenticationSuccessHandler {
+
+	private final MemberRepository memberRepository;
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -45,9 +54,11 @@ public class FormLoginSuccessHandler implements AuthenticationSuccessHandler {
 		DefaultRedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
 		// 로그인 페이지에서 로그인한 경우
-		if (loginInfo.getMemberStatus().equals(MemberStatus.FIRST)) {
+		if (loginInfo.getMemberStatus().equals(FIRST)) {
 			log.info("첫 번째 소셜 로그인 -> 추가 정보 입력");
-			redirectStrategy.sendRedirect(request, response, "/members/" + loginInfo.getId());
+			// memberStatus: FIRST -> NORMAL
+			changeMemberStatus(loginInfo.getId());
+			redirectStrategy.sendRedirect(request, response, "/members/my-profile");
 		} else if (savedRequest == null) {
 			redirectStrategy.sendRedirect(request, response, "/");
 		} else {
@@ -82,5 +93,14 @@ public class FormLoginSuccessHandler implements AuthenticationSuccessHandler {
 
 	private String getRedirectUrl(SavedRequest savedRequest) {
 		return savedRequest.getRedirectUrl();
+	}
+
+	private void changeMemberStatus(Long id) {
+		Member loginMember = memberRepository.findById(id)
+				.orElseThrow(() -> new AlbumException(NOT_EXIST_MEMBER));
+
+		loginMember.changeStatus(NORMAL);
+
+		memberRepository.save(loginMember);
 	}
 }
