@@ -1,0 +1,7 @@
+.card-text, .card-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* 원하는 줄 수로 변경 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

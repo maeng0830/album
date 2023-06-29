@@ -18,21 +18,10 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <!-- basic.css -->
   <link rel="stylesheet" href="/css/basic.css">
+  <!-- index.css -->
+  <link rel="stylesheet" href="/css/index.css">
   <!-- sign.css -->
   <link rel="stylesheet" href="/css/sign.css">
-
-  <!-- index.js -->
-  <script th:inline="javascript" th:src="@{/js/index.js}"></script>
-
-  <style>
-    .card-text, .card-title {
-      display: -webkit-box;
-      -webkit-line-clamp: 2; /* 원하는 줄 수로 변경 */
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-  </style>
 
   <title>Home</title>
 </head>
@@ -79,18 +68,9 @@
 
   <div class="album py-5 bg-light">
     <div class="container">
-      <div id="feedList" class="row justify-content-center"> <!-- 피드 리스트(ajax에서 렌더링 후 추가) -->
-
-
-        <div id="addFeedList">
-
-        </div>
-
-      </div>
-
-      <!-- 더보기 버튼 -->
+      <div id="feedList" class="row justify-content-center"><!-- 피드 리스트(ajax에서 렌더링 후 추가) --></div>
       <div class="text-center">
-        <button id="loadMoreBtn" class="btn btn-primary">더보기</button>
+        <button id="loadMoreBtn" class="btn btn-primary" type="button">더보기</button><!-- 더보기 버튼 -->
       </div>
 
     </div>
