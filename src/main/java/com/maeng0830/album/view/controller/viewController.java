@@ -29,4 +29,10 @@ public class viewController {
 
 		return "/myProfile";
 	}
+
+	@GetMapping("/members/post-feed")
+	public String postFeed() {
+
+		return "/postFeed";
+	}
 }
