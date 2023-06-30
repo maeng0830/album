@@ -44,7 +44,7 @@ public class FeedController {
 
 	@PostMapping
 	public FeedResponse feed(@Valid @RequestPart FeedRequestForm feedRequestForm,
-							 @RequestPart List<MultipartFile> imageFiles,
+							 @RequestPart(required = false) List<MultipartFile> imageFiles,
 							 @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		return feedService.feed(feedRequestForm, imageFiles, albumUtil.checkLogin(principalDetails));
 	}
