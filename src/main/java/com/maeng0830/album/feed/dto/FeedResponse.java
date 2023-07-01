@@ -3,6 +3,7 @@ package com.maeng0830.album.feed.dto;
 import com.maeng0830.album.common.model.image.Image;
 import com.maeng0830.album.feed.domain.Feed;
 import com.maeng0830.album.feed.domain.FeedImage;
+import com.maeng0830.album.member.dto.MemberDto;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
@@ -18,11 +19,8 @@ public class FeedResponse {
 	private String content;
 	private int hits;
 	private int commentCount;
-	private int likeCount;
 
-	private String createdBy;
-	private Long createdById;
-	private Image createdByImage;
+	private MemberDto member;
 
 	private List<Image> feedImages = new ArrayList<>();
 
@@ -31,14 +29,9 @@ public class FeedResponse {
 		this.content = feed.getContent();
 		this.hits = feed.getHits();
 		this.commentCount = feed.getCommentCount();
-		this.likeCount = feed.getLikeCount();
-
-		this.createdBy = feed.getCreatedBy();
-		this.createdById = feed.getMember().getId();
-		this.createdByImage = feed.getMember().getImage();
+		this.member = MemberDto.from(feed.getMember());
 
 		for (FeedImage feedImage : feedImages) {
-
 			Image image = Image.builder()
 					.imageOriginalName(feedImage.getImage().getImageOriginalName())
 					.imageStoreName(feedImage.getImage().getImageStoreName())

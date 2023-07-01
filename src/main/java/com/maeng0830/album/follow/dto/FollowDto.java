@@ -1,6 +1,6 @@
 package com.maeng0830.album.follow.dto;
 
-import com.maeng0830.album.common.model.entity.TimeEntity;
+import com.maeng0830.album.common.model.entity.BaseEntity;
 import com.maeng0830.album.follow.domain.Follow;
 import com.maeng0830.album.member.dto.MemberDto;
 import lombok.AllArgsConstructor;
@@ -14,7 +14,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FollowDto extends TimeEntity {
+public class FollowDto extends BaseEntity {
 
 	private MemberDto follower;
 	private MemberDto followee;
@@ -25,6 +25,7 @@ public class FollowDto extends TimeEntity {
 				.followee(MemberDto.from(follow.getFollowee()))
 				.createdAt(follow.getCreatedAt())
 				.modifiedAt(follow.getModifiedAt())
+				.modifiedBy(follow.getModifiedBy())
 				.build();
 	}
 }

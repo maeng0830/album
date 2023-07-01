@@ -6,6 +6,8 @@ import static org.assertj.core.api.Assertions.*;
 import com.maeng0830.album.common.model.image.Image;
 import com.maeng0830.album.feed.domain.Feed;
 import com.maeng0830.album.feed.domain.FeedImage;
+import com.maeng0830.album.member.domain.Member;
+import com.maeng0830.album.member.repository.MemberRepository;
 import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
@@ -32,10 +34,22 @@ class FeedRepositoryTest {
 	@Autowired
 	private FeedImageRepository feedImageRepository;
 
+	@Autowired
+	private MemberRepository memberRepository;
+
 	@DisplayName("피드 상태 및 피드 작성자와 일치하는 피드와 피드이미지를 함께 조회한다")
 	@Test
 	void searchByStatusAndCreatedBy() {
 		// given
+		// Member 세팅
+		Member memberA = Member.builder()
+				.username("memberA")
+				.build();
+		Member memberB = Member.builder()
+				.username("memberB")
+				.build();
+		memberRepository.saveAll(List.of(memberA, memberB));
+
 		// Image 세팅
 		Image image1 = Image.builder()
 				.imageOriginalName("testImageOriginalName1")
@@ -58,28 +72,28 @@ class FeedRepositoryTest {
 
 		// Feed 세팅
 		Feed feed1 = Feed.builder()
+				.member(memberA)
 				.status(NORMAL)
-				.createdBy("memberA")
 				.build();
 		Feed feed2 = Feed.builder()
+				.member(memberA)
 				.status(ACCUSE)
-				.createdBy("memberA")
 				.build();
 		Feed feed3 = Feed.builder()
+				.member(memberA)
 				.status(DELETE)
-				.createdBy("memberA")
 				.build();
 		Feed feed4 = Feed.builder()
+				.member(memberB)
 				.status(NORMAL)
-				.createdBy("memberB")
 				.build();
 		Feed feed5 = Feed.builder()
+				.member(memberB)
 				.status(ACCUSE)
-				.createdBy("memberB")
 				.build();
 		Feed feed6 = Feed.builder()
+				.member(memberB)
 				.status(DELETE)
-				.createdBy("memberB")
 				.build();
 
 		feed1.addFeedImage(feedImage1);
@@ -98,14 +112,14 @@ class FeedRepositoryTest {
 
 		// then
 		assertThat(result1.getContent()).hasSize(2)
-				.extracting("status", "createdBy", "feedImages")
+				.extracting("status", "member.username", "feedImages")
 				.containsExactlyInAnyOrder(
 						tuple(NORMAL, "memberA", feed1.getFeedImages()),
 						tuple(ACCUSE, "memberA", feed2.getFeedImages())
 				);
 
 		assertThat(result2.getContent()).hasSize(4)
-				.extracting("status", "createdBy", "feedImages")
+				.extracting("status", "member.username", "feedImages")
 				.containsExactlyInAnyOrder(
 						tuple(ACCUSE, "memberA", feed2.getFeedImages()),
 						tuple(DELETE, "memberA", feed3.getFeedImages()),
@@ -119,6 +133,15 @@ class FeedRepositoryTest {
 	@ParameterizedTest
 	void searchByStatusAndCreatedBy_Sorted(PageRequest pageRequest) {
 		// given
+		// Member 세팅
+		Member memberA = Member.builder()
+				.username("memberA")
+				.build();
+		Member memberB = Member.builder()
+				.username("memberB")
+				.build();
+		memberRepository.saveAll(List.of(memberA, memberB));
+
 		// Image 세팅
 		Image image1 = Image.builder()
 				.imageOriginalName("testImageOriginalName1")
@@ -141,40 +164,40 @@ class FeedRepositoryTest {
 
 		// Feed 세팅
 		Feed feed1 = Feed.builder()
+				.member(memberA)
 				.status(NORMAL)
-				.createdBy("memberA")
 				.commentCount(1)
-				.likeCount(6)
+				.hits(6)
 				.build();
 		Feed feed2 = Feed.builder()
+				.member(memberA)
 				.status(ACCUSE)
-				.createdBy("memberA")
 				.commentCount(2)
-				.likeCount(5)
+				.hits(5)
 				.build();
 		Feed feed3 = Feed.builder()
+				.member(memberA)
 				.status(DELETE)
-				.createdBy("memberA")
 				.commentCount(3)
-				.likeCount(4)
+				.hits(4)
 				.build();
 		Feed feed4 = Feed.builder()
+				.member(memberB)
 				.status(NORMAL)
-				.createdBy("memberB")
 				.commentCount(4)
-				.likeCount(3)
+				.hits(3)
 				.build();
 		Feed feed5 = Feed.builder()
+				.member(memberB)
 				.status(ACCUSE)
-				.createdBy("memberB")
 				.commentCount(5)
-				.likeCount(2)
+				.hits(2)
 				.build();
 		Feed feed6 = Feed.builder()
+				.member(memberB)
 				.status(DELETE)
-				.createdBy("memberB")
 				.commentCount(6)
-				.likeCount(1)
+				.hits(1)
 				.build();
 
 		feed1.addFeedImage(feedImage1);
@@ -188,7 +211,7 @@ class FeedRepositoryTest {
 
 		// then
 		assertThat(result.getContent()).hasSize(6)
-				.extracting("likeCount", "commentCount")
+				.extracting("hits", "commentCount")
 				.containsExactly(
 						tuple(1, 6),
 						tuple(2, 5),
@@ -201,7 +224,7 @@ class FeedRepositoryTest {
 
 	private static Stream<Arguments> providePageRequest() {
 		return Stream.of(
-				Arguments.of(PageRequest.of(0, 20, Direction.ASC, "likeCount")),
+				Arguments.of(PageRequest.of(0, 20, Direction.ASC, "hits")),
 				Arguments.of(PageRequest.of(0, 20, Direction.DESC, "commentCount"))
 		);
 	}

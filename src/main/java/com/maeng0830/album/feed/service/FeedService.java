@@ -82,7 +82,7 @@ public class FeedService {
 	public List<FeedResponse> getFeeds(MemberDto memberDto, Pageable pageable) {
 
 		PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
-				Sort.by(Direction.DESC, "likeCount"));
+				Sort.by(Direction.DESC, "hits"));
 
 		List<FeedStatus> feedStatuses = List.of(NORMAL, ACCUSE);
 
@@ -150,7 +150,6 @@ public class FeedService {
 				.content(feedRequestForm.getContent())
 				.hits(0)
 				.commentCount(0)
-				.likeCount(0)
 				.status(NORMAL)
 				.member(loginMember)
 				.build();
@@ -177,7 +176,7 @@ public class FeedService {
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_FEED));
 
 		// 본인 또는 관리자 여부 확인
-		if (!findFeed.getCreatedBy().equals(memberDto.getUsername())
+		if (!findFeed.getMember().getUsername().equals(memberDto.getUsername())
 				&& !memberDto.getRole().equals(
 				MemberRole.ROLE_ADMIN)) {
 			throw new AlbumException(NO_AUTHORITY);
@@ -204,7 +203,7 @@ public class FeedService {
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_FEED));
 
 		// 본인 여부 확인
-		if (!findFeed.getCreatedBy().equals(memberDto.getUsername())) {
+		if (!findFeed.getMember().getUsername().equals(memberDto.getUsername())) {
 			throw new AlbumException(NO_AUTHORITY);
 		}
 

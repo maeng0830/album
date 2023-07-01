@@ -1,7 +1,7 @@
 package com.maeng0830.album.follow.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.maeng0830.album.common.model.entity.TimeEntity;
+import com.maeng0830.album.common.model.entity.BaseEntity;
 import com.maeng0830.album.member.domain.Member;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -26,7 +26,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(name = "followUk", columnNames = {"follower_id", "followee_id"}))
-public class Follow extends TimeEntity {
+public class Follow extends BaseEntity {
 
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;

@@ -1,6 +1,6 @@
 package com.maeng0830.album.feed.domain;
 
-import com.maeng0830.album.common.model.entity.TimeEntity;
+import com.maeng0830.album.common.model.entity.BaseEntity;
 import com.maeng0830.album.member.domain.Member;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,7 +18,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class FeedAccuse extends TimeEntity {
+public class FeedAccuse extends BaseEntity {
 
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;

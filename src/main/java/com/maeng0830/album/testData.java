@@ -85,14 +85,12 @@ public class testData {
 				feed = feedRepository.save(Feed.builder()
 						.title("title" + i)
 						.member(member)
-						.createdBy(member.getUsername())
 						.status(FeedStatus.NORMAL)
 						.build());
 			} else {
 				feed = feedRepository.save(Feed.builder()
 						.title("title" + i)
 						.member(member)
-						.createdBy("NOT_follow" + member.getUsername())
 						.status(FeedStatus.NORMAL)
 						.build());
 			}

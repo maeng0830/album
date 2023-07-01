@@ -50,7 +50,7 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom {
 	}
 
 	private BooleanExpression createdByIn(Collection<String> createdBy) {
-		return createdBy == null ? null : feed.createdBy.in(createdBy);
+		return createdBy == null ? null : feed.member.username.in(createdBy);
 	}
 
 	private BooleanBuilder searchCondition(Collection<FeedStatus> status,

@@ -1,6 +1,6 @@
 package com.maeng0830.album.comment.domain;
 
-import com.maeng0830.album.common.model.entity.TimeEntity;
+import com.maeng0830.album.common.model.entity.BaseEntity;
 import com.maeng0830.album.feed.domain.Feed;
 import com.maeng0830.album.member.domain.Member;
 import javax.persistence.Entity;
@@ -18,7 +18,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @Getter
-public class Comment extends TimeEntity {
+public class Comment extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

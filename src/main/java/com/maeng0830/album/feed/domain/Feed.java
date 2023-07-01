@@ -1,12 +1,10 @@
 package com.maeng0830.album.feed.domain;
 
 import com.maeng0830.album.common.model.entity.BaseEntity;
-import com.maeng0830.album.feed.dto.FeedDto;
 import com.maeng0830.album.feed.dto.request.FeedRequestForm;
 import com.maeng0830.album.member.domain.Member;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -37,7 +35,6 @@ public class Feed extends BaseEntity {
 	private String content;
 	private int hits;
 	private int commentCount;
-	private int likeCount;
 	@Enumerated(EnumType.STRING)
 	private FeedStatus status;
 

@@ -31,7 +31,6 @@ public class FeedDto extends BaseEntity {
 				.commentCount(feed.getCommentCount())
 				.status(feed.getStatus())
 				.createdAt(feed.getCreatedAt())
-				.createdBy(feed.getCreatedBy())
 				.modifiedAt(feed.getModifiedAt())
 				.modifiedBy(feed.getModifiedBy())
 				.memberDto(MemberDto.from(feed.getMember()))

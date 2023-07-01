@@ -1,5 +1,6 @@
 package com.maeng0830.album.feed.dto;
 
+import com.maeng0830.album.common.model.entity.BaseEntity;
 import com.maeng0830.album.feed.domain.FeedAccuse;
 import com.maeng0830.album.member.dto.MemberDto;
 import lombok.Getter;
@@ -11,7 +12,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @NoArgsConstructor
-public class FeedAccuseDto {
+public class FeedAccuseDto extends BaseEntity {
 
 	private Long id;
 	private String content;
@@ -24,6 +25,9 @@ public class FeedAccuseDto {
 				.content(feedAccuse.getContent())
 				.memberDto(MemberDto.from(feedAccuse.getMember()))
 				.feedDto(FeedDto.from(feedAccuse.getFeed()))
+				.createdAt(feedAccuse.getCreatedAt())
+				.modifiedAt(feedAccuse.getModifiedAt())
+				.modifiedBy(feedAccuse.getModifiedBy())
 				.build();
 	}
 }
