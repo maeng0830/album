@@ -127,17 +127,14 @@ class FeedServiceTest {
 		Feed followerFeed = Feed.builder()
 				.status(NORMAL)
 				.member(followerMember)
-				.createdBy("followerMember")
 				.build();
 		Feed followeeFeed = Feed.builder()
 				.status(ACCUSE)
 				.member(followeeMember)
-				.createdBy("followeeMember")
 				.build();
 		Feed noRelationFeed = Feed.builder()
 				.status(NORMAL)
 				.member(noRelationMember)
-				.createdBy("noRelationMember")
 				.build();
 		feedRepository.saveAll(List.of(followerFeed, followeeFeed, noRelationFeed));
 
@@ -149,7 +146,7 @@ class FeedServiceTest {
 
 		// then
 		assertThat(feeds).hasSize(2)
-				.extracting("createdBy")
+				.extracting("member.username")
 				.containsExactlyInAnyOrder(followerMember.getUsername(),
 						followeeMember.getUsername());
 	}
@@ -189,17 +186,14 @@ class FeedServiceTest {
 		Feed followerFeed = Feed.builder()
 				.status(NORMAL)
 				.member(followerMember)
-				.createdBy("followerMember")
 				.build();
 		Feed followeeFeed = Feed.builder()
 				.status(ACCUSE)
 				.member(followeeMember)
-				.createdBy("followeeMember")
 				.build();
 		Feed noRelationFeed = Feed.builder()
 				.status(NORMAL)
 				.member(noRelationMember)
-				.createdBy("noRelationMember")
 				.build();
 		feedRepository.saveAll(List.of(followerFeed, followeeFeed, noRelationFeed));
 
@@ -211,7 +205,7 @@ class FeedServiceTest {
 
 		// then
 		assertThat(feeds).hasSize(3)
-				.extracting("createdBy")
+				.extracting("member.username")
 				.containsExactlyInAnyOrder(
 						followerMember.getUsername(), followeeMember.getUsername(),
 						noRelationMember.getUsername());
@@ -269,8 +263,8 @@ class FeedServiceTest {
 
 		// then
 		assertThat(feedResponse)
-				.extracting("title", "content", "hits", "commentCount", "likeCount")
-				.containsExactlyInAnyOrder("testTitle", "testContent", 0, 0, 0);
+				.extracting("title", "content", "hits", "commentCount")
+				.containsExactlyInAnyOrder("testTitle", "testContent", 0, 0);
 
 		assertThat(feedResponse.getFeedImages()).hasSize(3)
 				.extracting("imageOriginalName")
@@ -316,7 +310,6 @@ class FeedServiceTest {
 
 		Feed feed = Feed.builder()
 				.member(writer)
-				.createdBy(writer.getUsername())
 				.build();
 
 		feedRepository.save(feed);
@@ -346,7 +339,6 @@ class FeedServiceTest {
 
 		Feed feed = Feed.builder()
 				.member(writer)
-				.createdBy(writer.getUsername())
 				.build();
 
 		feedRepository.save(feed);
@@ -376,7 +368,6 @@ class FeedServiceTest {
 
 		Feed feed = Feed.builder()
 				.member(writer)
-				.createdBy(writer.getUsername())
 				.build();
 
 		feedRepository.save(feed);
@@ -402,7 +393,6 @@ class FeedServiceTest {
 		// feed 세팅
 		Feed feed = Feed.builder()
 				.member(writer)
-				.createdBy(writer.getUsername())
 				.title("prevTitle")
 				.content("prevContent")
 				.build();
@@ -461,7 +451,6 @@ class FeedServiceTest {
 		// feed 세팅
 		Feed feed = Feed.builder()
 				.member(writer)
-				.createdBy(writer.getUsername())
 				.title("prevTitle")
 				.content("prevContent")
 				.build();

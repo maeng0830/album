@@ -198,12 +198,12 @@ class CommentServiceTest {
 
 		// then
 		assertThat(result1)
-				.extracting("id", "createdBy", "feedId")
+				.extracting("id", "member.username", "feedId")
 				.containsExactlyInAnyOrder(comment1.getId(), comment1.getMember().getUsername(),
 						comment1.getFeed().getId());
 
 		assertThat(result2)
-				.extracting("id", "createdBy", "feedId")
+				.extracting("id", "member.username", "feedId")
 				.containsExactlyInAnyOrder(comment2.getId(), comment2.getMember().getUsername(),
 						comment2.getFeed().getId());
 	}
@@ -351,23 +351,27 @@ class CommentServiceTest {
 	void accuseComment() {
 		// given
 		// Member 세팅
-		Member writer = Member.builder()
-				.username("writer")
+		Member feedWriter = Member.builder()
+				.username("feedWriter")
 				.build();
-		Member noWriter = Member.builder()
-				.username("noWriter")
+		Member commentWriter = Member.builder()
+				.username("commentWriter")
 				.build();
-		memberRepository.saveAll(List.of(writer, noWriter));
+		Member commentNoWriter = Member.builder()
+				.username("commentNoWriter")
+				.build();
+		memberRepository.saveAll(List.of(feedWriter, commentWriter, commentNoWriter));
 
 		// Feed 세팅
 		Feed feed = Feed.builder()
+				.member(feedWriter)
 				.content("testFeed")
 				.build();
 		feedRepository.save(feed);
 
 		// Comment 세팅
 		Comment comment = Comment.builder()
-				.member(writer)
+				.member(commentWriter)
 				.feed(feed)
 				.build();
 		comment.saveGroup(comment);
@@ -381,15 +385,15 @@ class CommentServiceTest {
 				.build();
 
 		// MemberDto 세팅
-		MemberDto memberDto = MemberDto.from(noWriter);
+		MemberDto memberDto = MemberDto.from(commentNoWriter);
 
 		// when
 		CommentAccuseDto result = commentService.accuseComment(commentAccuseForm,
 				memberDto);
 
 		// then
-		assertThat(result).extracting("commentId", "memberId", "content")
-				.containsExactlyInAnyOrder(comment.getId(), noWriter.getId(),
+		assertThat(result).extracting("comment.id", "member.id", "content")
+				.containsExactlyInAnyOrder(comment.getId(), commentNoWriter.getId(),
 						commentAccuseForm.getContent());
 	}
 

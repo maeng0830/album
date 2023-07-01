@@ -1,6 +1,6 @@
 package com.maeng0830.album.feed.domain;
 
-import com.maeng0830.album.common.model.entity.TimeEntity;
+import com.maeng0830.album.common.model.entity.BaseEntity;
 import com.maeng0830.album.common.model.image.Image;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -18,7 +18,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @SuperBuilder
 @NoArgsConstructor
-public class FeedImage extends TimeEntity {
+public class FeedImage extends BaseEntity {
 
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;

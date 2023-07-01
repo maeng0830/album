@@ -2,7 +2,8 @@ package com.maeng0830.album.comment.dto.response;
 
 import com.maeng0830.album.comment.domain.Comment;
 import com.maeng0830.album.comment.domain.CommentStatus;
-import com.maeng0830.album.common.model.entity.TimeEntity;
+import com.maeng0830.album.common.model.entity.BaseEntity;
+import com.maeng0830.album.member.dto.MemberDto;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,13 +12,13 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @Getter
 @Setter
-public class GroupComment extends TimeEntity {
+public class GroupComment extends BaseEntity {
 
 	private Long id;
 	private Long feedId;
 	private Long groupId;
 	private Long parentId;
-	private String createdBy;
+	private MemberDto member;
 	private String content;
 	private CommentStatus status;
 	private List<BasicComment> basicComments;
@@ -28,7 +29,7 @@ public class GroupComment extends TimeEntity {
 				.feedId(comment.getFeed().getId())
 				.groupId(comment.getGroup().getId())
 				.parentId(comment.getParent().getId())
-				.createdBy(comment.getMember().getUsername())
+				.member(MemberDto.from(comment.getMember()))
 				.content(comment.getContent())
 				.status(comment.getStatus())
 				.createdAt(comment.getCreatedAt())

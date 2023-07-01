@@ -1,7 +1,7 @@
 package com.maeng0830.album.member.domain;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.maeng0830.album.common.model.entity.TimeEntity;
+import com.maeng0830.album.common.model.entity.BaseEntity;
 import com.maeng0830.album.common.model.image.Image;
 import com.maeng0830.album.follow.domain.Follow;
 import com.maeng0830.album.member.dto.MemberDto;
@@ -28,7 +28,7 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-public class Member extends TimeEntity {
+public class Member extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -73,6 +73,7 @@ public class Member extends TimeEntity {
 				.image(memberDto.getImage())
 				.createdAt(memberDto.getCreatedAt())
 				.modifiedAt(memberDto.getModifiedAt())
+				.modifiedBy(memberDto.getModifiedBy())
 				.build();
 	}
 

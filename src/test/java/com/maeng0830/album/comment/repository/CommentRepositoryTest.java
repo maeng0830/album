@@ -202,7 +202,6 @@ class CommentRepositoryTest {
 						basicCommentNormal_GN, basicCommentAccuse_GN, basicCommentDelete_BN));
 
 		// paging 세팅
-		PageRequest pageRequest = PageRequest.of(0, 20);
 		List<CommentStatus> status = List.of(NORMAL, ACCUSE, DELETE);
 
 		// when

@@ -1,6 +1,6 @@
 package com.maeng0830.album.member.dto;
 
-import com.maeng0830.album.common.model.entity.TimeEntity;
+import com.maeng0830.album.common.model.entity.BaseEntity;
 import com.maeng0830.album.common.model.image.Image;
 import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.domain.MemberRole;
@@ -16,7 +16,7 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-public class MemberDto extends TimeEntity {
+public class MemberDto extends BaseEntity {
 	private Long id;
 	private String username;
 	private String nickname;
@@ -41,6 +41,7 @@ public class MemberDto extends TimeEntity {
 				.image(member.getImage())
 				.createdAt(member.getCreatedAt())
 				.modifiedAt(member.getModifiedAt())
+				.modifiedBy(member.getModifiedBy())
 				.loginType(member.getLoginType())
 				.build();
 	}
