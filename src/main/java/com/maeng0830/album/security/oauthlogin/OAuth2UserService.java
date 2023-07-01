@@ -58,6 +58,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 			Member saveMember = memberRepository.save(
 					Member.builder()
 							.username(oAuthUserInfo.getUsername())
+							.nickname(createdNickname(oAuthUserInfo))
 							.password(passwordEncoder.encode(oauth2Password))
 							.status(MemberStatus.FIRST)
 							.role(MemberRole.ROLE_MEMBER)
@@ -66,5 +67,10 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 			);
 			return new PrincipalDetails(MemberDto.from(saveMember), oAuth2User.getAttributes());
 		}
+	}
+
+	private String createdNickname(OAuthUserInfo oAuthUserInfo) {
+		return oAuthUserInfo.getUsername().substring(0, oAuthUserInfo.getUsername().indexOf("@"))
+				+ "_" + oAuthUserInfo.getLoginType();
 	}
 }
