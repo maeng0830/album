@@ -30,7 +30,7 @@ public class BasicComment extends BaseEntity {
 				.feedId(comment.getFeed().getId())
 				.groupId(comment.getGroup().getId())
 				.parentId(comment.getParent().getId())
-				.parentMember(comment.getParent().getMember().getUsername())
+				.parentMember(comment.getParent().getMember().getNickname())
 				.member(MemberDto.from(comment.getMember()))
 				.content(comment.getContent())
 				.status(comment.getStatus())

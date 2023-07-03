@@ -48,19 +48,22 @@ public class CommentService {
 		List<GroupComment> groupComments =
 				commentRepository.findGroupComment(feedId, statuses, pageable)
 						.stream().map(GroupComment::from).collect(Collectors.toList());
+		System.out.println("groupComments.size() = " + groupComments.size());
 
 		// 자식댓글 리스트 생성
-		List<BasicComment> basicComments = commentRepository
-				.findBasicComment(
-						feedId, statuses, groupComments.get(0).getId(),
-						groupComments.get(groupComments.size() - 1).getId()
-				)
-				.stream().map(BasicComment::from).collect(Collectors.toList());
+		if (!groupComments.isEmpty()) {
+			List<BasicComment> basicComments = commentRepository
+					.findBasicComment(
+							feedId, statuses, groupComments.get(0).getId(),
+							groupComments.get(groupComments.size() - 1).getId()
+					)
+					.stream().map(BasicComment::from).collect(Collectors.toList());
 
-		// 그룹댓글 리스트  <- 자식댓글 리스트
-		groupComments.forEach(g -> g.setBasicComments(
-				basicComments.stream().filter(i -> i.getGroupId().equals(g.getId()))
-						.collect(Collectors.toList())));
+			// 그룹댓글 리스트  <- 자식댓글 리스트
+			groupComments.forEach(g -> g.setBasicComments(
+					basicComments.stream().filter(i -> i.getGroupId().equals(g.getId()))
+							.collect(Collectors.toList())));
+		}
 
 		return groupComments;
 	}

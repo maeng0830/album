@@ -8,6 +8,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 @RequiredArgsConstructor
@@ -34,5 +35,19 @@ public class viewController {
 	public String postFeed() {
 
 		return "/postFeed";
+	}
+
+	@GetMapping("/feed-page/{feedId}")
+	public String feedPage(@PathVariable Long feedId,
+						   @AuthenticationPrincipal PrincipalDetails principalDetails,
+						   Model model) {
+
+		model.addAttribute("feedId", feedId);
+		if (principalDetails != null) {
+			model.addAttribute("loginId", principalDetails.getMemberDto().getId());
+		} else {
+			model.addAttribute("loginId", -1);
+		}
+		return "/feedPage";
 	}
 }

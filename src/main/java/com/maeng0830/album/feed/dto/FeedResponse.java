@@ -1,5 +1,6 @@
 package com.maeng0830.album.feed.dto;
 
+import com.maeng0830.album.common.model.entity.BaseEntity;
 import com.maeng0830.album.common.model.image.Image;
 import com.maeng0830.album.feed.domain.Feed;
 import com.maeng0830.album.feed.domain.FeedImage;
@@ -9,27 +10,33 @@ import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
+@SuperBuilder
 @Getter
 @Setter
 @NoArgsConstructor
-public class FeedResponse {
+public class FeedResponse extends BaseEntity {
 
+	private Long id;
 	private String title;
 	private String content;
 	private int hits;
 	private int commentCount;
-
 	private MemberDto member;
-
 	private List<Image> feedImages = new ArrayList<>();
 
-	public FeedResponse(Feed feed, List<FeedImage> feedImages) {
-		this.title = feed.getTitle();
-		this.content = feed.getContent();
-		this.hits = feed.getHits();
-		this.commentCount = feed.getCommentCount();
-		this.member = MemberDto.from(feed.getMember());
+	public static FeedResponse createFeedResponse(Feed feed, List<FeedImage> feedImages) {
+		FeedResponse feedResponse = FeedResponse.builder()
+				.id(feed.getId())
+				.title(feed.getTitle())
+				.content(feed.getContent())
+				.hits(feed.getHits())
+				.commentCount(feed.getCommentCount())
+				.member(MemberDto.from(feed.getMember()))
+				.feedImages(new ArrayList<>())
+				.createdAt(feed.getCreatedAt())
+				.build();
 
 		for (FeedImage feedImage : feedImages) {
 			Image image = Image.builder()
@@ -38,7 +45,9 @@ public class FeedResponse {
 					.imagePath(feedImage.getImage().getImagePath())
 					.build();
 
-			this.feedImages.add(image);
+			feedResponse.feedImages.add(image);
 		}
+
+		return feedResponse;
 	}
 }

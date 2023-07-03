@@ -109,7 +109,7 @@ public class FeedService {
 			Page<Feed> feeds = feedRepository.searchByStatusAndCreatedBy(feedStatuses, createdBy,
 					pageRequest);
 
-			return feeds.stream().map(f -> new FeedResponse(f, f.getFeedImages()))
+			return feeds.stream().map(f -> FeedResponse.createFeedResponse(f, f.getFeedImages()))
 					.collect(Collectors.toList());
 		} else {
 			//비로그인 상태
@@ -118,7 +118,7 @@ public class FeedService {
 
 			System.out.println("메소드 완료!");
 
-			return feeds.stream().map(f -> new FeedResponse(f, f.getFeedImages()))
+			return feeds.stream().map(f -> FeedResponse.createFeedResponse(f, f.getFeedImages()))
 					.collect(Collectors.toList());
 		}
 	}
@@ -130,7 +130,7 @@ public class FeedService {
 
 		List<FeedImage> feedImages = feedImageRepository.findByFeed_Id(findFeed.getId());
 
-		return new FeedResponse(findFeed, feedImages);
+		return FeedResponse.createFeedResponse(findFeed, feedImages);
 	}
 
 	// 피드 등록
@@ -159,7 +159,7 @@ public class FeedService {
 		// FeedImage 데이터 등록
 		List<FeedImage> feedImages = saveFeedImage(imageFiles, feed);
 
-		return new FeedResponse(feed, feedImages);
+		return FeedResponse.createFeedResponse(feed, feedImages);
 	}
 
 	// 피드 삭제
@@ -216,7 +216,7 @@ public class FeedService {
 		// 새로운 FeedImage 데이터 등록
 		List<FeedImage> feedImages = saveFeedImage(imageFiles, findFeed);
 
-		return new FeedResponse(findFeed, feedImages);
+		return FeedResponse.createFeedResponse(findFeed, feedImages);
 	}
 
 	// 피드 신고

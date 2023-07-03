@@ -18,8 +18,10 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <!-- basic.css -->
   <link rel="stylesheet" href="/css/basic.css">
+  <!-- feedPage.css -->
+  <link rel="stylesheet" href="/css/feedPage.css">
 
-  <title>My profile</title>
+  <title>Feed page</title>
 </head>
 <body>
 <!-- 헤더 -->
@@ -52,66 +54,68 @@
   </div>
 </header>
 
-<!-- Form -->
-<div class="container">
-  <!-- main -->
-  <main class="d-flex justify-content-center align-items-center">
-      <div class="col-md-7 col-lg-8">
-        <h4 class="mb-3">기본 정보</h4>
-        <form id="basicInfo-form" enctype="multipart/form-data" novalidate>
-          <div class="row g-3">
-            <div class="col-sm-6">
-              <label for="role" class="form-label">회원 등급<span class="text-muted">(수정 불가)</span></label>
-              <input type="text" class="form-control" id="role" th:value="${memberDto.getRole()}" required disabled>
-            </div>
-
-            <div class="col-sm-6">
-              <label for="status" class="form-label">회원 상태<span class="text-muted">(수정 불가)</span></label>
-              <input type="text" class="form-control" id="status" th:value="${memberDto.getStatus()}" required disabled>
-            </div>
-
-            <div class="col-12">
-              <label for="nickname" class="form-label">닉네임</label>
-              <input type="text" class="form-control" id="nickname" th:value="${memberDto.getNickname()}" placeholder="닉네임..." required>
-            </div>
-
-            <div class="col-12">
-              <label for="phone" class="form-label">전화 번호<span class="text-muted">(Optional)</span></label>
-              <input type="text" class="form-control" id="phone" th:value="${memberDto.getPhone()}" placeholder="전화 번호...">
-            </div>
-
-            <div class="col-12">
-              <label for="imageFile" class="form-label">이미지<span class="text-muted">(Optional)</span></label>
-              <input type="file" class="form-control" id="imageFile" placeholder="이미지...">
-            </div>
+<!-- main -->
+<main class="d-flex justify-content-center align-items-center">
+  <div class="container">
+    <div class="row">
+      <!-- 피드 제목, 작성자 이미지 및 작성일자, 조회수 및 댓글 수, 피드 이미지, 피드 내용 -->
+      <div id="feed-details">
+      </div>
+      <!-- comment 입력 폼 -->
+      <div class="col-md-8 offset-md-2">
+        <form>
+          <div class="mb-3">
+            <label for="commentInput" class="form-label">댓글 작성</label>
+            <textarea class="form-control" id="commentInput" rows="3" required></textarea>
           </div>
-          <button class="w-100 btn btn-primary btn-lg" type="submit">기본 정보 수정하기</button>
-        </form>
-
-        <hr class="my-4">
-        <h4 class="mb-3">비밀 번호</h4>
-        <form id="modPassword-form" class="needs-validation" novalidate>
-          <div class="row gy-3">
-            <div class="col-12">
-              <label for="currentPassword" class="form-label">현재 비밀번호</label>
-              <input type="text" class="form-control" id="currentPassword" placeholder="">
-            </div>
-            <div class="col-md-6">
-              <label for="modPassword" class="form-label">변경 비밀번호</label>
-              <input type="text" class="form-control" id="modPassword" placeholder="" required>
-            </div>
-            <div class="col-md-6">
-              <label for="checkedModPassword" class="form-label">변경 비밀번호 확인</label>
-              <input type="text" class="form-control" id="checkedModPassword" placeholder="" required>
-            </div>
-          </div>
-          <button class="w-100 btn btn-primary btn-lg" type="submit">비밀번호 변경하기</button>
+          <button type="submit" class="btn btn-primary" style="float: right">댓글 등록</button>
         </form>
       </div>
-  </main>
-</div>
+      <!-- comment 목록 -->
+      <div class="col-md-8 offset-md-2">
+        <div id="comment-list">
+        </div>
+      </div>
+      <!-- 더보기 버튼 -->
+      <div class="col-md-8 offset-md-2">
+        <div class="text-center">
+          <button id="moreCommentBtn" class="btn btn-primary" type="button">댓글 더보기</button><!-- 더보기 버튼 -->
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
 
-<!-- myProfile.js -->
-<script th:inline="javascript" src="/js/myProfile.js"></script>
+<!-- 푸터 -->
+<footer class="text-muted py-5">
+  <div class="container">
+    <p class="float-end mb-1">
+      <a href="#">Back to top</a>
+    </p>
+    <p class="mb-1">Album example is &copy; Bootstrap, but please download and customize it for yourself!</p>
+    <p class="mb-0">New to Bootstrap? <a href="/">Visit the homepage</a> or read our <a href="../getting-started/introduction/">getting started guide</a>.</p>
+  </div>
+</footer>
+
+<!-- feedPage.js -->
+<script th:inline="javascript" src="/js/feedPage.js"></script>
+<script th:inline="javascript">
+  let feedId = [[${feedId}]];
+  let loginId = [[${loginId}]];
+  let currentPage = 0;
+
+  // 피드 내용, 첫 페이지 댓글 목록 가져오기
+  $(document).ready(function () {
+    getFeed(feedId, loginId);
+    getComments(feedId, currentPage, loginId);
+    currentPage += 1;
+  });
+
+  // 더보기 버튼으로 다음 페이지 댓글 목록 가져오기
+  document.querySelector('#moreCommentBtn').addEventListener('click', function () {
+    getComments(feedId, currentPage, loginId);
+    currentPage += 1;
+  })
+</script>
 </body>
 </html>
