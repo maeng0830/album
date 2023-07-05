@@ -4,14 +4,16 @@ import static com.maeng0830.album.feed.domain.FeedStatus.ACCUSE;
 import static com.maeng0830.album.feed.domain.FeedStatus.DELETE;
 import static com.maeng0830.album.feed.domain.FeedStatus.NORMAL;
 import static com.maeng0830.album.feed.exception.FeedExceptionCode.NOT_EXIST_FEED;
+import static com.maeng0830.album.member.domain.MemberRole.ROLE_ADMIN;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.NOT_EXIST_MEMBER;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.NO_AUTHORITY;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.REQUIRED_LOGIN;
 
+import com.maeng0830.album.comment.domain.CommentAccuse;
+import com.maeng0830.album.comment.dto.CommentAccuseDto;
 import com.maeng0830.album.common.exception.AlbumException;
 import com.maeng0830.album.common.filedir.FileDir;
 import com.maeng0830.album.common.model.image.Image;
-import com.maeng0830.album.common.util.AlbumUtil;
 import com.maeng0830.album.feed.domain.Feed;
 import com.maeng0830.album.feed.domain.FeedAccuse;
 import com.maeng0830.album.feed.domain.FeedImage;
@@ -42,6 +44,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -56,7 +59,6 @@ public class FeedService {
 	private final MemberRepository memberRepository;
 	private final FollowRepository followRepository;
 	private final FileDir fileDir;
-	private final AlbumUtil albumUtil;
 
 	// FeedImage 데이터 등록
 	public List<FeedImage> saveFeedImage(List<MultipartFile> imageFiles, Feed findFeed) {
@@ -78,8 +80,8 @@ public class FeedService {
 		return feedImageRepository.findByFeed_Id(findFeed.getId());
 	}
 
-	// 전체 피드 목록 조회, 로그인 여부에 따라 다른 피드 목록 반환
-	public List<FeedResponse> getFeeds(MemberDto memberDto, Pageable pageable) {
+	// 메인 페이지 전체 피드 목록 조회, 로그인 여부에 따라 다른 피드 목록 반환
+	public Page<FeedResponse> getFeedsForMain(MemberDto memberDto, Pageable pageable) {
 
 		PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
 				Sort.by(Direction.DESC, "hits"));
@@ -106,21 +108,43 @@ public class FeedService {
 					.filter(f -> !f.getFollower().getUsername().equals(loginMember.getUsername()))
 					.map(f -> f.getFollower().getUsername()).forEach(createdBy::add);
 
-			Page<Feed> feeds = feedRepository.searchByStatusAndCreatedBy(feedStatuses, createdBy,
+			Page<Feed> feeds = feedRepository.searchByCreatedBy(feedStatuses, createdBy,
 					pageRequest);
 
-			return feeds.stream().map(f -> FeedResponse.createFeedResponse(f, f.getFeedImages()))
-					.collect(Collectors.toList());
+			return feeds.map(f -> FeedResponse.createFeedResponse(f, f.getFeedImages()));
 		} else {
 			//비로그인 상태
-			Page<Feed> feeds = feedRepository.searchByStatusAndCreatedBy(feedStatuses, null,
+			Page<Feed> feeds = feedRepository.searchByCreatedBy(feedStatuses, null,
 					pageRequest);
 
 			System.out.println("메소드 완료!");
 
-			return feeds.stream().map(f -> FeedResponse.createFeedResponse(f, f.getFeedImages()))
-					.collect(Collectors.toList());
+			return feeds.map(f -> FeedResponse.createFeedResponse(f, f.getFeedImages()));
 		}
+	}
+
+	// 관리자 페이지 피드 목록 조회
+	public Page<FeedResponse> getFeedsForAdmin(MemberDto memberDto, String searchText, Pageable pageable) {
+		// 로그인 상태 및 권한 확인
+		if (memberDto != null) {
+			if (memberDto.getRole() != MemberRole.ROLE_ADMIN) {
+				throw new AlbumException(NO_AUTHORITY);
+			}
+		} else {
+			throw new AlbumException(REQUIRED_LOGIN);
+		}
+
+		// 데이터 조회 조건 설정
+		List<FeedStatus> statuses = List.of(NORMAL, ACCUSE, DELETE);
+
+		PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+				Sort.by(Order.asc("status"), Order.desc("createdAt")));
+
+		// 데이터 조회
+		Page<Feed> feeds = feedRepository.searchBySearchText(statuses, searchText, pageRequest);
+
+		// 변환 및 반환
+		return feeds.map(f -> FeedResponse.createFeedResponse(f, f.getFeedImages()));
 	}
 
 	// 특정 피드 조회
@@ -259,5 +283,22 @@ public class FeedService {
 		findFeed.changeStatus(feedStatus);
 
 		return FeedDto.from(findFeed);
+	}
+
+	public List<FeedAccuseDto> getFeedAccuses(MemberDto memberDto, Long feedId) {
+		// 로그인 및 권한 확인
+		if (memberDto != null) {
+			if (memberDto.getRole() != ROLE_ADMIN) {
+				throw new AlbumException(NO_AUTHORITY);
+			}
+		} else {
+			throw new AlbumException(REQUIRED_LOGIN);
+		}
+
+		// 데이터 조회
+		List<FeedAccuse> feedAccuses = feedAccuseRepository.findFeedAccuseByFeed_Id(feedId);
+
+		// 데이터 변환 및 반환
+		return feedAccuses.stream().map(FeedAccuseDto::from).collect(Collectors.toList());
 	}
 }

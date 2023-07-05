@@ -105,9 +105,9 @@ class FeedRepositoryTest {
 		PageRequest pageRequest = PageRequest.of(0, 20);
 
 		// when
-		Page<Feed> result1 = feedRepository.searchByStatusAndCreatedBy(List.of(NORMAL, ACCUSE),
+		Page<Feed> result1 = feedRepository.searchByCreatedBy(List.of(NORMAL, ACCUSE),
 				List.of("memberA"), pageRequest);
-		Page<Feed> result2 = feedRepository.searchByStatusAndCreatedBy(List.of(ACCUSE, DELETE),
+		Page<Feed> result2 = feedRepository.searchByCreatedBy(List.of(ACCUSE, DELETE),
 				List.of("memberA", "memberB"), pageRequest);
 
 		// then
@@ -206,7 +206,7 @@ class FeedRepositoryTest {
 		feedImageRepository.saveAll(List.of(feedImage1, feedImage2));
 
 		// when
-		Page<Feed> result = feedRepository.searchByStatusAndCreatedBy(List.of(NORMAL, ACCUSE, DELETE),
+		Page<Feed> result = feedRepository.searchByCreatedBy(List.of(NORMAL, ACCUSE, DELETE),
 				List.of("memberA", "memberB"), pageRequest);
 
 		// then

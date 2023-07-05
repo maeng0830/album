@@ -1,8 +1,10 @@
 package com.maeng0830.album.comment.domain;
 
+import com.maeng0830.album.comment.domain.CommentStatus.CommentStatusConvertor;
 import com.maeng0830.album.common.model.entity.BaseEntity;
 import com.maeng0830.album.feed.domain.Feed;
 import com.maeng0830.album.member.domain.Member;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -42,6 +44,7 @@ public class Comment extends BaseEntity {
 
 	private String content;
 
+	@Convert(converter = CommentStatusConvertor.class)
 	private CommentStatus status;
 
 	public void saveGroup(Comment group) {

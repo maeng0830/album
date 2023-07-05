@@ -2,6 +2,7 @@ package com.maeng0830.album.comment.repository;
 
 import com.maeng0830.album.comment.domain.Comment;
 import com.maeng0830.album.comment.domain.CommentStatus;
+import com.maeng0830.album.comment.repository.custom.CommentRepositoryCustom;
 import java.util.Collection;
 import java.util.List;
 import org.springframework.data.domain.Pageable;
@@ -10,7 +11,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface CommentRepository extends JpaRepository<Comment, Long> {
+public interface CommentRepository extends JpaRepository<Comment, Long>, CommentRepositoryCustom {
 
 	@EntityGraph(attributePaths = {"member", "feed", "group", "parent"})
 	@Query("select c from Comment c where "

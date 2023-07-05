@@ -1,9 +1,11 @@
 package com.maeng0830.album.member.repository;
 
+import static com.maeng0830.album.member.domain.MemberStatus.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
 import com.maeng0830.album.member.domain.Member;
+import com.maeng0830.album.member.domain.MemberStatus;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;

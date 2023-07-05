@@ -2,6 +2,7 @@ package com.maeng0830.album.common.exception;
 
 import com.maeng0830.album.common.exception.bindexception.BindExceptionResponse;
 import com.maeng0830.album.common.exception.code.ApiExceptionCode;
+import com.maeng0830.album.common.exception.commonexception.CommonExceptionResponse;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -23,6 +24,12 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(AlbumException.class)
 	public ExceptionResponse albumExceptionHandler(AlbumException e) {
 		return new ExceptionResponse(e.getCode(), e.getMessage());
+	}
+
+	// IllegalArgumentException
+	@ExceptionHandler(IllegalArgumentException.class)
+	public CommonExceptionResponse illegalArgumentException(IllegalArgumentException e) {
+		return new CommonExceptionResponse(e);
 	}
 
 	// json -> 객체 생성 오류(type miss match 오류)

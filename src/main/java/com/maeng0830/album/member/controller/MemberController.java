@@ -11,6 +11,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -65,8 +67,8 @@ public class MemberController {
 
 	// 전체 회원 조회
 	@GetMapping("/members")
-	public List<MemberDto> getMembers() {
-		return memberService.getMembers();
+	public Page<MemberDto> getMembers(String searchText, Pageable pageable) {
+		return memberService.getMembers(searchText, pageable);
 	}
 
 	// 회원 단건 조회

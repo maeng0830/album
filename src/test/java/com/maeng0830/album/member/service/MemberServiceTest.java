@@ -38,6 +38,8 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
@@ -119,11 +121,11 @@ class MemberServiceTest {
 		memberRepository.saveAll(members);
 
 		//when
-		List<MemberDto> result = memberService.getMembers();
+		Page<MemberDto> result = memberService.getMembers(null, PageRequest.of(0, 20));
 
 		//then
-		assertThat(result.size()).isEqualTo(members.size());
-		assertThat(result.get(0)).isInstanceOf(MemberDto.class);
+		assertThat(result.getContent().size()).isEqualTo(members.size());
+		assertThat(result.getContent().get(0)).isInstanceOf(MemberDto.class);
 	}
 
 	@DisplayName("주어진 ID에 해당하는 회원을 조회할 수 있다.")
