@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+<!-- accuseReason 모달 -->
+<div th:fragment="accuseReason" class="modal fade modal-accuses bg-secondary py-5" tabindex="-1" role="dialog" id="modalAccuses" aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content rounded-4 shadow">
+      <div id="accuse-attributes" class="container">
+        <div class="row row-cols-9 justify-content-md-center text-center">
+          <div class="col-1"><b>신고 대상</b></div>
+          <div class="col-2"><b>신고자 아이디</b></div>
+          <div class="col-2"><b>신고자 닉네임</b></div>
+          <div class="col-4"><b>신고 내용</b></div>
+        </div>
+      </div>
+      <div id="accuseReason-list" class="container">
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

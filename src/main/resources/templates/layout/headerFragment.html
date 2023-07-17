@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+<!-- 헤더 -->
+<header class="p-3 text-bg-dark" th:fragment="headerFragment">
+  <div class="container">
+    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+      <a href="#" class="navbar-brand d-flex align-items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true" class="me-2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+      </a>
+
+      <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+        <li><a href="/" class="nav-link px-2 text-secondary">Home</a></li>
+        <li><a href="/members/post-feed" class="nav-link px-2 text-white">Post</a></li>
+        <li><a href="/members/my-feed" class="nav-link px-2 text-white">Feed</a></li>
+        <li><a href="/members/my-follow" class="nav-link px-2 text-white">Follow</a></li>
+        <li><a href="/members/my-profile" class="nav-link px-2 text-white">My Profile</a></li>
+        <li>
+          <a sec:authorize="hasRole('ROLE_ADMIN')" href="#"
+             class="nav-link px-2 text-white dropdown-toggle"
+             role="button" id="adminDropdown"
+             data-bs-toggle="dropdown" aria-expanded="false">Admin
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+            <li><a class="dropdown-item" href="/admin/memberList">회원 관리</a></li>
+            <li><a class="dropdown-item" href="/admin/feedList">피드 관리</a></li>
+            <li><a class="dropdown-item" href="/admin/commentList">댓글 관리</a></li>
+          </ul>
+        </li>
+      </ul>
+
+      <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
+        <input id="headerSearch" onkeydown="if (event.keyCode === 13) {searchEnter($('#headerSearch').val());}" type="search" class="form-control form-control-dark text-bg-dark" placeholder="아이디 또는 닉네임 검색..." aria-label="Search">
+      </form>
+
+      <div class="text-end">
+        <button sec:authorize="isAnonymous()" id="signInBtn" type="button" class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#modalSignIn">Sign-in</button>
+        <button sec:authorize="isAnonymous()" id="signUpBtn" type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalSignUp">Sign-up</button>
+        <button sec:authorize="isAuthenticated()" id="logOutBtn" type="button" class="btn btn-outline-light me-2" onclick="location.href='/logout'">Log-out</button>
+      </div>
+    </div>
+  </div>
+</header>
+</body>
+</html>

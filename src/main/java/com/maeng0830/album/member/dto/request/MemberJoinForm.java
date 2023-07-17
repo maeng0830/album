@@ -18,17 +18,13 @@ public class MemberJoinForm {
 	@NotBlank
 	private String password;
 	@NotBlank
-	private String phone;
-	@NotNull
-	private LocalDateTime birthDate;
+	private String checkedPassword;
 
 	@Builder
-	private MemberJoinForm(String username, String nickname, String password, String phone,
-						   LocalDateTime birthDate) {
+	private MemberJoinForm(String username, String nickname, String password, String checkedPassword) {
 		this.username = username;
 		this.nickname = nickname;
 		this.password = password;
-		this.phone = phone;
-		this.birthDate = birthDate;
+		this.checkedPassword = checkedPassword;
 	}
 }

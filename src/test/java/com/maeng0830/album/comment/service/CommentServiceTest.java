@@ -380,7 +380,6 @@ class CommentServiceTest {
 
 		// CommentAccuseDto 세팅
 		CommentAccuseForm commentAccuseForm = CommentAccuseForm.builder()
-				.commentId(comment.getId())
 				.content("testContent")
 				.build();
 
@@ -388,7 +387,7 @@ class CommentServiceTest {
 		MemberDto memberDto = MemberDto.from(commentNoWriter);
 
 		// when
-		CommentAccuseDto result = commentService.accuseComment(commentAccuseForm,
+		CommentAccuseDto result = commentService.accuseComment(comment.getId(), commentAccuseForm,
 				memberDto);
 
 		// then
@@ -431,7 +430,7 @@ class CommentServiceTest {
 		MemberDto memberDto = MemberDto.from(writer);
 
 		// when
-		BasicComment result = commentService.deleteComment(basicComment, memberDto);
+		BasicComment result = commentService.deleteComment(comment.getId(), memberDto);
 
 		// then
 		assertThat(result).extracting("id", "content", "status")
@@ -477,7 +476,7 @@ class CommentServiceTest {
 		// when
 
 		// then
-		assertThatThrownBy(() -> commentService.deleteComment(basicComment, memberDto))
+		assertThatThrownBy(() -> commentService.deleteComment(comment.getId(), memberDto))
 				.isInstanceOf(AlbumException.class)
 				.hasMessage(NO_AUTHORITY.getMessage());
 	}

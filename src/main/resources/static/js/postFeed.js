@@ -34,8 +34,12 @@ $('#feed-form').submit(function (event) {
     processData: false,
     enctype: 'multipart/form-data',
     success: function (response) {
-      alert("피드가 등록되었습니다.");
-      location.href = "/"; // todo: 피드 상세 페이지로 이동
+      if (response.code && response.message) {
+        alert(response.message);
+      } else {
+        alert("피드가 등록되었습니다.")
+        location.href = `/`;
+      }
     },
     error: function (xhr) {
       var errorMessage3 = xhr.responseText;

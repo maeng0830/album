@@ -2,6 +2,7 @@ package com.maeng0830.album.feed.repository.custom;
 
 import static com.maeng0830.album.feed.domain.QFeed.feed;
 import static com.maeng0830.album.feed.domain.QFeedImage.feedImage;
+import static com.maeng0830.album.member.domain.QMember.member;
 
 import com.maeng0830.album.common.util.AlbumUtil;
 import com.maeng0830.album.feed.domain.Feed;
@@ -24,14 +25,15 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom {
 	private final AlbumUtil albumUtil;
 
 	@Override
-	public Page<Feed> searchByStatusAndCreatedBy(Collection<FeedStatus> status,
-												 Collection<String> createdBy, Pageable pageable) {
+	public Page<Feed> searchByCreatedBy(Collection<FeedStatus> status,
+										Collection<String> createdBy, Pageable pageable) {
 
 		List<Feed> content = jpaQueryFactory
 				.select(feed).distinct()
 				.from(feed)
 				.leftJoin(feed.feedImages, feedImage).fetchJoin()
-				.where(searchCondition(status, createdBy))
+				.leftJoin(feed.member, member).fetchJoin()
+				.where(searchCondition(status, createdBy, null))
 				.orderBy(albumUtil.getOrderSpecifier(pageable.getSort(), feed))
 				.offset(pageable.getOffset())
 				.limit(pageable.getPageSize())
@@ -40,7 +42,29 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom {
 		JPAQuery<Long> count = jpaQueryFactory
 				.select(feed.count())
 				.from(feed)
-				.where(searchCondition(status, createdBy));
+				.where(searchCondition(status, createdBy, null));
+
+		return PageableExecutionUtils.getPage(content, pageable, count::fetchOne);
+	}
+
+	@Override
+	public Page<Feed> searchBySearchText(Collection<FeedStatus> status, String searchText,
+										 Pageable pageable) {
+		List<Feed> content = jpaQueryFactory
+				.select(feed).distinct()
+				.from(feed)
+				.leftJoin(feed.feedImages, feedImage).fetchJoin()
+				.leftJoin(feed.member, member).fetchJoin()
+				.where(searchCondition(status, null, searchText))
+				.orderBy(albumUtil.getOrderSpecifier(pageable.getSort(), feed))
+				.offset(pageable.getOffset())
+				.limit(pageable.getPageSize())
+				.fetch();
+
+		JPAQuery<Long> count = jpaQueryFactory
+				.select(feed.count())
+				.from(feed)
+				.where(searchCondition(status, null, searchText));
 
 		return PageableExecutionUtils.getPage(content, pageable, count::fetchOne);
 	}
@@ -53,19 +77,32 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom {
 		return createdBy == null ? null : feed.member.username.in(createdBy);
 	}
 
+	private BooleanExpression usernameLike(String searchText) {
+		return searchText == null ? null : feed.member.username.like(searchText + "%");
+	}
+
+	private BooleanExpression nicknameLike(String searchText) {
+		return searchText == null ? null : feed.member.nickname.like(searchText + "%");
+	}
+
 	private BooleanBuilder searchCondition(Collection<FeedStatus> status,
-										   Collection<String> createdBy) {
+										   Collection<String> createdBy, String searchText) {
 
 		BooleanBuilder builder = new BooleanBuilder();
 		BooleanExpression statusIn = statusIn(status);
 		BooleanExpression createdByIn = createdByIn(createdBy);
+		BooleanExpression usernameLike = usernameLike(searchText);
+		BooleanExpression nicknameLike = nicknameLike(searchText);
 
-		if (statusIn != null) {
+		// searchByCreatedBy
+		if (statusIn != null && createdByIn != null) {
 			builder.and(statusIn);
+			builder.and(createdByIn);
 		}
 
-		if (createdByIn != null) {
-			builder.and(createdByIn);
+		// searchBySearchText
+		if (statusIn != null && usernameLike != null && nicknameLike != null) {
+			builder.and(statusIn).and(usernameLike.or(nicknameLike));
 		}
 
 		return builder;

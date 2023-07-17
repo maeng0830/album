@@ -1,5 +1,8 @@
 package com.maeng0830.album.security.oauthlogin;
 
+import com.maeng0830.album.common.filedir.FileDir;
+import com.maeng0830.album.common.image.DefaultImage;
+import com.maeng0830.album.common.model.image.Image;
 import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.domain.MemberStatus;
@@ -27,6 +30,8 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 
 	private final MemberRepository memberRepository;
 	private final BCryptPasswordEncoder passwordEncoder;
+	private final DefaultImage defaultImage;
+	private final FileDir fileDir;
 
 	@Value("${oauth2.password}")
 	private String oauth2Password;
@@ -58,13 +63,20 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 			Member saveMember = memberRepository.save(
 					Member.builder()
 							.username(oAuthUserInfo.getUsername())
+							.nickname(createdNickname(oAuthUserInfo))
 							.password(passwordEncoder.encode(oauth2Password))
 							.status(MemberStatus.FIRST)
 							.role(MemberRole.ROLE_MEMBER)
 							.loginType(oAuthUserInfo.getLoginType())
+							.image(Image.createDefaultImage(fileDir, defaultImage.getMemberImage()))
 							.build()
 			);
 			return new PrincipalDetails(MemberDto.from(saveMember), oAuth2User.getAttributes());
 		}
+	}
+
+	private String createdNickname(OAuthUserInfo oAuthUserInfo) {
+		return oAuthUserInfo.getUsername().substring(0, oAuthUserInfo.getUsername().indexOf("@"))
+				+ "_" + oAuthUserInfo.getLoginType();
 	}
 }

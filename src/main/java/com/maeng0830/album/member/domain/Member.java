@@ -4,11 +4,15 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.maeng0830.album.common.model.entity.BaseEntity;
 import com.maeng0830.album.common.model.image.Image;
 import com.maeng0830.album.follow.domain.Follow;
+import com.maeng0830.album.member.domain.MemberStatus.MemberStatusConvertor;
 import com.maeng0830.album.member.dto.MemberDto;
+import com.maeng0830.album.member.dto.request.MemberModifiedForm;
 import com.maeng0830.album.security.dto.LoginType;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.Convert;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -37,8 +41,8 @@ public class Member extends BaseEntity {
 	private String nickname;
 	private String password;
 	private String phone;
-	private LocalDateTime birthDate;
-	@Enumerated(EnumType.STRING)
+	private LocalDate birthDate;
+	@Convert(converter = MemberStatusConvertor.class)
 	private MemberStatus status;
 	@Enumerated(EnumType.STRING)
 	private MemberRole role;
@@ -56,7 +60,7 @@ public class Member extends BaseEntity {
 
 	@Builder.Default
 	@JsonManagedReference
-	@OneToMany(mappedBy = "followee")
+	@OneToMany(mappedBy = "following")
 	private List<Follow> followees = new ArrayList<>();
 
 	public static Member from(MemberDto memberDto) {
@@ -79,5 +83,11 @@ public class Member extends BaseEntity {
 
 	public void changeStatus(MemberStatus status) {
 		this.status = status;
+	}
+
+	public void modifiedBasicInfo(MemberModifiedForm memberModifiedForm) {
+		this.nickname = memberModifiedForm.getNickname();
+		this.phone = memberModifiedForm.getPhone();
+		this.birthDate = memberModifiedForm.getBirthDate();
 	}
 }

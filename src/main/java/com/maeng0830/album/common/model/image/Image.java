@@ -32,4 +32,12 @@ public class Image {
 		int pos = imageOriginalName.lastIndexOf(".");
 		return imageOriginalName.substring(pos);
 	}
+
+	public static Image createDefaultImage(FileDir fileDir, String filename) {
+		return Image.builder()
+				.imageOriginalName(filename)
+				.imageStoreName(filename)
+				.imagePath(fileDir.getDir() + filename)
+				.build();
+	}
 }

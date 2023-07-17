@@ -17,12 +17,12 @@ import lombok.experimental.SuperBuilder;
 public class FollowDto extends BaseEntity {
 
 	private MemberDto follower;
-	private MemberDto followee;
+	private MemberDto following;
 
 	public static FollowDto from(Follow follow) {
 		return FollowDto.builder()
 				.follower(MemberDto.from(follow.getFollower()))
-				.followee(MemberDto.from(follow.getFollowee()))
+				.following(MemberDto.from(follow.getFollowing()))
 				.createdAt(follow.getCreatedAt())
 				.modifiedAt(follow.getModifiedAt())
 				.modifiedBy(follow.getModifiedBy())

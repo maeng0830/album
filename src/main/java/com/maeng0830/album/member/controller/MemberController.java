@@ -11,6 +11,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,22 +34,9 @@ public class MemberController {
 	private final AlbumUtil albumUtil;
 
 	// 회원 가입
-	@PostMapping("/join")
-	public MemberDto join(@Valid @ModelAttribute MemberJoinForm memberJoinForm) {
+	@PostMapping("/form-signup")
+	public MemberDto join(@Valid @RequestBody MemberJoinForm memberJoinForm) {
 		return memberService.join(memberJoinForm);
-	}
-
-	// form login 테스트
-	@GetMapping("/form-login/test")
-	public MemberDto formLoginTest(@AuthenticationPrincipal PrincipalDetails principalDetails) {
-
-		return principalDetails.getMemberDto();
-	}
-
-	// Oauth2 login 테스트
-	@GetMapping("/oauth-login/test")
-	public MemberDto oauthLoginTest(@AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return principalDetails.getMemberDto();
 	}
 
 	// 로그인 예외 발생 시 호출
@@ -65,8 +54,8 @@ public class MemberController {
 
 	// 전체 회원 조회
 	@GetMapping("/members")
-	public List<MemberDto> getMembers() {
-		return memberService.getMembers();
+	public Page<MemberDto> getMembers(String searchText, Pageable pageable) {
+		return memberService.getMembers(searchText, pageable);
 	}
 
 	// 회원 단건 조회
@@ -80,7 +69,6 @@ public class MemberController {
 	public MemberDto modifiedMember(@AuthenticationPrincipal PrincipalDetails principalDetails,
 									@Valid @RequestPart(value = "memberModifiedForm") MemberModifiedForm memberModifiedForm,
 									@RequestPart(value = "imageFile", required = false) MultipartFile imageFile) {
-		System.out.println("MemberController.modifiedMember");
 		return memberService.modifiedMember(albumUtil.checkLogin(principalDetails), memberModifiedForm, imageFile);
 	}
 

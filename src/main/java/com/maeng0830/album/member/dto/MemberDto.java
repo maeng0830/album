@@ -6,6 +6,7 @@ import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.domain.MemberStatus;
 import com.maeng0830.album.security.dto.LoginType;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,7 +23,7 @@ public class MemberDto extends BaseEntity {
 	private String nickname;
 	private String password;
 	private String phone;
-	private LocalDateTime birthDate;
+	private LocalDate birthDate;
 	private MemberStatus status;
 	private MemberRole role;
 	private Image image;

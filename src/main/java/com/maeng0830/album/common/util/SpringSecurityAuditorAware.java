@@ -4,6 +4,7 @@ import com.maeng0830.album.security.formlogin.PrincipalDetails;
 import java.util.Optional;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.AuditorAware;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -13,12 +14,18 @@ public class SpringSecurityAuditorAware implements AuditorAware<String> {
 
 	@Override
 	public Optional<String> getCurrentAuditor() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-		PrincipalDetails principalDetails = (PrincipalDetails) SecurityContextHolder.getContext()
-				.getAuthentication();
+		if (null == authentication || !authentication.isAuthenticated()) {
+			return Optional.empty();
+		} else {
+			if (authentication.getPrincipal() instanceof String) {
+				return Optional.of((String) authentication.getPrincipal());
+			} else {
+				PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
 
-		String username = principalDetails.getUsername();
-
-		return Optional.of(username);
+				return Optional.of(principal.getUsername());
+			}
+		}
 	}
 }

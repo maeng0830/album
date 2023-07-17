@@ -41,6 +41,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
@@ -94,7 +95,7 @@ class FeedServiceTest {
 
 	@DisplayName("정상 및 신고 상태인 피드 목록을 조회할 수 있다. 로그인 했을 경우, 팔로워 및 팔로이의 피드를 조회한다.")
 	@Test
-	void getFeeds() {
+	void getFeedsForMain() {
 		// given
 		// 멤버 세팅
 		Member loginMember = Member.builder()
@@ -115,11 +116,11 @@ class FeedServiceTest {
 		// 팔로우 세팅
 		Follow follow1 = Follow.builder()
 				.follower(followerMember)
-				.followee(loginMember)
+				.following(loginMember)
 				.build();
 		Follow follow2 = Follow.builder()
 				.follower(loginMember)
-				.followee(followeeMember)
+				.following(followeeMember)
 				.build();
 		followRepository.saveAll(List.of(follow1, follow2));
 
@@ -142,10 +143,10 @@ class FeedServiceTest {
 		PageRequest pageRequest = PageRequest.of(0, 20);
 
 		// when
-		List<FeedResponse> feeds = feedService.getFeeds(MemberDto.from(loginMember), pageRequest);
+		Page<FeedResponse> feeds = feedService.getFeedsForMain(MemberDto.from(loginMember), pageRequest);
 
 		// then
-		assertThat(feeds).hasSize(2)
+		assertThat(feeds.getContent()).hasSize(2)
 				.extracting("member.username")
 				.containsExactlyInAnyOrder(followerMember.getUsername(),
 						followeeMember.getUsername());
@@ -153,7 +154,7 @@ class FeedServiceTest {
 
 	@DisplayName("정상 및 신고 상태인 피드 목록을 조회할 수 있다. 로그인 안했을 경우, 모든 피드를 조회한다.")
 	@Test
-	void getFeeds_noLogin() {
+	void getFeedsForMain_noLogin() {
 		// given
 		// 멤버 세팅
 		Member loginMember = Member.builder()
@@ -174,11 +175,11 @@ class FeedServiceTest {
 		// 팔로우 세팅
 		Follow follow1 = Follow.builder()
 				.follower(followerMember)
-				.followee(loginMember)
+				.following(loginMember)
 				.build();
 		Follow follow2 = Follow.builder()
 				.follower(loginMember)
-				.followee(followeeMember)
+				.following(followeeMember)
 				.build();
 		followRepository.saveAll(List.of(follow1, follow2));
 
@@ -201,10 +202,10 @@ class FeedServiceTest {
 		PageRequest pageRequest = PageRequest.of(0, 20);
 
 		// when
-		List<FeedResponse> feeds = feedService.getFeeds(null, pageRequest);
+		Page<FeedResponse> feeds = feedService.getFeedsForMain(null, pageRequest);
 
 		// then
-		assertThat(feeds).hasSize(3)
+		assertThat(feeds.getContent()).hasSize(3)
 				.extracting("member.username")
 				.containsExactlyInAnyOrder(
 						followerMember.getUsername(), followeeMember.getUsername(),

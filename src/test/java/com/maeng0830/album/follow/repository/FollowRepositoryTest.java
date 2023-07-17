@@ -41,16 +41,16 @@ class FollowRepositoryTest {
 
 		Follow follow1 = Follow.builder()
 				.follower(follower1)
-				.followee(followee1)
+				.following(followee1)
 				.build();
 		Follow follow2 = Follow.builder()
 				.follower(follower2)
-				.followee(followee2)
+				.following(followee2)
 				.build();
 		followRepository.saveAll(List.of(follow1, follow2));
 
 		// when
-		followRepository.deleteByFollowerAndFollowee(follower1, followee1);
+		followRepository.deleteByFollowerAndFollowing(follower1, followee1);
 		List<Follow> afterResult = followRepository.findAll();
 
 		// then
@@ -75,11 +75,11 @@ class FollowRepositoryTest {
 
 		Follow follow1 = Follow.builder()
 				.follower(follower1)
-				.followee(followee1)
+				.following(followee1)
 				.build();
 		Follow follow2 = Follow.builder()
 				.follower(follower2)
-				.followee(followee2)
+				.following(followee2)
 				.build();
 		followRepository.saveAll(List.of(follow1, follow2));
 
@@ -110,11 +110,11 @@ class FollowRepositoryTest {
 
 		Follow follow1 = Follow.builder()
 				.follower(follower1)
-				.followee(followee1)
+				.following(followee1)
 				.build();
 		Follow follow2 = Follow.builder()
 				.follower(follower2)
-				.followee(followee2)
+				.following(followee2)
 				.build();
 		followRepository.saveAll(List.of(follow1, follow2));
 
@@ -145,11 +145,11 @@ class FollowRepositoryTest {
 
 		Follow follow1 = Follow.builder()
 				.follower(follower1)
-				.followee(followee1)
+				.following(followee1)
 				.build();
 		Follow follow2 = Follow.builder()
 				.follower(follower2)
-				.followee(followee2)
+				.following(followee2)
 				.build();
 		followRepository.saveAll(List.of(follow1, follow2));
 

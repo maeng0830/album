@@ -1,10 +1,12 @@
 package com.maeng0830.album.feed.domain;
 
 import com.maeng0830.album.common.model.entity.BaseEntity;
+import com.maeng0830.album.feed.domain.FeedStatus.FeedStatusConvertor;
 import com.maeng0830.album.feed.dto.request.FeedRequestForm;
 import com.maeng0830.album.member.domain.Member;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -29,15 +31,13 @@ public class Feed extends BaseEntity {
 
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-
 	private String title;
 	@Lob
 	private String content;
 	private int hits;
 	private int commentCount;
-	@Enumerated(EnumType.STRING)
+	@Convert(converter = FeedStatusConvertor.class)
 	private FeedStatus status;
-
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
 	private Member member;
@@ -58,5 +58,13 @@ public class Feed extends BaseEntity {
 	public void modified(FeedRequestForm feedRequestForm) {
 		this.title = feedRequestForm.getTitle();
 		this.content = feedRequestForm.getContent();
+	}
+
+	public void addHits() {
+		this.hits += 1;
+	}
+
+	public void addCommentCount() {
+		this.commentCount += 1;
 	}
 }

@@ -33,6 +33,7 @@ public class CommentController {
 
 	@GetMapping()
 	public List<GroupComment> getFeedComments(Long feedId, Pageable pageable) {
+		System.out.println("feedId = " + feedId);
 		return commentService.getFeedComments(feedId, pageable);
 	}
 
@@ -51,13 +52,13 @@ public class CommentController {
 		return commentService.modifiedComment(commentModifiedForm, albumUtil.checkLogin(principalDetails));
 	}
 
-	@PutMapping("/accuse")
-	public CommentAccuseDto accuseComment(@Valid @RequestBody CommentAccuseForm commentAccuseForm, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return commentService.accuseComment(commentAccuseForm, albumUtil.checkLogin(principalDetails));
+	@PutMapping("/{domainId}/accuse")
+	public CommentAccuseDto accuseComment(@PathVariable Long domainId, @Valid @RequestBody CommentAccuseForm commentAccuseForm, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		return commentService.accuseComment(domainId, commentAccuseForm, albumUtil.checkLogin(principalDetails));
 	}
 
-	@DeleteMapping()
-	public BasicComment deleteComment(@RequestBody BasicComment basicComment, @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return commentService.deleteComment(basicComment, albumUtil.checkLogin(principalDetails));
+	@DeleteMapping("/{domainId}")
+	public BasicComment deleteComment(@PathVariable Long domainId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+		return commentService.deleteComment(domainId, albumUtil.checkLogin(principalDetails));
 	}
 }
