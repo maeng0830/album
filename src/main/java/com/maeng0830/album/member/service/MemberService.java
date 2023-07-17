@@ -28,6 +28,7 @@ import com.maeng0830.album.security.dto.LoginType;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -50,6 +51,7 @@ public class MemberService {
 	private final FileDir fileDir;
 	private final DefaultImage defaultImage;
 
+	// 폼 회원가입
 	public MemberDto join(MemberJoinForm memberJoinForm) {
 		// username 및 nickname 존재 여부 확인
 		List<Member> members = memberRepository.findByUsernameOrNickname(
@@ -85,6 +87,7 @@ public class MemberService {
 		return MemberDto.from(saveMember);
 	}
 
+	// 회원 탈퇴
 	public MemberDto withdraw(MemberDto memberDto) {
 
 		if (memberDto == null) {
@@ -99,7 +102,7 @@ public class MemberService {
 		return MemberDto.from(findMember);
 	}
 
-	// 회원 목록 조회
+	// 일반 회원용 회원 목록 조회
 	public Page<MemberDto> getMembers(String searchText, Pageable pageable) {
 		// 페이징 조건
 		List<MemberStatus> statuses = List.of(NORMAL);
@@ -112,8 +115,8 @@ public class MemberService {
 	}
 
 	// 관리자용 회원 목록 조회
-	public Page<MemberDto> getMemberForAdmin(MemberDto memberDto, String searchText,
-											 Pageable pageable) {
+	public Page<MemberDto> getMembersForAdmin(MemberDto memberDto, String searchText,
+											  Pageable pageable) {
 		// 로그인 상태 및 권한 확인
 		if (memberDto != null) {
 			if (memberDto.getRole() != MemberRole.ROLE_ADMIN) {
@@ -157,10 +160,10 @@ public class MemberService {
 
 		// json 요청 데이터 처리
 		// 닉네임 중복 체크
-		List<Member> checkNickname = memberRepository.findByUsernameOrNickname(null,
+		Optional<Member> checkNickname = memberRepository.findByNickname(
 				memberModifiedForm.getNickname());
 
-		if (!findMember.getNickname().equals(memberModifiedForm.getNickname()) && !checkNickname.isEmpty()) {
+		if (!findMember.getNickname().equals(memberModifiedForm.getNickname()) && checkNickname.isPresent()) {
 			throw new AlbumException(EXIST_NICKNAME);
 		}
 

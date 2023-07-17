@@ -8,12 +8,18 @@ import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.domain.MemberStatus;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -92,5 +98,87 @@ class MemberRepositoryTest {
 		// then
 		assertThat(result1).usingRecursiveComparison().isEqualTo(member1);
 		assertThat(result2).usingRecursiveComparison().isEqualTo(member2);
+	}
+
+	@DisplayName("주어진 nickname에 일치하는 회원을 조회할 수 있다.")
+	@Test
+	void findByNickname() {
+		// given
+		Member member1 = Member.builder()
+				.username("member1_username")
+				.nickname("member1_nickname")
+				.build();
+		Member member2 = Member.builder()
+				.username("member2_username")
+				.nickname("member2_nickname")
+				.build();
+		memberRepository.saveAll(List.of(member1, member2));
+
+		// when
+		Member result1 = memberRepository.findByNickname(member1.getNickname()).get();
+		Member result2 = memberRepository.findByNickname(member2.getNickname()).get();
+		// then
+		assertThat(result1).usingRecursiveComparison().isEqualTo(member1);
+		assertThat(result2).usingRecursiveComparison().isEqualTo(member2);
+	}
+
+	@DisplayName("주어진 searchText와 username 또는 nickname이 전방 일치하는 회원들을 조회할 수 있다.")
+	@Test
+	void searchBySearchText() {
+	    // given
+		// 회원 세팅
+		Member member1 = Member.builder()
+				.status(NORMAL)
+				.username("username1")
+				.nickname("nickname1")
+				.build();
+		Member member2 = Member.builder()
+				.status(NORMAL)
+				.username("username2")
+				.nickname("nickname2")
+				.build();
+		memberRepository.saveAll(List.of(member1, member2));
+
+		// 데이터 조회 조건 세팅
+		List<MemberStatus> statuses = List.of(NORMAL);
+		PageRequest pageRequest = PageRequest.of(0, 20);
+
+		// when
+		Page<Member> result1 = memberRepository.searchBySearchText(statuses, "username1",
+				pageRequest);
+		Page<Member> result2 = memberRepository.searchBySearchText(statuses, "nickname1",
+				pageRequest);
+		Page<Member> result3 = memberRepository.searchBySearchText(statuses, "username2",
+				pageRequest);
+		Page<Member> result4 = memberRepository.searchBySearchText(statuses, "nickname2",
+				pageRequest);
+		Page<Member> result5 = memberRepository.searchBySearchText(statuses, "username",
+				pageRequest);
+		Page<Member> result6 = memberRepository.searchBySearchText(statuses, "nickname",
+				pageRequest);
+
+		// then
+		assertThat(result1.getContent()).hasSize(1)
+				.extracting("username", "nickname")
+				.containsExactlyInAnyOrder(tuple(member1.getUsername(), member1.getNickname()));
+		assertThat(result2.getContent()).hasSize(1)
+				.extracting("username", "nickname")
+				.containsExactlyInAnyOrder(tuple(member1.getUsername(), member1.getNickname()));
+		assertThat(result3.getContent()).hasSize(1)
+				.extracting("username", "nickname")
+				.containsExactlyInAnyOrder(tuple(member2.getUsername(), member2.getNickname()));
+		assertThat(result4.getContent()).hasSize(1)
+				.extracting("username", "nickname")
+				.containsExactlyInAnyOrder(tuple(member2.getUsername(), member2.getNickname()));
+		assertThat(result5.getContent()).hasSize(2)
+				.extracting("username", "nickname")
+				.containsExactlyInAnyOrder(
+						tuple(member1.getUsername(), member1.getNickname()),
+						tuple(member2.getUsername(), member2.getNickname()));
+		assertThat(result6.getContent()).hasSize(2)
+				.extracting("username", "nickname")
+				.containsExactlyInAnyOrder(
+						tuple(member1.getUsername(), member1.getNickname()),
+						tuple(member2.getUsername(), member2.getNickname()));
 	}
 }

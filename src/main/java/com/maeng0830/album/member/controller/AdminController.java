@@ -60,7 +60,7 @@ public class AdminController {
 	public Page<MemberDto> getMembersForAdmin(@AuthenticationPrincipal PrincipalDetails principalDetails,
 											  String searchText,
 											  Pageable pageable) {
-		return memberService.getMemberForAdmin(albumUtil.checkLogin(principalDetails), searchText, pageable);
+		return memberService.getMembersForAdmin(albumUtil.checkLogin(principalDetails), searchText, pageable);
 	}
 
 	@PutMapping("/members/{memberId}/status")
