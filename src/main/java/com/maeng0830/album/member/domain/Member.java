@@ -6,7 +6,9 @@ import com.maeng0830.album.common.model.image.Image;
 import com.maeng0830.album.follow.domain.Follow;
 import com.maeng0830.album.member.domain.MemberStatus.MemberStatusConvertor;
 import com.maeng0830.album.member.dto.MemberDto;
+import com.maeng0830.album.member.dto.request.MemberModifiedForm;
 import com.maeng0830.album.security.dto.LoginType;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +21,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,7 +41,7 @@ public class Member extends BaseEntity {
 	private String nickname;
 	private String password;
 	private String phone;
-	private LocalDateTime birthDate;
+	private LocalDate birthDate;
 	@Convert(converter = MemberStatusConvertor.class)
 	private MemberStatus status;
 	@Enumerated(EnumType.STRING)
@@ -59,7 +60,7 @@ public class Member extends BaseEntity {
 
 	@Builder.Default
 	@JsonManagedReference
-	@OneToMany(mappedBy = "followee")
+	@OneToMany(mappedBy = "following")
 	private List<Follow> followees = new ArrayList<>();
 
 	public static Member from(MemberDto memberDto) {
@@ -82,5 +83,11 @@ public class Member extends BaseEntity {
 
 	public void changeStatus(MemberStatus status) {
 		this.status = status;
+	}
+
+	public void modifiedBasicInfo(MemberModifiedForm memberModifiedForm) {
+		this.nickname = memberModifiedForm.getNickname();
+		this.phone = memberModifiedForm.getPhone();
+		this.birthDate = memberModifiedForm.getBirthDate();
 	}
 }

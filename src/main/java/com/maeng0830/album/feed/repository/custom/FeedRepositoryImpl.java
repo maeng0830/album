@@ -2,6 +2,7 @@ package com.maeng0830.album.feed.repository.custom;
 
 import static com.maeng0830.album.feed.domain.QFeed.feed;
 import static com.maeng0830.album.feed.domain.QFeedImage.feedImage;
+import static com.maeng0830.album.member.domain.QMember.member;
 
 import com.maeng0830.album.common.util.AlbumUtil;
 import com.maeng0830.album.feed.domain.Feed;
@@ -31,6 +32,7 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom {
 				.select(feed).distinct()
 				.from(feed)
 				.leftJoin(feed.feedImages, feedImage).fetchJoin()
+				.leftJoin(feed.member, member).fetchJoin()
 				.where(searchCondition(status, createdBy, null))
 				.orderBy(albumUtil.getOrderSpecifier(pageable.getSort(), feed))
 				.offset(pageable.getOffset())
@@ -52,6 +54,7 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom {
 				.select(feed).distinct()
 				.from(feed)
 				.leftJoin(feed.feedImages, feedImage).fetchJoin()
+				.leftJoin(feed.member, member).fetchJoin()
 				.where(searchCondition(status, null, searchText))
 				.orderBy(albumUtil.getOrderSpecifier(pageable.getSort(), feed))
 				.offset(pageable.getOffset())
@@ -98,9 +101,8 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom {
 		}
 
 		// searchBySearchText
-		if (usernameLike != null && nicknameLike != null) {
-			builder.or(usernameLike);
-			builder.or(nicknameLike);
+		if (statusIn != null && usernameLike != null && nicknameLike != null) {
+			builder.and(statusIn).and(usernameLike.or(nicknameLike));
 		}
 
 		return builder;

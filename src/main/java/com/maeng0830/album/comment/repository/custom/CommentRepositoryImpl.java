@@ -5,6 +5,7 @@ import static com.maeng0830.album.member.domain.QMember.member;
 
 import com.maeng0830.album.comment.domain.Comment;
 import com.maeng0830.album.common.util.AlbumUtil;
+import com.maeng0830.album.member.domain.QMember;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -27,6 +28,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
 		List<Comment> content = jpaQueryFactory
 				.select(comment)
 				.from(comment)
+				.leftJoin(comment.member, member).fetchJoin()
 				.where(searchTextCondition(searchText))
 				.orderBy(albumUtil.getOrderSpecifier(pageable.getSort(), comment))
 				.offset(pageable.getOffset())

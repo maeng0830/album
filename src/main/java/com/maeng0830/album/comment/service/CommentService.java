@@ -129,6 +129,8 @@ public class CommentService {
 
 		commentRepository.save(comment);
 
+		findFeed.addCommentCount();
+
 		return BasicComment.from(comment);
 	}
 
@@ -154,7 +156,7 @@ public class CommentService {
 	}
 
 	@Transactional
-	public CommentAccuseDto accuseComment(CommentAccuseForm commentAccuseForm,
+	public CommentAccuseDto accuseComment(Long commentId, CommentAccuseForm commentAccuseForm,
 										  MemberDto memberDto) {
 
 		// 로그인 여부 확인
@@ -165,7 +167,7 @@ public class CommentService {
 		Member findMember = memberRepository.findById(memberDto.getId())
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_MEMBER));
 
-		Comment findComment = commentRepository.findById(commentAccuseForm.getCommentId())
+		Comment findComment = commentRepository.findById(commentId)
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_COMMENT));
 
 		findComment.accuseComment();
@@ -182,7 +184,7 @@ public class CommentService {
 	}
 
 	@Transactional
-	public BasicComment deleteComment(BasicComment basicComment,
+	public BasicComment deleteComment(Long commentId,
 									  MemberDto memberDto) {
 
 		// 로그인 여부 확인
@@ -190,7 +192,7 @@ public class CommentService {
 			throw new AlbumException(REQUIRED_LOGIN);
 		}
 
-		Comment findComment = commentRepository.findById(basicComment.getId())
+		Comment findComment = commentRepository.findById(commentId)
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_COMMENT));
 
 		if (!findComment.getMember().getUsername().equals(memberDto.getUsername())) {

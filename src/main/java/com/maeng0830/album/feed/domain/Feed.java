@@ -59,4 +59,12 @@ public class Feed extends BaseEntity {
 		this.title = feedRequestForm.getTitle();
 		this.content = feedRequestForm.getContent();
 	}
+
+	public void addHits() {
+		this.hits += 1;
+	}
+
+	public void addCommentCount() {
+		this.commentCount += 1;
+	}
 }

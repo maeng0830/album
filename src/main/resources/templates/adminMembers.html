@@ -18,102 +18,57 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <!-- basic.css -->
   <link rel="stylesheet" href="/css/basic.css">
-  <!-- feedPage.css -->
-  <link rel="stylesheet" href="/css/feedPage.css">
 
   <title>Admin members</title>
 </head>
 <body>
 <!-- 헤더 -->
-<header class="p-3 text-bg-dark">
-  <div class="container">
-    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-      <a href="#" class="navbar-brand d-flex align-items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true" class="me-2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-      </a>
-
-      <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-        <li><a href="#" class="nav-link px-2 text-secondary">Home</a></li>
-        <li><a href="/members/post-feed" class="nav-link px-2 text-white">Post</a></li>
-        <li><a href="#" class="nav-link px-2 text-white">Feed</a></li>
-        <li><a href="#" class="nav-link px-2 text-white">Follow</a></li>
-        <li><a href="/members/my-profile" class="nav-link px-2 text-white">My Profile</a></li>
-        <li>
-          <a sec:authorize="hasRole('ROLE_ADMIN')" href="#"
-             class="nav-link px-2 text-white dropdown-toggle"
-             role="button" id="adminDropdown"
-             data-bs-toggle="dropdown" aria-expanded="false">Admin
-          </a>
-          <ul class="dropdown-menu" aria-labelledby="adminDropdown">
-            <li><a class="dropdown-item" href="/admin-members">회원 관리</a></li>
-            <li><a class="dropdown-item" href="/admin-feeds">피드 관리</a></li>
-            <li><a class="dropdown-item" href="/admin-comments">댓글 관리</a></li>
-          </ul>
-        </li>
-      </ul>
-
-      <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
-        <input type="search" class="form-control form-control-dark text-bg-dark" placeholder="닉네임 검색..." aria-label="Search">
-      </form>
-
-      <div class="text-end">
-        <button sec:authorize="isAnonymous()" id="signInBtn" type="button" class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#modalSignIn">Sign-in</button>
-        <button sec:authorize="isAnonymous()" id="signUpBtn" type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalSignUp">Sign-up</button>
-        <button sec:authorize="isAuthenticated()" id="logOutBtn" type="button" class="btn btn-outline-light me-2" onclick="location.href='/logout'">Log-out</button>
-      </div>
-    </div>
-  </div>
+<header th:replace="layout/headerFragment.html::headerFragment">
 </header>
 
 <!-- main -->
 <main class="justify-content-center align-items-center">
+  <div id="search" class="container">
+    <div class="row row-cols-11 justify-content-md-center text-center">
+      <label for="searchInput"></label>
+      <input type="search" id="searchInput" class="col-md-auto form-control-dark" placeholder="아이디 또는 닉네임">
+      <button id="searchBtn" class="col-md-auto btn btn-outline-primary btn-sm" onclick="getAdminMembers(0, $('#searchInput').val())">검색</button>
+    </div>
+  </div>
   <div id="member-attributes" class="container">
-    <div class="row row-cols-9 justify-content-md-center text-center fs-5">
-      <div class="col-2">Username</div>
-      <div class="col-2">Nickname</div>
-      <div class="col-2">Sign-in Date</div>
-      <div class="col-1">Role</div>
-      <div class="col-1">Status</div>
-      <div class="col-2">Change Status</div>
+    <div class="row row-cols-11 justify-content-md-center text-center">
+      <div class="col-1"><b>번호</b></div>
+      <div class="col-2"><b>아이디</b></div>
+      <div class="col-2"><b>닉네임</b></div>
+      <div class="col-2"><b>일자</b></div>
+      <div class="col-1"><b>권한</b></div>
+      <div class="col-1"><b>상태</b></div>
+      <div class="col-2"><b>상태 변경</b></div>
     </div>
   </div>
   <div id="member-list" class="container">
-    <div class="row row-cols-9 justify-content-md-center text-center">
-        <div class="col-2">Username</div>
-        <div class="col-2">Nickname</div>
-        <div class="col-2">Sign-in Date</div>
-        <div class="col-1">Role</div>
-        <div class="col-1">Status</div>
-        <div class="col-2"><button class="changeStatusBtn btn btn-outline-primary btn-sm" type="button">상태 변경</button></div>
-    </div>
   </div>
 </main>
 
-<nav aria-label="Page navigation example">
-  <ul class="pagination justify-content-center">
-    <!-- li태그의 클래스에 disabled를 넣으면 마우스를 위에 올렸을 때 클릭 금지 마크가 나오고 클릭도 되지 않는다.-->
-    <!-- disabled의 의미는 앞의 페이지가 존재하지 않다는 뜻이다. -->
-    <li class="page-item disabled"><a class="page-link" href="#"><span>«</span></a></li>
-    <!-- li태그의 클래스에 active를 넣으면 색이 반전되고 클릭도 되지 않는다. -->
-    <!-- active의 의미는 현재 페이지의 의미이다. -->
-    <li class="page-item"><a class="page-link" href="#">1</a></li>
-    <li class="page-item"><a class="page-link" href="#">2</a></li>
-    <li class="page-item"><a class="page-link" href="#">3</a></li>
-    <li class="page-item"><a class="page-link" href="#">4</a></li>
-    <li class="page-item"><a class="page-link" href="#">5</a></li>
-    <li class="page-item"><a class="page-link" href="#"><span>»</span></a></li>
-  </ul>
-</nav>
+<!-- pagination -->
+<nav id="pagination" aria-label="Page navigation example"></nav>
 
 <!-- 푸터 -->
-<footer class="text-muted py-5">
-  <div class="container">
-    <p class="float-end mb-1">
-      <a href="#">Back to top</a>
-    </p>
-    <p class="mb-1">Album example is &copy; Bootstrap, but please download and customize it for yourself!</p>
-    <p class="mb-0">New to Bootstrap? <a href="/">Visit the homepage</a> or read our <a href="../getting-started/introduction/">getting started guide</a>.</p>
-  </div>
-</footer>
+<footer th:replace="layout/footerFragment.html::footerFragment"></footer>
+
+<!-- signIn 모달 -->
+<div th:replace="layout/signFragment.html::signInFragment"></div>
+<!-- signUp 모달 -->
+<div th:replace="layout/signFragment.html::signUpFragment"></div>
+
+<!-- searchEnter.js -->
+<script th:inline="javascript" src="/js/searchEnter.js"></script>
+<!-- adminMembers.js -->
+<script th:inline="javascript" src="/js/adminMembers.js"></script>
+<script th:inline="javascript">
+  $(document).ready(function () {
+    getAdminMembers(0, null);
+  })
+</script>
 </body>
 </html>

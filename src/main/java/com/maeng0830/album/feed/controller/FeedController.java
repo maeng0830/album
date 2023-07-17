@@ -34,9 +34,14 @@ public class FeedController {
 	private final AlbumUtil albumUtil;
 
 	// 메인 페이지 전체 피드 목록 조회, 로그인 여부에 따라 다른 피드 목록 반환
+	// searchText(회원 닉네임) != null -> 해당 닉네임이 작성자인 피드 목록 반환
 	@GetMapping()
-	public Page<FeedResponse> getFeedsForMain(@AuthenticationPrincipal PrincipalDetails principalDetails, Pageable pageable) {
-		return feedService.getFeedsForMain(albumUtil.checkLogin(principalDetails), pageable);
+	public Page<FeedResponse> getFeedsForMain(@AuthenticationPrincipal PrincipalDetails principalDetails, String searchText, Pageable pageable) {
+		if (searchText == null) {
+			return feedService.getFeedsForMain(albumUtil.checkLogin(principalDetails), pageable);
+		} else {
+			return feedService.getFeedsForMainWithSearchText(searchText, pageable);
+		}
 	}
 
 	@GetMapping("/{feedId}")
@@ -51,10 +56,10 @@ public class FeedController {
 		return feedService.feed(feedRequestForm, imageFiles, albumUtil.checkLogin(principalDetails));
 	}
 
-	@DeleteMapping("/{feedId}")
-	public FeedDto deleteFeed(@PathVariable Long feedId,
+	@DeleteMapping("/{domainId}")
+	public FeedDto deleteFeed(@PathVariable Long domainId,
 							  @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return feedService.deleteFeed(feedId, albumUtil.checkLogin(principalDetails));
+		return feedService.deleteFeed(domainId, albumUtil.checkLogin(principalDetails));
 	}
 
 	@PutMapping("/{feedId}")
@@ -65,10 +70,17 @@ public class FeedController {
 		return feedService.modifiedFeed(feedId, feedRequestForm, imageFiles, albumUtil.checkLogin(principalDetails));
 	}
 
-	@PutMapping("/{feedId}/accuse")
-	public FeedAccuseDto accuseFeed(@PathVariable Long feedId,
+	@PutMapping("/{domainId}/accuse")
+	public FeedAccuseDto accuseFeed(@PathVariable Long domainId,
 									@Valid @RequestBody FeedAccuseRequestForm feedAccuseRequestForm,
 									@AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return feedService.accuseFeed(feedId, feedAccuseRequestForm, albumUtil.checkLogin(principalDetails));
+		return feedService.accuseFeed(domainId, feedAccuseRequestForm, albumUtil.checkLogin(principalDetails));
+	}
+
+	@GetMapping("/members/{memberId}")
+	public Page<FeedResponse> getMyFeeds(@PathVariable Long memberId,
+										 @AuthenticationPrincipal PrincipalDetails principalDetails,
+										 Pageable pageable) {
+		return feedService.getMyFeeds(memberId, albumUtil.checkLogin(principalDetails), pageable);
 	}
 }

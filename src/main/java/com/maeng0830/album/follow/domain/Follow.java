@@ -25,7 +25,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(name = "followUk", columnNames = {"follower_id", "followee_id"}))
+@Table(uniqueConstraints = @UniqueConstraint(name = "followUk", columnNames = {"follower_id", "following_id"}))
 public class Follow extends BaseEntity {
 
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,10 +34,10 @@ public class Follow extends BaseEntity {
 	@JsonBackReference
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "follower_id")
-	private Member follower; // 구독하는 회원
+	private Member follower; // 팔로우 하는 사람(본인)
 
 	@JsonBackReference
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "followee_id")
-	private Member followee; // 구독 당하는 회원
+	@JoinColumn(name = "following_id")
+	private Member following; // 팔로우 당하는 사람(타인)
 }

@@ -25,44 +25,7 @@
 </head>
 <body>
 <!-- 헤더 -->
-<header class="p-3 text-bg-dark">
-  <div class="container">
-    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-      <a href="#" class="navbar-brand d-flex align-items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true" class="me-2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-      </a>
-
-      <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-        <li><a href="#" class="nav-link px-2 text-secondary">Home</a></li>
-        <li><a href="/members/post-feed" class="nav-link px-2 text-white">Post</a></li>
-        <li><a href="#" class="nav-link px-2 text-white">Feed</a></li>
-        <li><a href="#" class="nav-link px-2 text-white">Follow</a></li>
-        <li><a href="/members/my-profile" class="nav-link px-2 text-white">My Profile</a></li>
-        <li>
-          <a sec:authorize="hasRole('ROLE_ADMIN')" href="#"
-             class="nav-link px-2 text-white dropdown-toggle"
-             role="button" id="adminDropdown"
-             data-bs-toggle="dropdown" aria-expanded="false">Admin
-          </a>
-          <ul class="dropdown-menu" aria-labelledby="adminDropdown">
-            <li><a class="dropdown-item" href="/admin-members">회원 관리</a></li>
-            <li><a class="dropdown-item" href="/admin-feeds">피드 관리</a></li>
-            <li><a class="dropdown-item" href="/admin-comments">댓글 관리</a></li>
-          </ul>
-        </li>
-      </ul>
-
-      <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
-        <input type="search" class="form-control form-control-dark text-bg-dark" placeholder="닉네임 검색..." aria-label="Search">
-      </form>
-
-      <div class="text-end">
-        <button sec:authorize="isAnonymous()" id="signInBtn" type="button" class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#modalSignIn">Sign-in</button>
-        <button sec:authorize="isAnonymous()" id="signUpBtn" type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modalSignUp">Sign-up</button>
-        <button sec:authorize="isAuthenticated()" id="logOutBtn" type="button" class="btn btn-outline-light me-2" onclick="location.href='/logout'">Log-out</button>
-      </div>
-    </div>
-  </div>
+<header th:replace="layout/headerFragment.html::headerFragment">
 </header>
 
 <!-- main -->
@@ -74,13 +37,11 @@
       </div>
       <!-- comment 입력 폼 -->
       <div class="col-md-8 offset-md-2">
-        <form>
           <div class="mb-3">
             <label for="commentInput" class="form-label">댓글 작성</label>
             <textarea class="form-control" id="commentInput" rows="3" required></textarea>
           </div>
-          <button type="submit" class="btn btn-primary" style="float: right">댓글 등록</button>
-        </form>
+          <button onclick="postComment(feedId, $('#commentInput').val())" class="btn btn-primary" style="float: right">댓글 등록</button>
       </div>
       <!-- comment 목록 -->
       <div class="col-md-8 offset-md-2">
@@ -97,17 +58,43 @@
   </div>
 </main>
 
-<!-- 푸터 -->
-<footer class="text-muted py-5">
-  <div class="container">
-    <p class="float-end mb-1">
-      <a href="#">Back to top</a>
-    </p>
-    <p class="mb-1">Album example is &copy; Bootstrap, but please download and customize it for yourself!</p>
-    <p class="mb-0">New to Bootstrap? <a href="/">Visit the homepage</a> or read our <a href="../getting-started/introduction/">getting started guide</a>.</p>
+<!-- modifiedCommentTemplate 모달 -->
+<div id="modifiedCommentTemplate" class="modal fade modal-accuses bg-secondary py-5" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content rounded-4 shadow">
+      <div id="modifiedCommentTemplateModal"></div>
+    </div>
   </div>
-</footer>
+</div>
 
+<!-- commentReply 모달 -->
+<div id="commentReply" class="modal fade modal-accuses bg-secondary py-5" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content rounded-4 shadow">
+      <div id="commentReplyModal"></div>
+    </div>
+  </div>
+</div>
+
+<!-- accuseTemplate 모달 -->
+<div id="accuseTemplate" class="modal fade modal-accuses bg-secondary py-5" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content rounded-4 shadow">
+      <div id="accuseTemplateModal"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 푸터 -->
+<footer th:replace="layout/footerFragment.html::footerFragment"></footer>
+
+<!-- signIn 모달 -->
+<div th:replace="layout/signFragment.html::signInFragment"></div>
+<!-- signUp 모달 -->
+<div th:replace="layout/signFragment.html::signUpFragment"></div>
+
+<!-- searchEnter.js -->
+<script th:inline="javascript" src="/js/searchEnter.js"></script>
 <!-- feedPage.js -->
 <script th:inline="javascript" src="/js/feedPage.js"></script>
 <script th:inline="javascript">

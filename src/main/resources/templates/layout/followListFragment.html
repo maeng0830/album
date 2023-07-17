@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+<!-- followList 모달 -->
+<div th:fragment="followList" class="modal fade modal-accuses bg-secondary py-5" tabindex="-1" role="dialog" id="followListTemplate" aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content rounded-4 shadow">
+      <div id="follow-list" class="container"></div>
+      <div id="follow-list-pagination"></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

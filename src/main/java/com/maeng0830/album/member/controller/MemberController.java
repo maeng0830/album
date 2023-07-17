@@ -34,22 +34,9 @@ public class MemberController {
 	private final AlbumUtil albumUtil;
 
 	// 회원 가입
-	@PostMapping("/join")
-	public MemberDto join(@Valid @ModelAttribute MemberJoinForm memberJoinForm) {
+	@PostMapping("/form-signup")
+	public MemberDto join(@Valid @RequestBody MemberJoinForm memberJoinForm) {
 		return memberService.join(memberJoinForm);
-	}
-
-	// form login 테스트
-	@GetMapping("/form-login/test")
-	public MemberDto formLoginTest(@AuthenticationPrincipal PrincipalDetails principalDetails) {
-
-		return principalDetails.getMemberDto();
-	}
-
-	// Oauth2 login 테스트
-	@GetMapping("/oauth-login/test")
-	public MemberDto oauthLoginTest(@AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return principalDetails.getMemberDto();
 	}
 
 	// 로그인 예외 발생 시 호출
@@ -82,7 +69,6 @@ public class MemberController {
 	public MemberDto modifiedMember(@AuthenticationPrincipal PrincipalDetails principalDetails,
 									@Valid @RequestPart(value = "memberModifiedForm") MemberModifiedForm memberModifiedForm,
 									@RequestPart(value = "imageFile", required = false) MultipartFile imageFile) {
-		System.out.println("MemberController.modifiedMember");
 		return memberService.modifiedMember(albumUtil.checkLogin(principalDetails), memberModifiedForm, imageFile);
 	}
 

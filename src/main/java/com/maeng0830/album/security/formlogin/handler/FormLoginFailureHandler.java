@@ -31,7 +31,7 @@ public class FormLoginFailureHandler implements AuthenticationFailureHandler {
 			request.setAttribute("loginFailMsg", "인증이 필요한 회원입니다.");
 		}
 
-		RequestDispatcher dispatcher = request.getRequestDispatcher("/loginForm");
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/");
 		dispatcher.forward(request, response);
 	}
 }

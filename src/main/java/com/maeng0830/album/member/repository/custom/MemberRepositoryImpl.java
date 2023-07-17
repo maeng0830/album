@@ -4,10 +4,12 @@ import static com.maeng0830.album.member.domain.QMember.member;
 
 import com.maeng0830.album.common.util.AlbumUtil;
 import com.maeng0830.album.member.domain.Member;
+import com.maeng0830.album.member.domain.MemberStatus;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,12 +23,13 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
 	private final AlbumUtil albumUtil;
 
 	@Override
-	public Page<Member> searchBySearchText(String searchText,
+	public Page<Member> searchBySearchText(Collection<MemberStatus> status,
+										   String searchText,
 										   Pageable pageable) {
 		List<Member> content = jpaQueryFactory
 				.select(member)
 				.from(member)
-				.where(searchTextCondition(searchText))
+				.where(searchTextCondition(status, searchText))
 				.orderBy(albumUtil.getOrderSpecifier(pageable.getSort(), member))
 				.offset(pageable.getOffset())
 				.limit(pageable.getPageSize())
@@ -35,7 +38,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
 		JPAQuery<Long> count = jpaQueryFactory
 				.select(member.count())
 				.from(member)
-				.where(searchTextCondition(searchText));
+				.where(searchTextCondition(status, searchText));
 
 		return PageableExecutionUtils.getPage(content, pageable, count::fetchOne);
 	}
@@ -48,17 +51,22 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
 		return searchText == null ? null : member.nickname.like(searchText + "%");
 	}
 
-	private BooleanBuilder searchTextCondition(String searchText) {
+	private BooleanExpression statusIn(Collection<MemberStatus> status) {
+		return status == null ? null : member.status.in(status);
+	}
+
+	private BooleanBuilder searchTextCondition(Collection<MemberStatus> status, String searchText) {
 		BooleanBuilder builder = new BooleanBuilder();
+		BooleanExpression statusIn = statusIn(status);
 		BooleanExpression usernameLike = usernameLike(searchText);
 		BooleanExpression nicknameLike = nicknameLike(searchText);
 
-		if (usernameLike != null) {
-			builder.or(usernameLike);
+		if (statusIn != null) {
+			builder.and(statusIn);
 		}
 
-		if (nicknameLike != null) {
-			builder.or(nicknameLike);
+		if (usernameLike != null && nicknameLike != null) {
+			builder.and(usernameLike.or(nicknameLike));
 		}
 
 		return builder;

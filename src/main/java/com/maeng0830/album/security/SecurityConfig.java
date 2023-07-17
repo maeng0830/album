@@ -28,6 +28,7 @@ public class SecurityConfig {
 				.antMatchers("/admin/**").access("hasRole('ADMIN')")
 				.antMatchers("/static/css/**").permitAll()
 				.antMatchers("/static/js/**").permitAll()
+				.antMatchers("/static/file/**").permitAll()
 				.anyRequest().permitAll()
 				.and()
 				.formLogin()

@@ -51,7 +51,7 @@ class FollowServiceTest {
 		//then
 		assertThat(result.getFollower()).usingRecursiveComparison()
 				.isEqualTo(MemberDto.from(follower));
-		assertThat(result.getFollowee()).usingRecursiveComparison()
+		assertThat(result.getFollowing()).usingRecursiveComparison()
 				.isEqualTo(MemberDto.from(followee));
 	}
 
@@ -67,7 +67,7 @@ class FollowServiceTest {
 
 		followRepository.save(Follow.builder()
 				.follower(follower)
-				.followee(followee)
+				.following(followee)
 				.build());
 
 		MemberDto followerDto = MemberDto.from(follower);

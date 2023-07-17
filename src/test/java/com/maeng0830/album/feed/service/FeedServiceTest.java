@@ -116,11 +116,11 @@ class FeedServiceTest {
 		// 팔로우 세팅
 		Follow follow1 = Follow.builder()
 				.follower(followerMember)
-				.followee(loginMember)
+				.following(loginMember)
 				.build();
 		Follow follow2 = Follow.builder()
 				.follower(loginMember)
-				.followee(followeeMember)
+				.following(followeeMember)
 				.build();
 		followRepository.saveAll(List.of(follow1, follow2));
 
@@ -175,11 +175,11 @@ class FeedServiceTest {
 		// 팔로우 세팅
 		Follow follow1 = Follow.builder()
 				.follower(followerMember)
-				.followee(loginMember)
+				.following(loginMember)
 				.build();
 		Follow follow2 = Follow.builder()
 				.follower(loginMember)
-				.followee(followeeMember)
+				.following(followeeMember)
 				.build();
 		followRepository.saveAll(List.of(follow1, follow2));
 

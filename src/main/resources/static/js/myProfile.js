@@ -6,7 +6,8 @@ $('#basicInfo-form').submit(function (event) {
 
   var memberModifiedForm = {
     nickname: $('#nickname').val(),
-    phone: $('#phone').val()
+    phone: $('#phone').val(),
+    birthDate: $('#birthDate').val()
   }
 
   var imageFile = $('#imageFile')[0].files[0];
@@ -22,6 +23,10 @@ $('#basicInfo-form').submit(function (event) {
     processData: false,
     enctype: 'multipart/form-data',
     success: function (response) {
+      if (response.code && response.message) {
+       alert(response.message);
+       return false
+      }
       alert("회원 정보가 수정되었습니다.");
       location.href = "/";
     },

@@ -56,6 +56,13 @@ public class AdminController {
 	}
 
 	// Member
+	@GetMapping("/members")
+	public Page<MemberDto> getMembersForAdmin(@AuthenticationPrincipal PrincipalDetails principalDetails,
+											  String searchText,
+											  Pageable pageable) {
+		return memberService.getMemberForAdmin(albumUtil.checkLogin(principalDetails), searchText, pageable);
+	}
+
 	@PutMapping("/members/{memberId}/status")
 	public MemberDto changeMemberStatus(@PathVariable Long memberId, @RequestBody MemberStatus memberStatus) {
 		return memberService.changeMemberStatus(memberId, memberStatus);

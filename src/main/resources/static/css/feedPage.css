@@ -29,3 +29,9 @@
   object-fit: cover; /* 이미지 비율 유지 */
   border-radius: 50%; /* 동그란 원형으로 만들기 */
 }
+
+.comment-reply {
+  margin: 0;
+  border-width: 0;
+  padding: 0;
+}

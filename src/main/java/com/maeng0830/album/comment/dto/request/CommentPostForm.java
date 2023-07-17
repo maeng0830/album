@@ -11,8 +11,6 @@ import lombok.NoArgsConstructor;
 public class CommentPostForm {
 
 	@NotNull
-	private Long id;
-	@NotNull
 	private Long feedId;
 	private Long groupId;
 	private Long parentId;
@@ -20,8 +18,7 @@ public class CommentPostForm {
 	private String content;
 
 	@Builder
-	public CommentPostForm(Long id, Long feedId, Long groupId, Long parentId, String content) {
-		this.id = id;
+	public CommentPostForm(Long feedId, Long groupId, Long parentId, String content) {
 		this.feedId = feedId;
 		this.groupId = groupId;
 		this.parentId = parentId;

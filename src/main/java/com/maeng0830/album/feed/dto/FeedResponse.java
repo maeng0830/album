@@ -4,6 +4,7 @@ import com.maeng0830.album.common.model.entity.BaseEntity;
 import com.maeng0830.album.common.model.image.Image;
 import com.maeng0830.album.feed.domain.Feed;
 import com.maeng0830.album.feed.domain.FeedImage;
+import com.maeng0830.album.feed.domain.FeedStatus;
 import com.maeng0830.album.member.dto.MemberDto;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ public class FeedResponse extends BaseEntity {
 	private String content;
 	private int hits;
 	private int commentCount;
+	private FeedStatus status;
 	private MemberDto member;
 	private List<Image> feedImages = new ArrayList<>();
 
@@ -33,6 +35,7 @@ public class FeedResponse extends BaseEntity {
 				.content(feed.getContent())
 				.hits(feed.getHits())
 				.commentCount(feed.getCommentCount())
+				.status(feed.getStatus())
 				.member(MemberDto.from(feed.getMember()))
 				.feedImages(new ArrayList<>())
 				.createdAt(feed.getCreatedAt())

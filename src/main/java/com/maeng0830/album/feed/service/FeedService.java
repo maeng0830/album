@@ -9,10 +9,9 @@ import static com.maeng0830.album.member.exception.MemberExceptionCode.NOT_EXIST
 import static com.maeng0830.album.member.exception.MemberExceptionCode.NO_AUTHORITY;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.REQUIRED_LOGIN;
 
-import com.maeng0830.album.comment.domain.CommentAccuse;
-import com.maeng0830.album.comment.dto.CommentAccuseDto;
 import com.maeng0830.album.common.exception.AlbumException;
 import com.maeng0830.album.common.filedir.FileDir;
+import com.maeng0830.album.common.image.DefaultImage;
 import com.maeng0830.album.common.model.image.Image;
 import com.maeng0830.album.feed.domain.Feed;
 import com.maeng0830.album.feed.domain.FeedAccuse;
@@ -59,22 +58,33 @@ public class FeedService {
 	private final MemberRepository memberRepository;
 	private final FollowRepository followRepository;
 	private final FileDir fileDir;
+	private final DefaultImage defaultImage;
 
 	// FeedImage 데이터 등록
 	public List<FeedImage> saveFeedImage(List<MultipartFile> imageFiles, Feed findFeed) {
-		for (MultipartFile imageFile : imageFiles) {
+		// 첨부 파일이 없을 경우, 기본 이미지 파일 사용
+		// 첨부 파일이 있을 경우, 파일 저장.
+		if (imageFiles.isEmpty()) {
 			FeedImage feedImage = FeedImage.builder()
-					.image(new Image(imageFile, fileDir))
-					.feed(findFeed)
+					.image(Image.createDefaultImage(fileDir, defaultImage.getFeedImage()))
 					.build();
 
-			try {
-				imageFile.transferTo(new File(feedImage.getImage().getImagePath()));
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-
 			feedImageRepository.save(feedImage);
+		} else {
+			for (MultipartFile imageFile : imageFiles) {
+				FeedImage feedImage = FeedImage.builder()
+						.image(new Image(imageFile, fileDir))
+						.feed(findFeed)
+						.build();
+
+				try {
+					imageFile.transferTo(new File(feedImage.getImage().getImagePath()));
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+
+				feedImageRepository.save(feedImage);
+			}
 		}
 
 		return feedImageRepository.findByFeed_Id(findFeed.getId());
@@ -82,7 +92,6 @@ public class FeedService {
 
 	// 메인 페이지 전체 피드 목록 조회, 로그인 여부에 따라 다른 피드 목록 반환
 	public Page<FeedResponse> getFeedsForMain(MemberDto memberDto, Pageable pageable) {
-
 		PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
 				Sort.by(Direction.DESC, "hits"));
 
@@ -102,8 +111,8 @@ public class FeedService {
 			Set<String> createdBy = new HashSet<>();
 
 			members.stream()
-					.filter(f -> !f.getFollowee().getUsername().equals(loginMember.getUsername()))
-					.map(f -> f.getFollowee().getUsername()).forEach(createdBy::add);
+					.filter(f -> !f.getFollowing().getUsername().equals(loginMember.getUsername()))
+					.map(f -> f.getFollowing().getUsername()).forEach(createdBy::add);
 			members.stream()
 					.filter(f -> !f.getFollower().getUsername().equals(loginMember.getUsername()))
 					.map(f -> f.getFollower().getUsername()).forEach(createdBy::add);
@@ -117,10 +126,20 @@ public class FeedService {
 			Page<Feed> feeds = feedRepository.searchByCreatedBy(feedStatuses, null,
 					pageRequest);
 
-			System.out.println("메소드 완료!");
-
 			return feeds.map(f -> FeedResponse.createFeedResponse(f, f.getFeedImages()));
 		}
+	}
+
+	// 헤더 검색창(닉네임)을 통한 피드 목록 반환
+	public Page<FeedResponse> getFeedsForMainWithSearchText(String nickname, Pageable pageable) {
+		PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+				Sort.by(Direction.DESC, "hits"));
+
+		List<FeedStatus> feedStatuses = List.of(NORMAL, ACCUSE);
+
+		Page<Feed> feeds = feedRepository.searchBySearchText(feedStatuses, nickname, pageRequest);
+
+		return feeds.map(f -> FeedResponse.createFeedResponse(f, f.getFeedImages()));
 	}
 
 	// 관리자 페이지 피드 목록 조회
@@ -148,11 +167,14 @@ public class FeedService {
 	}
 
 	// 특정 피드 조회
+	@Transactional
 	public FeedResponse getFeed(Long feedId) {
 		Feed findFeed = feedRepository.findById(feedId)
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_FEED));
 
 		List<FeedImage> feedImages = feedImageRepository.findByFeed_Id(findFeed.getId());
+
+		findFeed.addHits();
 
 		return FeedResponse.createFeedResponse(findFeed, feedImages);
 	}
@@ -160,7 +182,6 @@ public class FeedService {
 	// 피드 등록
 	public FeedResponse feed(FeedRequestForm feedRequestForm, List<MultipartFile> imageFiles,
 							 MemberDto memberDto) {
-
 		if (memberDto == null) {
 			throw new AlbumException(REQUIRED_LOGIN);
 		}
@@ -300,5 +321,19 @@ public class FeedService {
 
 		// 데이터 변환 및 반환
 		return feedAccuses.stream().map(FeedAccuseDto::from).collect(Collectors.toList());
+	}
+
+	public Page<FeedResponse> getMyFeeds(Long memberId, MemberDto memberDto, Pageable pageable) {
+		// 로그인 여부 확인
+		if (memberDto == null) {
+			throw new AlbumException(REQUIRED_LOGIN);
+		}
+
+		List<FeedStatus> statuses = List.of(NORMAL, ACCUSE);
+
+		Page<Feed> feeds = feedRepository.findByStatusInAndMember_Id(statuses,
+				memberId, pageable);
+
+		return feeds.map(f -> FeedResponse.createFeedResponse(f, f.getFeedImages()));
 	}
 }
