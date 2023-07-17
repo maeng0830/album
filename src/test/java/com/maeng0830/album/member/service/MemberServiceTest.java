@@ -2,36 +2,46 @@ package com.maeng0830.album.member.service;
 
 import static com.maeng0830.album.member.domain.MemberRole.*;
 import static com.maeng0830.album.member.domain.MemberStatus.*;
+import static com.maeng0830.album.member.exception.MemberExceptionCode.*;
 import static com.maeng0830.album.security.dto.LoginType.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
+import com.maeng0830.album.common.exception.AlbumException;
 import com.maeng0830.album.common.filedir.FileDir;
+import com.maeng0830.album.common.image.DefaultImage;
+import com.maeng0830.album.common.model.image.Image;
 import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.domain.MemberStatus;
 import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.dto.request.MemberJoinForm;
 import com.maeng0830.album.member.dto.request.MemberModifiedForm;
+import com.maeng0830.album.member.dto.request.MemberPasswordModifiedForm;
+import com.maeng0830.album.member.exception.MemberExceptionCode;
 import com.maeng0830.album.member.repository.MemberRepository;
 import com.maeng0830.album.security.dto.LoginType;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -62,6 +72,9 @@ class MemberServiceTest {
 	@Autowired
 	private FileDir fileDir;
 
+	@Autowired
+	private DefaultImage defaultImage;
+
 	@DisplayName("회원가입을 할 수 있다.")
 	@Test
 	public void join() {
@@ -70,6 +83,7 @@ class MemberServiceTest {
 				.username("test@naver.com")
 				.nickname("testNickname")
 				.password("123")
+				.checkedPassword("123")
 				.build();
 
 		//when
@@ -86,6 +100,58 @@ class MemberServiceTest {
 						FORM);
 		assertThat(passwordEncoder.matches(memberJoinForm.getPassword(), result.getPassword()))
 				.isTrue();
+		assertThat(result.getImage())
+				.usingRecursiveComparison().isEqualTo(Image.createDefaultImage(fileDir, defaultImage.getMemberImage()));
+	}
+
+	@DisplayName("username이 중복인 경우, 회원가입 시 예외가 발생한다.")
+	@Test
+	void join_existUsername() {
+	    // given
+	    // 기존 회원
+		Member existMember = Member.builder()
+				.username("test@naver.com")
+				.nickname("testNickname")
+				.build();
+		memberRepository.save(existMember);
+
+		// 회원가입 정보
+		MemberJoinForm memberJoinForm = MemberJoinForm.builder()
+				.username("test@naver.com")
+				.nickname("testNickname2")
+				.password("123")
+				.checkedPassword("123")
+				.build();
+
+		// when
+		assertThatThrownBy(() -> memberService.join(memberJoinForm))
+				.isInstanceOf(AlbumException.class)
+				.hasMessage(EXIST_USERNAME.getMessage());
+	}
+
+	@DisplayName("nickname이 중복인 경우, 회원가입 시 예외가 발생한다.")
+	@Test
+	void join_existNickname() {
+		// given
+		// 기존 회원
+		Member existMember = Member.builder()
+				.username("test@naver.com")
+				.nickname("testNickname")
+				.build();
+		memberRepository.save(existMember);
+
+		// 회원가입 정보
+		MemberJoinForm memberJoinForm = MemberJoinForm.builder()
+				.username("test2@naver.com")
+				.nickname("testNickname")
+				.password("123")
+				.checkedPassword("123")
+				.build();
+
+		// when
+		assertThatThrownBy(() -> memberService.join(memberJoinForm))
+				.isInstanceOf(AlbumException.class)
+				.hasMessage(EXIST_NICKNAME.getMessage());
 	}
 
 	@DisplayName("본인인 경우, 회원을 탈퇴할 수 있다(WITHDRAW).")
@@ -105,27 +171,159 @@ class MemberServiceTest {
 		assertThat(result.getStatus()).isEqualTo(WITHDRAW);
 	}
 
-	@DisplayName("전체 회원 목록을 조회할 수 있다.")
-	@Test
-	public void getMembers() {
+	@DisplayName("일반회원은 NORMAL 상태인 회원 목록을 조회할 수 있다. "
+			+ "searchText가 null이면 전체 회원 목록을, "
+			+ "null이 아니면 searchText와 username 또는 nickname이 전방 일치하는 회원 목록을 조회한다.")
+	@CsvSource(value = {", 15", "searchUsername, 5", "searchNickname, 10"})
+	@ParameterizedTest
+	public void getMembers(String searchText, int size) {
 		//given
 		List<Member> members = new ArrayList<>();
 
-		for (int i = 0; i < 10; i++) {
-			Member member = Member.builder()
-					.build();
+		// NORMAL 상태의 회원
+		for (int i = 0; i < 15; i++) {
+			if (i <= 4) {
+				Member member = Member.builder()
+						.username("searchUsername")
+						.status(NORMAL)
+						.build();
+				members.add(member);
+			} else {
+				Member member = Member.builder()
+						.nickname("searchNickname")
+						.status(NORMAL)
+						.build();
+				members.add(member);
+			}
+		}
 
-			members.add(member);
+		// LOCKED 또는 WITHDRAW 상태의 회원
+		for (int i = 0; i < 15; i++) {
+			if (i <= 4) {
+				Member member = Member.builder()
+						.username("searchUsername")
+						.status(LOCKED)
+						.build();
+				members.add(member);
+			} else {
+				Member member = Member.builder()
+						.nickname("searchNickname")
+						.status(WITHDRAW)
+						.build();
+				members.add(member);
+			}
 		}
 
 		memberRepository.saveAll(members);
 
 		//when
-		Page<MemberDto> result = memberService.getMembers(null, PageRequest.of(0, 20));
+		Page<MemberDto> result = memberService.getMembers(searchText, PageRequest.of(0, 20));
 
 		//then
-		assertThat(result.getContent().size()).isEqualTo(members.size());
-		assertThat(result.getContent().get(0)).isInstanceOf(MemberDto.class);
+		assertThat(result.getContent().size()).isEqualTo(size);
+	}
+
+	@DisplayName("관리자는 FIRST, NORMAL, LOCKED, WITHDRAW 상태인 회원 목록을 조회할 수 있다. "
+			+ "searchText가 null이면 전체 회원 목록을, "
+			+ "null이 아니면 searchText와 username 또는 nickname이 전방 일치하는 회원 목록을 조회한다.")
+	@CsvSource(value = {", 15, 15, 15, 15", "searchUsername, 5, 5, 5, 5", "searchNickname, 10, 10, 10, 10"})
+	@ParameterizedTest
+	public void getMembersForAdmin(String searchText, int firstSize, int normalSize, int lockedSize, int withdrawSize) {
+		//given
+		List<Member> members = new ArrayList<>();
+
+		// FIRST 상태의 회원
+		for (int i = 0; i < 15; i++) {
+			if (i <= 4) {
+				Member member = Member.builder()
+						.username("searchUsername")
+						.status(FIRST)
+						.build();
+				members.add(member);
+			} else {
+				Member member = Member.builder()
+						.nickname("searchNickname")
+						.status(FIRST)
+						.build();
+				members.add(member);
+			}
+		}
+
+		// NORMAL 상태의 회원
+		for (int i = 0; i < 15; i++) {
+			if (i <= 4) {
+				Member member = Member.builder()
+						.username("searchUsername")
+						.status(NORMAL)
+						.build();
+				members.add(member);
+			} else {
+				Member member = Member.builder()
+						.nickname("searchNickname")
+						.status(NORMAL)
+						.build();
+				members.add(member);
+			}
+		}
+
+		// LOCKED 상태의 회원
+		for (int i = 0; i < 15; i++) {
+			if (i <= 4) {
+				Member member = Member.builder()
+						.username("searchUsername")
+						.status(LOCKED)
+						.build();
+				members.add(member);
+			} else {
+				Member member = Member.builder()
+						.nickname("searchNickname")
+						.status(LOCKED)
+						.build();
+				members.add(member);
+			}
+		}
+
+		// WITHDRAW 상태의 회원
+		for (int i = 0; i < 15; i++) {
+			if (i <= 4) {
+				Member member = Member.builder()
+						.username("searchUsername")
+						.status(WITHDRAW)
+						.build();
+				members.add(member);
+			} else {
+				Member member = Member.builder()
+						.nickname("searchNickname")
+						.status(WITHDRAW)
+						.build();
+				members.add(member);
+			}
+		}
+
+		memberRepository.saveAll(members);
+
+		// 관리자 MemberDto
+		MemberDto adminDto = MemberDto.builder()
+				.role(ROLE_ADMIN)
+				.build();
+
+		//when
+		Page<MemberDto> findMembers = memberService.getMembersForAdmin(adminDto, searchText, PageRequest.of(0, 60));
+		List<MemberDto> firstMembers = findMembers.getContent().stream().filter(m -> m.getStatus().equals(FIRST))
+				.collect(Collectors.toList());
+		List<MemberDto> normalMembers = findMembers.getContent().stream().filter(m -> m.getStatus().equals(NORMAL))
+				.collect(Collectors.toList());
+		List<MemberDto> lockedMembers = findMembers.getContent().stream().filter(m -> m.getStatus().equals(LOCKED))
+				.collect(Collectors.toList());
+		List<MemberDto> withdrawMembers = findMembers.getContent().stream().filter(m -> m.getStatus().equals(WITHDRAW))
+				.collect(Collectors.toList());
+
+		//then
+		assertThat(firstMembers).hasSize(firstSize);
+		assertThat(firstMembers).hasSize(normalSize);
+		assertThat(firstMembers).hasSize(lockedSize);
+		assertThat(firstMembers).hasSize(withdrawSize);
+
 	}
 
 	@DisplayName("주어진 ID에 해당하는 회원을 조회할 수 있다.")
@@ -142,17 +340,21 @@ class MemberServiceTest {
 		memberRepository.saveAll(List.of(member1, member2, member3));
 
 		//when
-		MemberDto result = memberService.getMember(member2.getId());
+		MemberDto result1 = memberService.getMember(member1.getId());
+		MemberDto result2 = memberService.getMember(member2.getId());
+		MemberDto result3 = memberService.getMember(member3.getId());
 
 		//then
-		assertThat(result).isInstanceOf(MemberDto.class);
-		assertThat(result).usingRecursiveComparison().isEqualTo(MemberDto.from(member2));
+		assertThat(result1).usingRecursiveComparison().isEqualTo(MemberDto.from(member1));
+		assertThat(result2).usingRecursiveComparison().isEqualTo(MemberDto.from(member2));
+		assertThat(result3).usingRecursiveComparison().isEqualTo(MemberDto.from(member3));
 	}
 
 	@DisplayName("본인인 경우, 회원 정보를 수정할 수 있다.")
 	@Test
 	public void modifiedMember() throws IOException {
 		//given
+		// 로그인 회원
 		Member loginMember = Member.builder()
 				.nickname("prevNickname")
 				.phone("010-0000-0000")
@@ -161,9 +363,12 @@ class MemberServiceTest {
 		memberRepository.save(loginMember);
 		MemberDto loginMemberDto = MemberDto.from(loginMember);
 
+		// 수정 정보
+		LocalDate modifiedBirthDate = LocalDate.now();
 		MemberModifiedForm memberModifiedForm = MemberModifiedForm.builder()
 				.nickname("nextNickname")
 				.phone("010-1111-1111")
+				.birthDate(modifiedBirthDate)
 				.build();
 
 		MockMultipartFile imageFile = createImageFile("imageFile", "testImage.png",
@@ -178,10 +383,88 @@ class MemberServiceTest {
 				.isEqualTo(memberModifiedForm.getNickname());
 		assertThat(result.getPhone())
 				.isEqualTo(memberModifiedForm.getPhone());
+		assertThat(result.getBirthDate())
+				.isEqualTo(memberModifiedForm.getBirthDate());
 		assertThat(result.getImage().getImageOriginalName())
 				.isEqualTo(imageFile.getOriginalFilename());
 		assertThat(result.getImage().getImagePath())
 				.isEqualTo(fileDir.getDir() + result.getImage().getImageStoreName());
+	}
+
+	@DisplayName("본인인 경우, 비밀번호를 수정할 수 있다.")
+	@Test
+	void modifiedMemberPassword() {
+	    // given
+		// 로그인 회원
+		Member loginMember = Member.builder()
+				.password(passwordEncoder.encode("123"))
+				.build();
+		memberRepository.save(loginMember);
+		MemberDto loginMemberDto = MemberDto.from(loginMember);
+
+		MemberPasswordModifiedForm memberPasswordModifiedForm = MemberPasswordModifiedForm.builder()
+				.currentPassword("123")
+				.modPassword("1234")
+				.checkedModPassword("1234")
+				.build();
+
+		// when
+		MemberDto result = memberService.modifiedMemberPassword(loginMemberDto,
+				memberPasswordModifiedForm);
+
+		// then
+		assertThat(passwordEncoder.matches(memberPasswordModifiedForm.getModPassword(), result.getPassword()))
+				.isTrue();
+	}
+
+	@DisplayName("현재 비밀번호가 일치하지 않는 경우, 비밀번호 변경 시 예외가 발생한다.")
+	@Test
+	void modifiedMemberPassword_incorrectPassword() {
+		// given
+		// 로그인 회원
+		Member loginMember = Member.builder()
+				.password(passwordEncoder.encode("123"))
+				.build();
+		memberRepository.save(loginMember);
+		MemberDto loginMemberDto = MemberDto.from(loginMember);
+
+		MemberPasswordModifiedForm memberPasswordModifiedForm = MemberPasswordModifiedForm.builder()
+				.currentPassword("1234")
+				.modPassword("12345")
+				.checkedModPassword("12345")
+				.build();
+
+		// when
+		assertThatThrownBy(() -> memberService.modifiedMemberPassword(loginMemberDto, memberPasswordModifiedForm))
+				.isInstanceOf(AlbumException.class)
+				.hasMessage(INCORRECT_PASSWORD.getMessage());
+
+		// then
+	}
+
+	@DisplayName("변경 비밀번호와 확인 변경 비밀번호가 일치하지 않는 경우, 비밀번호 변경 시 예외가 발생한다.")
+	@Test
+	void modifiedMemberPassword_notSamePasswordRepassword() {
+		// given
+		// 로그인 회원
+		Member loginMember = Member.builder()
+				.password(passwordEncoder.encode("123"))
+				.build();
+		memberRepository.save(loginMember);
+		MemberDto loginMemberDto = MemberDto.from(loginMember);
+
+		MemberPasswordModifiedForm memberPasswordModifiedForm = MemberPasswordModifiedForm.builder()
+				.currentPassword("123")
+				.modPassword("1234")
+				.checkedModPassword("12345")
+				.build();
+
+		// when
+		assertThatThrownBy(() -> memberService.modifiedMemberPassword(loginMemberDto, memberPasswordModifiedForm))
+				.isInstanceOf(AlbumException.class)
+				.hasMessage(NOT_SAME_PASSWORD_REPASSWORD.getMessage());
+
+		// then
 	}
 
 	@DisplayName("회원 상태를 수정할 수 있다.")
@@ -200,6 +483,7 @@ class MemberServiceTest {
 		assertThat(result.getId()).isEqualTo(member.getId());
 		assertThat(result.getStatus()).isEqualTo(status);
 	}
+
 
 	private MockMultipartFile createImageFile(String name, String originalFilename,
 											  String contentType, FileDir fileDir)

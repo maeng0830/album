@@ -33,7 +33,6 @@ public class CommentController {
 
 	@GetMapping()
 	public List<GroupComment> getFeedComments(Long feedId, Pageable pageable) {
-		System.out.println("feedId = " + feedId);
 		return commentService.getFeedComments(feedId, pageable);
 	}
 
