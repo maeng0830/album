@@ -3,11 +3,15 @@ package com.maeng0830.album.feed.repository;
 import static com.maeng0830.album.feed.domain.FeedStatus.*;
 import static org.assertj.core.api.Assertions.*;
 
+import com.maeng0830.album.common.filedir.FileDir;
+import com.maeng0830.album.common.image.DefaultImage;
 import com.maeng0830.album.common.model.image.Image;
 import com.maeng0830.album.feed.domain.Feed;
 import com.maeng0830.album.feed.domain.FeedImage;
+import com.maeng0830.album.feed.domain.FeedStatus;
 import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.repository.MemberRepository;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
@@ -20,6 +24,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.security.access.method.P;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,9 +42,15 @@ class FeedRepositoryTest {
 	@Autowired
 	private MemberRepository memberRepository;
 
-	@DisplayName("피드 상태 및 피드 작성자와 일치하는 피드와 피드이미지를 함께 조회한다")
+	@Autowired
+	private FileDir fileDir;
+
+	@Autowired
+	private DefaultImage defaultImage;
+
+	@DisplayName("피드 상태 및 피드 작성자와 일치하는 피드와 피드이미지를 함께 조회한다.")
 	@Test
-	void searchByStatusAndCreatedBy() {
+	void searchByCreatedBy() {
 		// given
 		// Member 세팅
 		Member memberA = Member.builder()
@@ -131,7 +142,7 @@ class FeedRepositoryTest {
 	@DisplayName("주어진 정렬 기준에 따라, 피드 상태 및 피드 작성자와 일치하는 피드와 피드이미지를 함께 조회한다")
 	@MethodSource("providePageRequest")
 	@ParameterizedTest
-	void searchByStatusAndCreatedBy_Sorted(PageRequest pageRequest) {
+	void searchByCreatedBy_Sorted(PageRequest pageRequest) {
 		// given
 		// Member 세팅
 		Member memberA = Member.builder()
@@ -222,10 +233,134 @@ class FeedRepositoryTest {
 				);
 	}
 
+	@DisplayName("피드 상태와 일치하는 피드와 피드이미지를 함께 조회한다."
+			+ "searchText가 null인 경우, 모든 피드를 조회한다."
+			+ "null이 아닌 경우, searchText와 피드 작성자의 username 또는 nickname이 전방 일치하는 피드를 조회한다.")
+	@MethodSource("argumentsForSearchBySearchText")
+	@ParameterizedTest
+	void searchBySearchText(List<FeedStatus> statuses, String searchText, List<String> usernames, List<String> nicknames, int size) {
+	    // given
+		// 멤버 세팅
+		Member member1 = Member.builder()
+				.username("username11")
+				.nickname("nickname11")
+				.build();
+
+		Member member2 = Member.builder()
+				.username("username22")
+				.nickname("nickname22")
+				.build();
+
+		memberRepository.saveAll(List.of(member1, member2));
+
+		// 피드 세팅
+		List<Feed> feeds = new ArrayList<>();
+		for (int i = 0; i < 3; i++) {
+			if (i == 0) {
+				Feed feedForMember1 = Feed.builder()
+						.member(member1)
+						.status(NORMAL)
+						.build();
+				Feed feedForMember2 = Feed.builder()
+						.member(member2)
+						.status(NORMAL)
+						.build();
+				feeds.add(feedForMember1);
+				feeds.add(feedForMember2);
+			} else if (i == 1) {
+				Feed feedForMember1 = Feed.builder()
+						.member(member1)
+						.status(ACCUSE)
+						.build();
+				Feed feedForMember2 = Feed.builder()
+						.member(member2)
+						.status(ACCUSE)
+						.build();
+				feeds.add(feedForMember1);
+				feeds.add(feedForMember2);
+			} else {
+				Feed feedForMember1 = Feed.builder()
+						.member(member1)
+						.status(DELETE)
+						.build();
+				Feed feedForMember2 = Feed.builder()
+						.member(member2)
+						.status(DELETE)
+						.build();
+				feeds.add(feedForMember1);
+				feeds.add(feedForMember2);
+			}
+		}
+
+		feedRepository.saveAll(feeds);
+
+		// 피드 이미지 세팅
+		Image defaultFeedImage = Image.createDefaultImage(fileDir, defaultImage.getFeedImage());
+
+		for (Feed feed : feeds) {
+			FeedImage feedImage = FeedImage.builder()
+					.image(defaultFeedImage)
+					.build();
+
+			feed.addFeedImage(feedImage);
+
+			feedImageRepository.save(feedImage);
+		}
+
+		PageRequest pageRequest = PageRequest.of(0, 20);
+
+		// when
+		Page<Feed> result = feedRepository.searchBySearchText(statuses, searchText, pageRequest);
+
+		// then
+		if (searchText != null) {
+			assertThat(result.getContent()).hasSize(size)
+					.extracting("status", "member.username", "member.nickname")
+					.containsExactlyInAnyOrder(tuple(statuses.get(0), usernames.get(0), nicknames.get(0)));
+
+			assertThat(result.getContent().get(0).getFeedImages().get(0))
+					.extracting("image")
+					.usingRecursiveComparison().isEqualTo(defaultFeedImage);
+		} else {
+			assertThat(result.getContent()).hasSize(size)
+					.extracting("status", "member.username", "member.nickname")
+					.containsExactlyInAnyOrder(
+							tuple(statuses.get(0), usernames.get(0), nicknames.get(0)),
+							tuple(statuses.get(0), usernames.get(1), nicknames.get(1))
+					);
+			assertThat(result.getContent().get(0).getFeedImages().get(0))
+					.extracting("image")
+					.usingRecursiveComparison().isEqualTo(defaultFeedImage);
+			assertThat(result.getContent().get(1).getFeedImages().get(0))
+					.extracting("image")
+					.usingRecursiveComparison().isEqualTo(defaultFeedImage);
+		}
+	}
+
 	private static Stream<Arguments> providePageRequest() {
 		return Stream.of(
 				Arguments.of(PageRequest.of(0, 20, Direction.ASC, "hits")),
 				Arguments.of(PageRequest.of(0, 20, Direction.DESC, "commentCount"))
+		);
+	}
+
+	private static Stream<Arguments> argumentsForSearchBySearchText() {
+		return Stream.of(
+				Arguments.of(List.of(NORMAL), "username1", List.of("username11"), List.of("nickname11"), 1),
+				Arguments.of(List.of(NORMAL), "nickname1", List.of("username11"), List.of("nickname11"), 1),
+				Arguments.of(List.of(NORMAL), "username2", List.of("username22"), List.of("nickname22"), 1),
+				Arguments.of(List.of(NORMAL), "nickname2", List.of("username22"), List.of("nickname22"), 1),
+				Arguments.of(List.of(NORMAL), null, List.of("username11", "username22"), List.of("nickname11", "nickname22"), 2),
+				Arguments.of(List.of(ACCUSE), "username1", List.of("username11"), List.of("nickname11"), 1),
+				Arguments.of(List.of(ACCUSE), "nickname1", List.of("username11"), List.of("nickname11"), 1),
+				Arguments.of(List.of(ACCUSE), "username2", List.of("username22"), List.of("nickname22"), 1),
+				Arguments.of(List.of(ACCUSE), "nickname2", List.of("username22"), List.of("nickname22"), 1),
+				Arguments.of(List.of(ACCUSE), null, List.of("username11", "username22"), List.of("nickname11", "nickname22"), 2),
+				Arguments.of(List.of(DELETE), "username1", List.of("username11"), List.of("nickname11"), 1),
+				Arguments.of(List.of(DELETE), "nickname1", List.of("username11"), List.of("nickname11"), 1),
+				Arguments.of(List.of(DELETE), "username2", List.of("username22"), List.of("nickname22"), 1),
+				Arguments.of(List.of(DELETE), "nickname2", List.of("username22"), List.of("nickname22"), 1),
+				Arguments.of(List.of(DELETE), null, List.of("username11", "username22"), List.of("nickname11", "nickname22"), 2)
 		);
 	}
 }
