@@ -33,7 +33,7 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom {
 				.from(feed)
 				.leftJoin(feed.feedImages, feedImage).fetchJoin()
 				.leftJoin(feed.member, member).fetchJoin()
-				.where(searchCondition(status, createdBy, null))
+				.where(searchByCreatedByCondition(status, createdBy))
 				.orderBy(albumUtil.getOrderSpecifier(pageable.getSort(), feed))
 				.offset(pageable.getOffset())
 				.limit(pageable.getPageSize())
@@ -42,7 +42,7 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom {
 		JPAQuery<Long> count = jpaQueryFactory
 				.select(feed.count())
 				.from(feed)
-				.where(searchCondition(status, createdBy, null));
+				.where(searchByCreatedByCondition(status, createdBy));
 
 		return PageableExecutionUtils.getPage(content, pageable, count::fetchOne);
 	}
@@ -55,7 +55,7 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom {
 				.from(feed)
 				.leftJoin(feed.feedImages, feedImage).fetchJoin()
 				.leftJoin(feed.member, member).fetchJoin()
-				.where(searchCondition(status, null, searchText))
+				.where(searchBySearchTextCondition(status, searchText))
 				.orderBy(albumUtil.getOrderSpecifier(pageable.getSort(), feed))
 				.offset(pageable.getOffset())
 				.limit(pageable.getPageSize())
@@ -64,7 +64,7 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom {
 		JPAQuery<Long> count = jpaQueryFactory
 				.select(feed.count())
 				.from(feed)
-				.where(searchCondition(status, null, searchText));
+				.where(searchBySearchTextCondition(status, searchText));
 
 		return PageableExecutionUtils.getPage(content, pageable, count::fetchOne);
 	}
@@ -85,24 +85,34 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom {
 		return searchText == null ? null : feed.member.nickname.like(searchText + "%");
 	}
 
-	private BooleanBuilder searchCondition(Collection<FeedStatus> status,
-										   Collection<String> createdBy, String searchText) {
-
+	private BooleanBuilder searchByCreatedByCondition(Collection<FeedStatus> status, Collection<String> createdBy) {
 		BooleanBuilder builder = new BooleanBuilder();
 		BooleanExpression statusIn = statusIn(status);
 		BooleanExpression createdByIn = createdByIn(createdBy);
-		BooleanExpression usernameLike = usernameLike(searchText);
-		BooleanExpression nicknameLike = nicknameLike(searchText);
 
-		// searchByCreatedBy
-		if (statusIn != null && createdByIn != null) {
+		if (statusIn != null) {
 			builder.and(statusIn);
+		}
+
+		if (createdByIn != null) {
 			builder.and(createdByIn);
 		}
 
-		// searchBySearchText
-		if (statusIn != null && usernameLike != null && nicknameLike != null) {
-			builder.and(statusIn).and(usernameLike.or(nicknameLike));
+		return builder;
+	}
+
+	private BooleanBuilder searchBySearchTextCondition(Collection<FeedStatus> status,String searchText) {
+		BooleanBuilder builder = new BooleanBuilder();
+		BooleanExpression statusIn = statusIn(status);
+		BooleanExpression usernameLike = usernameLike(searchText);
+		BooleanExpression nicknameLike = nicknameLike(searchText);
+
+		if (statusIn != null) {
+			builder.and(statusIn);
+		}
+
+		if (usernameLike != null && nicknameLike != null) {
+			builder.and(usernameLike.or(nicknameLike));
 		}
 
 		return builder;
