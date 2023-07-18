@@ -16,10 +16,4 @@ public interface FollowRepository extends JpaRepository<Follow, Long>, FollowRep
 	int deleteByFollowerAndFollowing(Member follower, Member following);
 
 	Optional<Follow> findByFollower_IdAndFollowing_Id(Long followerId, Long followingId);
-
-	@EntityGraph(attributePaths = {"follower", "following"})
-	Page<Follow> getFollowByFollower_IdAndFollowing_Nickname(Long followerId, String followingNickname, Pageable pageable);
-
-	@EntityGraph(attributePaths = {"follower", "following"})
-	Page<Follow> getFollowByFollowing_IdAndFollower_Nickname(Long followingId, String followerNickname, Pageable pageable);
 }
