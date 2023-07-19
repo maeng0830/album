@@ -3,12 +3,14 @@ package com.maeng0830.album.comment.service;
 import static com.maeng0830.album.comment.domain.CommentStatus.ACCUSE;
 import static com.maeng0830.album.comment.domain.CommentStatus.DELETE;
 import static com.maeng0830.album.comment.domain.CommentStatus.NORMAL;
+import static com.maeng0830.album.member.domain.MemberRole.*;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.NO_AUTHORITY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
 
 import com.maeng0830.album.comment.domain.Comment;
+import com.maeng0830.album.comment.domain.CommentAccuse;
 import com.maeng0830.album.comment.domain.CommentStatus;
 import com.maeng0830.album.comment.dto.CommentAccuseDto;
 import com.maeng0830.album.comment.dto.request.CommentAccuseForm;
@@ -16,13 +18,16 @@ import com.maeng0830.album.comment.dto.request.CommentModifiedForm;
 import com.maeng0830.album.comment.dto.request.CommentPostForm;
 import com.maeng0830.album.comment.dto.response.BasicComment;
 import com.maeng0830.album.comment.dto.response.GroupComment;
+import com.maeng0830.album.comment.repository.CommentAccuseRepository;
 import com.maeng0830.album.comment.repository.CommentRepository;
 import com.maeng0830.album.common.exception.AlbumException;
 import com.maeng0830.album.feed.domain.Feed;
 import com.maeng0830.album.feed.repository.FeedRepository;
 import com.maeng0830.album.member.domain.Member;
+import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.repository.MemberRepository;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,6 +35,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +51,8 @@ class CommentServiceTest {
 	private FeedRepository feedRepository;
 	@Autowired
 	private CommentRepository commentRepository;
+	@Autowired
+	private CommentAccuseRepository commentAccuseRepository;
 	@Autowired
 	private MemberRepository memberRepository;
 
@@ -513,5 +521,253 @@ class CommentServiceTest {
 		// then
 		assertThat(result).extracting("id", "status")
 				.containsExactlyInAnyOrder(comment.getId(), commentStatus);
+	}
+
+	@DisplayName("관리자인 경우, searchText가 작성자의 username 또는 nickname과 전방 일치하는 댓글을 조회할 수 있다."
+			+ "searchText가 null인 경우, 모든 댓글이 조회된다."
+			+ "댓글 상태 기준 신고-정상-삭제 순으로 정렬된다.")
+	@CsvSource(value = {",", "username1", "nickname1", "username2", "nickname2"})
+	@ParameterizedTest
+	void getCommentsForAdmin(String searchText) {
+	    // given
+	    // 관리자 세팅
+		Member admin = Member.builder()
+				.role(ROLE_ADMIN)
+				.build();
+		// 작성자 세팅
+		Member writer1 = Member.builder()
+				.username("username11")
+				.nickname("nickname11")
+				.build();
+		Member writer2 = Member.builder()
+				.username("username22")
+				.nickname("nickname22")
+				.build();
+
+		memberRepository.saveAll(List.of(admin, writer1, writer2));
+
+		// 피드 세팅
+		Feed feed = Feed.builder()
+				.build();
+		feedRepository.save(feed);
+
+		// 댓글 세팅
+		List<Comment> comments = new ArrayList<>();
+		for (int i = 0; i < 3; i++) {
+			CommentStatus commentStatus;
+			Comment comment1;
+			Comment comment2;
+
+			if (i == 0) {
+				commentStatus = NORMAL;
+
+				comment1 = Comment.builder()
+						.member(writer1)
+						.feed(feed)
+						.status(commentStatus)
+						.build();
+				comment1.saveGroup(comment1);
+				comment1.saveParent(comment1);
+
+				comment2 = Comment.builder()
+						.member(writer2)
+						.feed(feed)
+						.status(commentStatus)
+						.build();
+				comment2.saveGroup(comment2);
+				comment2.saveParent(comment2);
+			} else if (i == 1) {
+				commentStatus = ACCUSE;
+
+				comment1 = Comment.builder()
+						.member(writer1)
+						.feed(feed)
+						.status(commentStatus)
+						.build();
+				comment1.saveGroup(comment1);
+				comment1.saveParent(comment1);
+
+				comment2 = Comment.builder()
+						.member(writer2)
+						.feed(feed)
+						.status(commentStatus)
+						.build();
+				comment2.saveGroup(comment2);
+				comment2.saveParent(comment2);
+			} else {
+				commentStatus = DELETE;
+
+				comment1 = Comment.builder()
+						.member(writer1)
+						.feed(feed)
+						.status(commentStatus)
+						.build();
+				comment1.saveGroup(comment1);
+				comment1.saveParent(comment1);
+
+				comment2 = Comment.builder()
+						.member(writer2)
+						.feed(feed)
+						.status(commentStatus)
+						.build();
+				comment2.saveGroup(comment2);
+				comment2.saveParent(comment2);
+			}
+
+			comments.add(comment1);
+			comments.add(comment2);
+		}
+
+		commentRepository.saveAll(comments);
+
+		PageRequest pageRequest = PageRequest.of(0, 20);
+
+		// when
+		Page<BasicComment> result = commentService.getCommentsForAdmin(
+				MemberDto.from(admin), searchText, pageRequest);
+
+		// then
+		if (searchText == null) {
+			assertThat(result.getContent()).hasSize(6)
+					.extracting("status")
+					.containsExactly(
+							ACCUSE, ACCUSE,
+							NORMAL, NORMAL,
+							DELETE, DELETE
+					);
+		} else if (searchText.equals("username1") || searchText.equals("nickname1")) {
+			assertThat(result.getContent()).hasSize(3)
+					.extracting("status", "member.username", "member.nickname")
+					.containsExactly(
+							tuple(ACCUSE, writer1.getUsername(), writer1.getNickname()),
+							tuple(NORMAL, writer1.getUsername(), writer1.getNickname()),
+							tuple(DELETE, writer1.getUsername(), writer1.getNickname())
+					);
+		} else if (searchText.equals("username2") || searchText.equals("nickname2")) {
+			assertThat(result.getContent()).hasSize(3)
+					.extracting("status", "member.username", "member.nickname")
+					.containsExactly(
+							tuple(ACCUSE, writer2.getUsername(), writer2.getNickname()),
+							tuple(NORMAL, writer2.getUsername(), writer2.getNickname()),
+							tuple(DELETE, writer2.getUsername(), writer2.getNickname())
+					);
+		}
+	}
+
+	@DisplayName("관리자가 아닌 경우, searchText가 작성자의 username 또는 nickname과 전방 일치하는 댓글을 조회할 때"
+			+ "예외가 발생한다.")
+	@Test
+	void getCommentsForAdmin_noAdmin() {
+	    // given
+		Member noAdmin = Member.builder()
+				.role(ROLE_MEMBER)
+				.build();
+		MemberDto noAdminDto = MemberDto.from(noAdmin);
+
+		// when
+	    assertThatThrownBy(() -> commentService.getCommentsForAdmin(noAdminDto, null, null))
+				.isInstanceOf(AlbumException.class)
+				.hasMessage(NO_AUTHORITY.getMessage());
+
+	    // then
+	}
+
+	@DisplayName("관리자인 경우, 주어진 댓글아이디에 해당하는 댓글신고 목록을 조회할 수 있다.")
+	@Test
+	void getCommentAccuses() {
+	    // given
+		// 관리자 세팅
+		Member admin = Member.builder()
+				.role(ROLE_ADMIN)
+				.build();
+		// 작성자 세팅
+		Member feedWriter = Member.builder()
+				.build();
+		Member commentWriter = Member.builder()
+				.build();
+		Member commentAccuseWriter = Member.builder()
+				.build();
+		memberRepository.saveAll(List.of(admin, feedWriter, commentWriter, commentAccuseWriter));
+
+		// 피드 세팅
+		Feed feed = Feed.builder()
+				.member(feedWriter)
+				.build();
+		feedRepository.save(feed);
+
+		// 댓글 세팅
+		Comment comment1 = Comment.builder()
+				.feed(feed)
+				.member(commentWriter)
+				.status(ACCUSE)
+				.build();
+		comment1.saveParent(comment1);
+		comment1.saveGroup(comment1);
+
+		Comment comment2 = Comment.builder()
+				.feed(feed)
+				.member(commentWriter)
+				.status(ACCUSE)
+				.build();
+		comment2.saveParent(comment2);
+		comment2.saveGroup(comment2);
+
+		commentRepository.saveAll(List.of(comment1, comment2));
+
+		// 댓글 신고 세팅
+		List<CommentAccuse> commentAccuses = new ArrayList<>();
+		for (int i = 0; i < 10; i++) {
+			CommentAccuse commentAccuse;
+
+			if (i % 2 == 0) {
+				 commentAccuse = CommentAccuse.builder()
+						.member(commentAccuseWriter)
+						.comment(comment1)
+						.build();
+			} else {
+				commentAccuse = CommentAccuse.builder()
+						.member(commentAccuseWriter)
+						.comment(comment2)
+						.build();
+			}
+
+			commentAccuses.add(commentAccuse);
+		}
+
+		commentAccuseRepository.saveAll(commentAccuses);
+
+		// when
+		List<CommentAccuseDto> result1 = commentService.getCommentAccuses(
+				MemberDto.from(admin), comment1.getId());
+		List<CommentAccuseDto> result2 = commentService.getCommentAccuses(
+				MemberDto.from(admin), comment2.getId());
+
+		// then
+		assertThat(result1).hasSize(5)
+				.extracting("comment.id")
+				.containsExactlyInAnyOrder(
+						comment1.getId(), comment1.getId(), comment1.getId(), comment1.getId(), comment1.getId()
+				);
+		assertThat(result2).hasSize(5)
+				.extracting("comment.id")
+				.containsExactlyInAnyOrder(
+						comment2.getId(), comment2.getId(), comment2.getId(), comment2.getId(), comment2.getId()
+				);
+	}
+
+	@DisplayName("관리자가 아닌 경우, 주어진 댓글아이디에 해당하는 댓글신고 목록을 조회할 때 예외가 발생한다.")
+	@Test
+	void getCommentAccuses_noAdmin() {
+	    // given
+		Member noAdmin = Member.builder()
+				.role(ROLE_MEMBER)
+				.build();
+
+		// when
+		assertThatThrownBy(() -> commentService.getCommentAccuses(MemberDto.from(noAdmin), null))
+				.isInstanceOf(AlbumException.class)
+				.hasMessage(NO_AUTHORITY.getMessage());
+
+	    // then
 	}
 }

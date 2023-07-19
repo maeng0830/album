@@ -44,11 +44,11 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
 	}
 
 	private BooleanExpression usernameLike(String searchText) {
-		return searchText == null ? null : member.username.like(searchText + "%");
+		return searchText == null ? null : comment.member.username.like(searchText + "%");
 	}
 
 	private BooleanExpression nicknameLike(String searchText) {
-		return searchText == null ? null : member.nickname.like(searchText + "%");
+		return searchText == null ? null : comment.member.nickname.like(searchText + "%");
 	}
 
 	private BooleanBuilder searchTextCondition(String searchText) {
