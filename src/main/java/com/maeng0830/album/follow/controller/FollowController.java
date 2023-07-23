@@ -26,7 +26,6 @@ public class FollowController {
 	@PostMapping("/follows/{followerId}")
 	public FollowDto follow(@PathVariable Long followerId,
 							@AuthenticationPrincipal PrincipalDetails principalDetails) {
-
 		return followService.follow(followerId, albumUtil.checkLogin(principalDetails));
 	}
 

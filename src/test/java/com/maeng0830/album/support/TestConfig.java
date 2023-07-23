@@ -1,43 +1,24 @@
-package com.maeng0830.album.common;
+package com.maeng0830.album.support;
 
 import com.maeng0830.album.common.filedir.FileDir;
 import com.maeng0830.album.common.filedir.FileDirProperties;
 import com.maeng0830.album.common.image.DefaultImage;
 import com.maeng0830.album.common.image.DefaultImageProperties;
-import com.maeng0830.album.common.util.AlbumUtil;
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import javax.persistence.EntityManager;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-@RequiredArgsConstructor
-@EnableConfigurationProperties(value = {FileDirProperties.class, DefaultImageProperties.class})
-@EnableJpaAuditing
 @Configuration
-public class CommonConfig {
+@EnableConfigurationProperties(value = {FileDirProperties.class, DefaultImageProperties.class})
+public class TestConfig {
 
-	private final FileDirProperties fileDirProperties;
-	private final DefaultImageProperties defaultImageProperties;
+	@Autowired
+	private FileDirProperties fileDirProperties;
 
-	@Bean
-	public BCryptPasswordEncoder bCryptPasswordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
-
-	@Bean
-	public AlbumUtil util() {
-		return new AlbumUtil();
-	}
-
-	@Bean
-	public JPAQueryFactory jpaQueryFactory(EntityManager em) {
-		return new JPAQueryFactory(em);
-	}
+	@Autowired
+	private DefaultImageProperties defaultImageProperties;
 
 	@Profile("dev")
 	@Bean(name = "fileDir")
