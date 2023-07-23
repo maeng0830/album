@@ -7,9 +7,13 @@ import com.maeng0830.album.security.oauthlogin.handler.OAuthLoginSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
+@EnableGlobalMethodSecurity(prePostEnabled=true)
+@EnableWebSecurity
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
@@ -25,6 +29,7 @@ public class SecurityConfig {
 
 		http.authorizeRequests()
 				.antMatchers("/members/**").access("hasRole('ADMIN') or hasRole('MEMBER')")
+				.antMatchers("/follows/**").access("hasRole('ADMIN') or hasRole('MEMBER')")
 				.antMatchers("/admin/**").access("hasRole('ADMIN')")
 				.antMatchers("/static/css/**").permitAll()
 				.antMatchers("/static/js/**").permitAll()

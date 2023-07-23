@@ -39,8 +39,7 @@ public class AdminController {
 	// Feed
 	@GetMapping("/feeds")
 	public Page<FeedResponse> getFeedsForAdmin(@AuthenticationPrincipal PrincipalDetails principalDetails,
-											   String searchText,
-											   Pageable pageable) {
+											   String searchText, Pageable pageable) {
 		return feedService.getFeedsForAdmin(albumUtil.checkLogin(principalDetails), searchText, pageable);
 	}
 
@@ -58,8 +57,7 @@ public class AdminController {
 	// Member
 	@GetMapping("/members")
 	public Page<MemberDto> getMembersForAdmin(@AuthenticationPrincipal PrincipalDetails principalDetails,
-											  String searchText,
-											  Pageable pageable) {
+											  String searchText, Pageable pageable) {
 		return memberService.getMembersForAdmin(albumUtil.checkLogin(principalDetails), searchText, pageable);
 	}
 
@@ -71,8 +69,7 @@ public class AdminController {
 	// Comment
 	@GetMapping("/comments")
 	public Page<BasicComment> getCommentsForAdmin(@AuthenticationPrincipal PrincipalDetails principalDetails,
-												  String searchText,
-												  Pageable pageable) {
+												  String searchText, Pageable pageable) {
 		return commentService.getCommentsForAdmin(albumUtil.checkLogin(principalDetails), searchText, pageable);
 	}
 
@@ -83,8 +80,8 @@ public class AdminController {
 	}
 
 	@PutMapping("/comments/{commentId}/status")
-	public BasicComment changeCommentStatus(@PathVariable Long commentId, @RequestBody
-											CommentStatus commentStatus) {
+	public BasicComment changeCommentStatus(@PathVariable Long commentId,
+											@RequestBody CommentStatus commentStatus) {
 		return commentService.changeCommentStatus(commentId, commentStatus);
 	}
 }

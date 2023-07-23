@@ -6,7 +6,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @PropertySource("classpath:/env.properties")
-@EnableJpaAuditing
 @SpringBootApplication
 public class AlbumApplication {
 

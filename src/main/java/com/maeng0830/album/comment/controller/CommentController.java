@@ -13,6 +13,7 @@ import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,23 +42,32 @@ public class CommentController {
 		return commentService.getComment(commentId);
 	}
 
+	@PreAuthorize("isAuthenticated()")
 	@PostMapping()
-	public BasicComment comment(@Valid @RequestBody CommentPostForm commentPostForm, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+	public BasicComment comment(@Valid @RequestBody CommentPostForm commentPostForm,
+								@AuthenticationPrincipal PrincipalDetails principalDetails) {
 		return commentService.comment(commentPostForm, albumUtil.checkLogin(principalDetails));
 	}
 
+	@PreAuthorize("isAuthenticated()")
 	@PutMapping()
-	public BasicComment modifiedComment(@Valid @RequestBody CommentModifiedForm commentModifiedForm, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+	public BasicComment modifiedComment(@Valid @RequestBody CommentModifiedForm commentModifiedForm,
+										@AuthenticationPrincipal PrincipalDetails principalDetails) {
 		return commentService.modifiedComment(commentModifiedForm, albumUtil.checkLogin(principalDetails));
 	}
 
+	@PreAuthorize("isAuthenticated()")
 	@PutMapping("/{domainId}/accuse")
-	public CommentAccuseDto accuseComment(@PathVariable Long domainId, @Valid @RequestBody CommentAccuseForm commentAccuseForm, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+	public CommentAccuseDto accuseComment(@PathVariable Long domainId,
+										  @Valid @RequestBody CommentAccuseForm commentAccuseForm,
+										  @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		return commentService.accuseComment(domainId, commentAccuseForm, albumUtil.checkLogin(principalDetails));
 	}
 
+	@PreAuthorize("isAuthenticated()")
 	@DeleteMapping("/{domainId}")
-	public BasicComment deleteComment(@PathVariable Long domainId, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+	public BasicComment deleteComment(@PathVariable Long domainId,
+									  @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		return commentService.deleteComment(domainId, albumUtil.checkLogin(principalDetails));
 	}
 }
