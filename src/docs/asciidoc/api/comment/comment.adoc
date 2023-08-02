@@ -1,0 +1,54 @@
+[[get-comments-for-feed]]
+=== 특정 피드 댓글 조회
+==== HTTP Request
+include::{snippets}/get-comments-for-feed/http-request.adoc[]
+include::{snippets}/get-comments-for-feed/request-parameters.adoc[]
+==== HTTP Response
+include::{snippets}/get-comments-for-feed/http-response.adoc[]
+include::{snippets}/get-comments-for-feed/response-fields.adoc[]
+
+[[get-comment]]
+=== 특정 댓글 조회
+==== HTTP Request
+include::{snippets}/get-comment/http-request.adoc[]
+include::{snippets}/get-comment/path-parameters.adoc[]
+==== HTTP Response
+include::{snippets}/get-comment/http-response.adoc[]
+include::{snippets}/get-comment/response-fields.adoc[]
+
+[[comment]]
+=== 댓글 작성
+==== HTTP Request
+include::{snippets}/comment/http-request.adoc[]
+include::{snippets}/comment/request-fields.adoc[]
+==== HTTP Response
+include::{snippets}/comment/http-response.adoc[]
+include::{snippets}/comment/response-fields.adoc[]
+
+[[modified-comment]]
+=== 댓글 수정
+==== HTTP Request
+include::{snippets}/modified-comment/http-request.adoc[]
+include::{snippets}/modified-comment/request-fields.adoc[]
+==== HTTP Response
+include::{snippets}/modified-comment/http-response.adoc[]
+include::{snippets}/modified-comment/response-fields.adoc[]
+
+[[accuse-comment]]
+=== 댓글 신고
+==== HTTP Request
+include::{snippets}/accuse-comment/http-request.adoc[]
+include::{snippets}/accuse-comment/path-parameters.adoc[]
+include::{snippets}/accuse-comment/request-fields.adoc[]
+==== HTTP Response
+include::{snippets}/accuse-comment/http-response.adoc[]
+include::{snippets}/accuse-comment/response-fields.adoc[]
+
+[[delete-comment]]
+=== 댓글 삭제
+==== HTTP Request
+include::{snippets}/delete-comment/http-request.adoc[]
+include::{snippets}/delete-comment/path-parameters.adoc[]
+==== HTTP Response
+include::{snippets}/delete-comment/http-response.adoc[]
+include::{snippets}/delete-comment/response-fields.adoc[]

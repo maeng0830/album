@@ -5,6 +5,7 @@ import com.maeng0830.album.common.model.image.Image;
 import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.domain.MemberStatus;
+import com.maeng0830.album.member.dto.request.MemberModifiedForm;
 import com.maeng0830.album.security.dto.LoginType;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -45,6 +46,12 @@ public class MemberDto extends BaseEntity {
 				.modifiedBy(member.getModifiedBy())
 				.loginType(member.getLoginType())
 				.build();
+	}
+
+	public void modifiedBasicInfo(MemberModifiedForm memberModifiedForm) {
+		this.nickname = memberModifiedForm.getNickname();
+		this.phone = memberModifiedForm.getPhone();
+		this.birthDate = memberModifiedForm.getBirthDate();
 	}
 }
 

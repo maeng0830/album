@@ -1,0 +1,30 @@
+ifndef::snippets[]
+:snippets: ../../build/generated-snippets
+endif::[]
+= Album REST API 명세서
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[Member-API]]
+== Member API
+include::api/member/member.adoc[]
+
+[[Follow-API]]
+== Follow API
+include::api/follow/follow.adoc[]
+
+[[Feed-API]]
+== Feed API
+include::api/feed/feed.adoc[]
+
+[[Comment-API]]
+== Comment API
+include::api/comment/comment.adoc[]
+
+[[Admin-API]]
+== Admin API
+include::api/admin/admin.adoc[]

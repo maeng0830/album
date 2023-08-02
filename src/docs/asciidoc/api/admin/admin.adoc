@@ -1,0 +1,74 @@
+[[get-feeds-for-admin]]
+=== 관리자용 전체 피드 조회
+==== HTTP Request
+include::{snippets}/get-feeds-for-admin/http-request.adoc[]
+include::{snippets}/get-feeds-for-admin/request-parameters.adoc[]
+==== HTTP Response
+include::{snippets}/get-feeds-for-admin/http-response.adoc[]
+include::{snippets}/get-feeds-for-admin/response-fields.adoc[]
+
+[[get-feeds-accuses-for-admin]]
+=== 관리자용 특정 피드 신고 내역 조회
+==== HTTP Request
+include::{snippets}/get-feeds-accuses-for-admin/http-request.adoc[]
+include::{snippets}/get-feeds-accuses-for-admin/path-parameters.adoc[]
+==== HTTP Response
+include::{snippets}/get-feeds-accuses-for-admin/http-response.adoc[]
+include::{snippets}/get-feeds-accuses-for-admin/response-fields.adoc[]
+
+[[change-feed-status-for-admin]]
+=== 관리자용 피드 상태 변경
+==== HTTP Request
+include::{snippets}/change-feed-status-for-admin/http-request.adoc[]
+include::{snippets}/change-feed-status-for-admin/path-parameters.adoc[]
+include::{snippets}/change-feed-status-for-admin/request-fields.adoc[]
+==== HTTP Response
+include::{snippets}/change-feed-status-for-admin/http-response.adoc[]
+include::{snippets}/change-feed-status-for-admin/response-fields.adoc[]
+
+[[get-members-for-admin]]
+=== 관리자용 전체 회원 조회
+==== HTTP Request
+include::{snippets}/get-members-for-admin/http-request.adoc[]
+include::{snippets}/get-members-for-admin/request-parameters.adoc[]
+==== HTTP Response
+include::{snippets}/get-members-for-admin/http-response.adoc[]
+include::{snippets}/get-members-for-admin/response-fields.adoc[]
+
+[[change-member-status-for-admin]]
+=== 관리자용 회원 상태 변경
+==== HTTP Request
+include::{snippets}/change-member-status-for-admin/http-request.adoc[]
+include::{snippets}/change-member-status-for-admin/path-parameters.adoc[]
+include::{snippets}/change-member-status-for-admin/request-fields.adoc[]
+==== HTTP Response
+include::{snippets}/change-member-status-for-admin/http-response.adoc[]
+include::{snippets}/change-member-status-for-admin/response-fields.adoc[]
+
+[[get-comments-for-admin]]
+=== 관리자용 전체 댓글 조회
+==== HTTP Request
+include::{snippets}/get-comments-for-admin/http-request.adoc[]
+include::{snippets}/get-comments-for-admin/request-parameters.adoc[]
+==== HTTP Response
+include::{snippets}/get-comments-for-admin/http-response.adoc[]
+include::{snippets}/get-comments-for-admin/response-fields.adoc[]
+
+[[get-comment-accuses-for-admin]]
+=== 관리자용 특정 댓글 신고 내역 조회
+==== HTTP Request
+include::{snippets}/get-comment-accuses-for-admin/http-request.adoc[]
+include::{snippets}/get-comment-accuses-for-admin/path-parameters.adoc[]
+==== HTTP Response
+include::{snippets}/get-comment-accuses-for-admin/http-response.adoc[]
+include::{snippets}/get-comment-accuses-for-admin/response-fields.adoc[]
+
+[[change-comment-status-for-admin]]
+=== 관리자용 댓글 상태 변경
+==== HTTP Request
+include::{snippets}/change-comment-status-for-admin/http-request.adoc[]
+include::{snippets}/change-comment-status-for-admin/path-parameters.adoc[]
+include::{snippets}/change-comment-status-for-admin/request-fields.adoc[]
+==== HTTP Response
+include::{snippets}/change-comment-status-for-admin/http-response.adoc[]
+include::{snippets}/change-comment-status-for-admin/response-fields.adoc[]

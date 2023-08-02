@@ -13,6 +13,8 @@ import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.repository.MemberRepository;
 import com.maeng0830.album.security.formlogin.PrincipalDetails;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +34,7 @@ public class FollowService {
 	private final MemberRepository memberRepository;
 
 	@Transactional
-	public FollowDto follow(Long followerId, MemberDto memberDto) {
+	public FollowDto follow(Long followingId, MemberDto memberDto) {
 
 		if (memberDto == null) {
 			throw new AlbumException(REQUIRED_LOGIN);
@@ -44,7 +46,7 @@ public class FollowService {
 						NOT_EXIST_MEMBER));
 
 		log.info("타인 조회");
-		Member following = memberRepository.findById(followerId)
+		Member following = memberRepository.findById(followingId)
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_MEMBER));
 
 		log.info("팔로우 저장");
@@ -61,7 +63,7 @@ public class FollowService {
 		return FollowDto.from(follow);
 	}
 
-	public String cancelFollow(Long followingId, MemberDto memberDto) {
+	public Map<String, String> cancelFollow(Long followingId, MemberDto memberDto) {
 
 		log.info("본인 조회");
 		Member follower = memberRepository.findById(memberDto.getId())
@@ -78,8 +80,13 @@ public class FollowService {
 		if (count == 0) {
 			throw new AlbumException(NOT_EXIST_FOLLOW);
 		} else {
-			return String.format("%s님이 %s님에 대한 팔로우를 취소하였습니다.", follower.getUsername(),
+			Map<String, String> map = new HashMap<>();
+
+			String value = String.format("%s님이 %s님에 대한 팔로우를 취소하였습니다.", follower.getUsername(),
 					following.getUsername());
+			map.put("message", value);
+
+			return map;
 		}
 	}
 

@@ -23,7 +23,8 @@ import com.maeng0830.album.feed.dto.FeedAccuseDto;
 import com.maeng0830.album.feed.dto.FeedDto;
 import com.maeng0830.album.feed.dto.FeedResponse;
 import com.maeng0830.album.feed.dto.request.FeedAccuseRequestForm;
-import com.maeng0830.album.feed.dto.request.FeedRequestForm;
+import com.maeng0830.album.feed.dto.request.FeedModifiedForm;
+import com.maeng0830.album.feed.dto.request.FeedPostForm;
 import com.maeng0830.album.feed.repository.FeedAccuseRepository;
 import com.maeng0830.album.feed.repository.FeedImageRepository;
 import com.maeng0830.album.feed.repository.FeedRepository;
@@ -35,16 +36,12 @@ import com.maeng0830.album.member.repository.MemberRepository;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
@@ -502,7 +499,7 @@ class FeedServiceTest {
 	@Test
 	void feed() throws IOException {
 		// given
-		FeedRequestForm feedRequestForm = FeedRequestForm.builder()
+		FeedPostForm feedPostForm = FeedPostForm.builder()
 				.title("testTitle")
 				.content("testContent")
 				.build();
@@ -516,7 +513,7 @@ class FeedServiceTest {
 				"multipart/mixed", fileDir, 3);
 
 		// when
-		FeedResponse feedResponse = feedService.feed(feedRequestForm, imageFiles, memberDto);
+		FeedResponse feedResponse = feedService.feed(feedPostForm, imageFiles, memberDto);
 
 		// then
 		assertThat(feedResponse)
@@ -536,7 +533,7 @@ class FeedServiceTest {
 	@Test
 	void feed_noLogin() throws IOException {
 		// given
-		FeedRequestForm feedRequestForm = FeedRequestForm.builder()
+		FeedPostForm feedPostForm = FeedPostForm.builder()
 				.title("testTitle")
 				.content("testContent")
 				.build();
@@ -549,7 +546,7 @@ class FeedServiceTest {
 		// when
 
 		// then
-		assertThatThrownBy(() -> feedService.feed(feedRequestForm, imageFiles, memberDto))
+		assertThatThrownBy(() -> feedService.feed(feedPostForm, imageFiles, memberDto))
 				.isInstanceOf(AlbumException.class)
 				.hasMessage(REQUIRED_LOGIN.getMessage());
 	}
@@ -668,7 +665,8 @@ class FeedServiceTest {
 		}
 
 		// 변경 데이터 세팅
-		FeedRequestForm feedRequestForm = FeedRequestForm.builder()
+		FeedModifiedForm feedModifiedForm = FeedModifiedForm.builder()
+				.id(feed.getId())
 				.title("modTitle")
 				.content("modContent")
 				.build();
@@ -679,14 +677,12 @@ class FeedServiceTest {
 		System.out.println("feed.getId() = " + feed.getId());
 
 		// when
-		FeedResponse feedResponse = feedService.modifiedFeed(feed.getId(), feedRequestForm,
-				modImageFiles,
-				writerDto);
+		FeedResponse feedResponse = feedService.modifiedFeed(feedModifiedForm, modImageFiles, writerDto);
 
 		// then
 		assertThat(feedResponse)
 				.extracting("title", "content")
-				.containsExactly(feedRequestForm.getTitle(), feedRequestForm.getContent());
+				.containsExactly(feedModifiedForm.getTitle(), feedModifiedForm.getContent());
 		assertThat(feedResponse.getFeedImages()).hasSize(3)
 				.extracting("imageOriginalName")
 				.containsExactlyInAnyOrder(
@@ -715,7 +711,8 @@ class FeedServiceTest {
 		feedRepository.save(feed);
 
 		// 변경 데이터 세팅
-		FeedRequestForm feedRequestForm = FeedRequestForm.builder()
+		FeedModifiedForm feedModifiedForm = FeedModifiedForm.builder()
+				.id(feed.getId())
 				.title("modTitle")
 				.content("modContent")
 				.build();
@@ -728,8 +725,7 @@ class FeedServiceTest {
 		// when
 
 		// then
-		assertThatThrownBy(() -> feedService.modifiedFeed(feed.getId(), feedRequestForm, null,
-				noWriterDto))
+		assertThatThrownBy(() -> feedService.modifiedFeed(feedModifiedForm, null, noWriterDto))
 				.isInstanceOf(AlbumException.class)
 				.hasMessage(NO_AUTHORITY.getMessage());
 	}

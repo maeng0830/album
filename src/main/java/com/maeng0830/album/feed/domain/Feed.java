@@ -2,14 +2,13 @@ package com.maeng0830.album.feed.domain;
 
 import com.maeng0830.album.common.model.entity.BaseEntity;
 import com.maeng0830.album.feed.domain.FeedStatus.FeedStatusConvertor;
-import com.maeng0830.album.feed.dto.request.FeedRequestForm;
+import com.maeng0830.album.feed.dto.request.FeedModifiedForm;
+import com.maeng0830.album.feed.dto.request.FeedPostForm;
 import com.maeng0830.album.member.domain.Member;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -55,9 +54,9 @@ public class Feed extends BaseEntity {
 		feedImage.assignFeed(this);
 	}
 
-	public void modified(FeedRequestForm feedRequestForm) {
-		this.title = feedRequestForm.getTitle();
-		this.content = feedRequestForm.getContent();
+	public void modified(FeedModifiedForm feedModifiedForm) {
+		this.title = feedModifiedForm.getTitle();
+		this.content = feedModifiedForm.getContent();
 	}
 
 	public void addHits() {

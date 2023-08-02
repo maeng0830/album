@@ -7,18 +7,19 @@ $(document).ready(function() {
 })
 
 function modifiedFeed(feedId, title, content, files) {
-  var url = `/feeds/${feedId}`;
+  var url = `/feeds`;
 
   var formData = new FormData();
 
-  var feedRequestForm = {
+  var feedModifiedForm = {
+    id: feedId,
     title: title,
     content: content
   }
 
   var imageFiles = files[0].files;
 
-  formData.append("feedRequestForm", new Blob([JSON.stringify(feedRequestForm)], {type: "application/json"}));
+  formData.append("feedModifiedForm", new Blob([JSON.stringify(feedModifiedForm)], {type: "application/json"}));
 
   for (var i = 0; i < imageFiles.length; i++) {
     formData.append("imageFiles", imageFiles[i]);

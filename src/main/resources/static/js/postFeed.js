@@ -13,14 +13,14 @@ $('#feed-form').submit(function (event) {
 
   var formData = new FormData();
 
-  var feedRequestForm = {
+  var feedPostForm = {
     title: $('#title').val(),
     content: $('#content').val()
   }
 
   var imageFiles = $('#imageFiles')[0].files;
 
-  formData.append("feedRequestForm", new Blob([JSON.stringify(feedRequestForm)], {type: "application/json"}));
+  formData.append("feedPostForm", new Blob([JSON.stringify(feedPostForm)], {type: "application/json"}));
 
   for (var i = 0; i < imageFiles.length; i++) {
     formData.append("imageFiles", imageFiles[i]);

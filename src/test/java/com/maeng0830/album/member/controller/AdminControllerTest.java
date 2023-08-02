@@ -33,6 +33,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -53,12 +54,18 @@ class AdminControllerTest {
 
 	private MockMvc mockMvc;
 
+	@Autowired
+	private FileDir fileDir;
+	@Autowired
+	private DefaultImage defaultImage;
+	@Autowired
+	private TestPrincipalDetailsService testPrincipalDetailsService;
+
 	private PrincipalDetails memberPrincipalDetails;
 
 	private PrincipalDetails adminPrincipalDetails;
 
-	private final TestPrincipalDetailsService testPrincipalDetailsService =
-			new TestPrincipalDetailsService();
+	private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 	@MockBean
 	private CommentService commentService;
@@ -76,11 +83,6 @@ class AdminControllerTest {
 	private OAuthLoginSuccessHandler oAuthLoginSuccessHandler;
 	@MockBean
 	private OAuthLoginFailureHandler oAuthLoginFailureHandler;
-
-	@Autowired
-	private FileDir fileDir;
-	@Autowired
-	private DefaultImage defaultImage;
 
 	@BeforeEach
 	public void setup() {

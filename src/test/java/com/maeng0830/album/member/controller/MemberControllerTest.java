@@ -43,6 +43,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -63,12 +64,18 @@ class MemberControllerTest {
 
 	private MockMvc mockMvc;
 
+	@Autowired
+	private FileDir fileDir;
+	@Autowired
+	private DefaultImage defaultImage;
+	@Autowired
+	private TestPrincipalDetailsService testPrincipalDetailsService;
+
 	private PrincipalDetails memberPrincipalDetails;
 
 	private PrincipalDetails adminPrincipalDetails;
 
-	private final TestPrincipalDetailsService testPrincipalDetailsService =
-			new TestPrincipalDetailsService();
+	private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 	@MockBean
 	private MemberService memberService;
@@ -82,11 +89,6 @@ class MemberControllerTest {
 	private OAuthLoginSuccessHandler oAuthLoginSuccessHandler;
 	@MockBean
 	private OAuthLoginFailureHandler oAuthLoginFailureHandler;
-
-	@Autowired
-	private FileDir fileDir;
-	@Autowired
-	private DefaultImage defaultImage;
 
 	@BeforeEach
 	public void setup() {
@@ -284,8 +286,8 @@ class MemberControllerTest {
 	void modifiedMember() throws Exception {
 		// given
 		MemberModifiedForm memberModifiedForm = MemberModifiedForm.builder()
-				.nickname("testNickname")
-				.phone("010-1111-1111")
+				.nickname("modNickname")
+				.phone("010-2222-2222")
 				.birthDate(LocalDate.now())
 				.build();
 
