@@ -15,7 +15,8 @@ import com.maeng0830.album.common.filedir.FileDir;
 import com.maeng0830.album.common.image.DefaultImage;
 import com.maeng0830.album.common.util.AlbumUtil;
 import com.maeng0830.album.feed.dto.request.FeedAccuseRequestForm;
-import com.maeng0830.album.feed.dto.request.FeedRequestForm;
+import com.maeng0830.album.feed.dto.request.FeedModifiedForm;
+import com.maeng0830.album.feed.dto.request.FeedPostForm;
 import com.maeng0830.album.feed.service.FeedService;
 import com.maeng0830.album.security.formlogin.PrincipalDetails;
 import com.maeng0830.album.security.formlogin.handler.FormLoginFailureHandler;
@@ -42,6 +43,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -62,12 +64,18 @@ class FeedControllerTest {
 
 	private MockMvc mockMvc;
 
+	@Autowired
+	private FileDir fileDir;
+	@Autowired
+	private DefaultImage defaultImage;
+	@Autowired
+	private TestPrincipalDetailsService testPrincipalDetailsService;
+
 	private PrincipalDetails memberPrincipalDetails;
 
 	private PrincipalDetails adminPrincipalDetails;
 
-	private final TestPrincipalDetailsService testPrincipalDetailsService =
-			new TestPrincipalDetailsService();
+	private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 	@MockBean
 	private FeedService feedService;
@@ -81,11 +89,6 @@ class FeedControllerTest {
 	private OAuthLoginSuccessHandler oAuthLoginSuccessHandler;
 	@MockBean
 	private OAuthLoginFailureHandler oAuthLoginFailureHandler;
-
-	@Autowired
-	private FileDir fileDir;
-	@Autowired
-	private DefaultImage defaultImage;
 
 	@BeforeEach
 	public void setup() {
@@ -139,15 +142,15 @@ class FeedControllerTest {
 	@Test
 	void feed() throws Exception {
 		// given
-		FeedRequestForm feedRequestForm = FeedRequestForm.builder()
+		FeedPostForm feedPostForm = FeedPostForm.builder()
 				.title("testTitle")
 				.content("testContent")
 				.build();
 
-		String content = objectMapper.writeValueAsString(feedRequestForm);
+		String content = objectMapper.writeValueAsString(feedPostForm);
 
 		MockMultipartFile json = new MockMultipartFile(
-				"feedRequestForm", "jsondata",
+				"feedPostForm", "jsondata",
 				"application/json", content.getBytes(StandardCharsets.UTF_8));
 
 		List<MockMultipartFile> imageFiles = createImageFiles("imageFiles", "testImage.png",
@@ -172,14 +175,14 @@ class FeedControllerTest {
 	@Test
 	void feed_blankTitle() throws Exception {
 		// given
-		FeedRequestForm feedRequestForm = FeedRequestForm.builder()
+		FeedPostForm feedPostForm = FeedPostForm.builder()
 				.content("testContent")
 				.build();
 
-		String content = objectMapper.writeValueAsString(feedRequestForm);
+		String content = objectMapper.writeValueAsString(feedPostForm);
 
 		MockMultipartFile json = new MockMultipartFile(
-				"feedRequestForm", "jsondata",
+				"feedPostForm", "jsondata",
 				"application/json", content.getBytes(StandardCharsets.UTF_8));
 
 		List<MockMultipartFile> imageFiles = createImageFiles("imageFiles", "testImage.png",
@@ -206,14 +209,14 @@ class FeedControllerTest {
 	@Test
 	void feed_nullContent() throws Exception {
 		// given
-		FeedRequestForm feedRequestForm = FeedRequestForm.builder()
+		FeedPostForm feedPostForm = FeedPostForm.builder()
 				.title("testTitle")
 				.build();
 
-		String content = objectMapper.writeValueAsString(feedRequestForm);
+		String content = objectMapper.writeValueAsString(feedPostForm);
 
 		MockMultipartFile json = new MockMultipartFile(
-				"feedRequestForm", "jsondata",
+				"feedPostForm", "jsondata",
 				"application/json", content.getBytes(StandardCharsets.UTF_8));
 
 		List<MockMultipartFile> imageFiles = createImageFiles("imageFiles", "testImage.png",
@@ -258,15 +261,16 @@ class FeedControllerTest {
 	@Test
 	void modifiedFeed() throws Exception {
 		// given
-		FeedRequestForm feedRequestForm = FeedRequestForm.builder()
+		FeedModifiedForm feedModifiedForm = FeedModifiedForm.builder()
+				.id(1L)
 				.title("testTitle")
 				.content("testContent")
 				.build();
 
-		String content = objectMapper.writeValueAsString(feedRequestForm);
+		String content = objectMapper.writeValueAsString(feedModifiedForm);
 
 		MockMultipartFile json = new MockMultipartFile(
-				"feedRequestForm", "jsondata",
+				"feedModifiedForm", "jsondata",
 				"application/json", content.getBytes(StandardCharsets.UTF_8));
 
 		List<MockMultipartFile> imageFiles = createImageFiles("imageFiles", "testImage.png",
@@ -276,7 +280,7 @@ class FeedControllerTest {
 
 		// then
 		mockMvc.perform(
-						multipart(HttpMethod.PUT, "/feeds/1")
+						multipart(HttpMethod.PUT, "/feeds")
 								.file(imageFiles.get(0))
 								.file(imageFiles.get(1))
 								.file(json)
@@ -287,18 +291,19 @@ class FeedControllerTest {
 				.andExpect(status().isOk());
 	}
 
-	@DisplayName("피드 수정 시, 제목은 필수다.")
+	@DisplayName("피드 수정 시, 피드번호는 필수다.")
 	@Test
-	void modifiedFeed_blankTitle() throws Exception {
+	void modifiedFeed_nullId() throws Exception {
 		// given
-		FeedRequestForm feedRequestForm = FeedRequestForm.builder()
+		FeedModifiedForm feedModifiedForm = FeedModifiedForm.builder()
+				.title("testTitle")
 				.content("testContent")
 				.build();
 
-		String content = objectMapper.writeValueAsString(feedRequestForm);
+		String content = objectMapper.writeValueAsString(feedModifiedForm);
 
 		MockMultipartFile json = new MockMultipartFile(
-				"feedRequestForm", "jsondata",
+				"feedModifiedForm", "jsondata",
 				"application/json", content.getBytes(StandardCharsets.UTF_8));
 
 		List<MockMultipartFile> imageFiles = createImageFiles("imageFiles", "testImage.png",
@@ -308,7 +313,42 @@ class FeedControllerTest {
 
 		// then
 		mockMvc.perform(
-						multipart(HttpMethod.PUT, "/feeds/1")
+						multipart(HttpMethod.PUT, "/feeds")
+								.file(imageFiles.get(0))
+								.file(imageFiles.get(1))
+								.file(json)
+								.with(csrf())
+								.with(user(memberPrincipalDetails))
+				)
+				.andDo(print())
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$[0].code").value("NotNull"))
+				.andExpect(jsonPath("$[0].message").value("id, 값을 입력해주시기 바랍니다."));
+	}
+
+	@DisplayName("피드 수정 시, 제목은 필수다.")
+	@Test
+	void modifiedFeed_blankTitle() throws Exception {
+		// given
+		FeedModifiedForm feedModifiedForm = FeedModifiedForm.builder()
+				.id(1L)
+				.content("testContent")
+				.build();
+
+		String content = objectMapper.writeValueAsString(feedModifiedForm);
+
+		MockMultipartFile json = new MockMultipartFile(
+				"feedModifiedForm", "jsondata",
+				"application/json", content.getBytes(StandardCharsets.UTF_8));
+
+		List<MockMultipartFile> imageFiles = createImageFiles("imageFiles", "testImage.png",
+				"multipart/mixed", fileDir, 2);
+
+		// when
+
+		// then
+		mockMvc.perform(
+						multipart(HttpMethod.PUT, "/feeds")
 								.file(imageFiles.get(0))
 								.file(imageFiles.get(1))
 								.file(json)
@@ -321,18 +361,19 @@ class FeedControllerTest {
 				.andExpect(jsonPath("$[0].message").value("title, 값을 입력해주시기 바랍니다."));
 	}
 
-	@DisplayName("로그인한 경우, 피드를 수정할 수 있다.")
+	@DisplayName("피드 수정 시, 내용은 필수다.")
 	@Test
 	void modifiedFeed_nullContent() throws Exception {
 		// given
-		FeedRequestForm feedRequestForm = FeedRequestForm.builder()
+		FeedModifiedForm feedModifiedForm = FeedModifiedForm.builder()
+				.id(1L)
 				.title("testTitle")
 				.build();
 
-		String content = objectMapper.writeValueAsString(feedRequestForm);
+		String content = objectMapper.writeValueAsString(feedModifiedForm);
 
 		MockMultipartFile json = new MockMultipartFile(
-				"feedRequestForm", "jsondata",
+				"feedModifiedForm", "jsondata",
 				"application/json", content.getBytes(StandardCharsets.UTF_8));
 
 		List<MockMultipartFile> imageFiles = createImageFiles("imageFiles", "testImage.png",
@@ -342,7 +383,7 @@ class FeedControllerTest {
 
 		// then
 		mockMvc.perform(
-						multipart(HttpMethod.PUT, "/feeds/1")
+						multipart(HttpMethod.PUT, "/feeds")
 								.file(imageFiles.get(0))
 								.file(imageFiles.get(1))
 								.file(json)

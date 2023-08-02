@@ -7,10 +7,10 @@ function getFollow(currentPage, searchText, memberId) {
 }
 
 // 팔로우 하기
-function follow(followerId) {
+function follow(followingId) {
   console.log('follow 호출');
 
-  let url = `/follows/${followerId}`;
+  let url = `/follows/${followingId}`;
 
   $.ajax({
     type: 'POST',
@@ -44,7 +44,7 @@ function cancelFollow(followingId) {
       if (response.code && response.message) {
         alert(response.message);
       } else {
-        alert(response);
+        alert(response.message);
       }
     },
     error: function () {

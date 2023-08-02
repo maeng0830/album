@@ -8,15 +8,18 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class FeedRequestForm {
+public class FeedModifiedForm {
 
+	@NotNull
+	private Long id;
 	@NotBlank
 	private String title;
 	@NotNull
 	private String content;
 
 	@Builder
-	private FeedRequestForm(String title, String content) {
+	private FeedModifiedForm(Long id, String title, String content) {
+		this.id = id;
 		this.title = title;
 		this.content = content;
 	}

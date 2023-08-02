@@ -1,0 +1,37 @@
+[[follw]]
+=== 팔로우
+==== HTTP Request
+include::{snippets}/follow/http-request.adoc[]
+include::{snippets}/follow/path-parameters.adoc[]
+==== HTTP Response
+include::{snippets}/follow/http-response.adoc[]
+include::{snippets}/follow/response-fields.adoc[]
+
+[[cancel-follow]]
+=== 팔로우 취소
+==== HTTP Request
+include::{snippets}/cancel-follow/http-request.adoc[]
+include::{snippets}/cancel-follow/path-parameters.adoc[]
+==== HTTP Response
+include::{snippets}/cancel-follow/http-response.adoc[]
+include::{snippets}/cancel-follow/response-fields.adoc[]
+
+[[get-followings]]
+=== 팔로잉 목록 조회
+==== HTTP Request
+include::{snippets}/get-followings/http-request.adoc[]
+include::{snippets}/get-followings/path-parameters.adoc[]
+include::{snippets}/get-followings/request-parameters.adoc[]
+==== HTTP Response
+include::{snippets}/get-followings/http-response.adoc[]
+include::{snippets}/get-followings/response-fields.adoc[]
+
+[[get-followers]]
+=== 팔로워 목록 조회
+==== HTTP Request
+include::{snippets}/get-followers/http-request.adoc[]
+include::{snippets}/get-followers/path-parameters.adoc[]
+include::{snippets}/get-followers/request-parameters.adoc[]
+==== HTTP Response
+include::{snippets}/get-followers/http-response.adoc[]
+include::{snippets}/get-followers/response-fields.adoc[]

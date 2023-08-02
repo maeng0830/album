@@ -39,6 +39,8 @@ public class FeedResponse extends BaseEntity {
 				.member(MemberDto.from(feed.getMember()))
 				.feedImages(new ArrayList<>())
 				.createdAt(feed.getCreatedAt())
+				.modifiedAt(feed.getModifiedAt())
+				.modifiedBy(feed.getModifiedBy())
 				.build();
 
 		for (FeedImage feedImage : feedImages) {

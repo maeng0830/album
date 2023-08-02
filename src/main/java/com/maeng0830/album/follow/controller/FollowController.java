@@ -4,6 +4,7 @@ import com.maeng0830.album.common.util.AlbumUtil;
 import com.maeng0830.album.follow.dto.FollowDto;
 import com.maeng0830.album.follow.service.FollowService;
 import com.maeng0830.album.security.formlogin.PrincipalDetails;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,16 +24,16 @@ public class FollowController {
 	private final AlbumUtil albumUtil;
 
 	// 팔로우 하기
-	@PostMapping("/follows/{followerId}")
-	public FollowDto follow(@PathVariable Long followerId,
+	@PostMapping("/follows/{followingId}")
+	public FollowDto follow(@PathVariable Long followingId,
 							@AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return followService.follow(followerId, albumUtil.checkLogin(principalDetails));
+		return followService.follow(followingId, albumUtil.checkLogin(principalDetails));
 	}
 
-	// 팔로우 끊기
+	// 팔로우 취소
 	@DeleteMapping("/follows/{followingId}")
-	public String cancelFollow(@PathVariable Long followingId,
-							   @AuthenticationPrincipal PrincipalDetails principalDetails) {
+	public Map<String, String> cancelFollow(@PathVariable Long followingId,
+											@AuthenticationPrincipal PrincipalDetails principalDetails) {
 		return followService.cancelFollow(followingId, albumUtil.checkLogin(principalDetails));
 	}
 

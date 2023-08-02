@@ -36,6 +36,7 @@ public class BasicComment extends BaseEntity {
 				.status(comment.getStatus())
 				.createdAt(comment.getCreatedAt())
 				.modifiedAt(comment.getModifiedAt())
+				.modifiedBy(comment.getModifiedBy())
 				.build();
 	}
 }

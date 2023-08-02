@@ -9,6 +9,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
 @EnableConfigurationProperties(value = {FileDirProperties.class, DefaultImageProperties.class})
@@ -20,23 +21,18 @@ public class TestConfig {
 	@Autowired
 	private DefaultImageProperties defaultImageProperties;
 
-	@Profile("dev")
-	@Bean(name = "fileDir")
-	public FileDir fileDirDev() {
-
-		System.out.println("fileDirProperties.getDev() = " + fileDirProperties.getDev());
-		return new FileDir(fileDirProperties.getDev());
-	}
-
-	@Profile("test")
-	@Bean(name = "fileDir")
-	public FileDir fileDirTest() {
-		System.out.println("fileDirProperties.getTest() = " + fileDirProperties.getTest());
+	@Bean(name = "testFileDir")
+	public FileDir testFileDir() {
 		return new FileDir(fileDirProperties.getTest());
 	}
 
-	@Bean
-	public DefaultImage defaultImage() {
+	@Bean(name = "testDefaultImage")
+	public DefaultImage testDefaultImage() {
 		return new DefaultImage(defaultImageProperties.getMember(), defaultImageProperties.getFeed());
+	}
+
+	@Bean
+	public TestPrincipalDetailsService testPrincipalDetailsService() {
+		return new TestPrincipalDetailsService();
 	}
 }

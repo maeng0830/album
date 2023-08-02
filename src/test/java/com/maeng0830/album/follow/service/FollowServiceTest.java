@@ -14,6 +14,7 @@ import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.repository.MemberRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -108,10 +109,10 @@ class FollowServiceTest {
 		MemberDto followerDto = MemberDto.from(follower);
 
 		//when
-		String result = followService.cancelFollow(followee.getId(), followerDto);
+		Map<String, String> result = followService.cancelFollow(followee.getId(), followerDto);
 
 		//then
-		assertThat(result).isEqualTo(
+		assertThat(result.get("message")).isEqualTo(
 				String.format("%s님이 %s님에 대한 팔로우를 취소하였습니다.", follower.getUsername(), followee.getUsername()));
 	}
 

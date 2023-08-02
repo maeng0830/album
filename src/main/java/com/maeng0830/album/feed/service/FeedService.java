@@ -21,7 +21,8 @@ import com.maeng0830.album.feed.dto.FeedAccuseDto;
 import com.maeng0830.album.feed.dto.FeedDto;
 import com.maeng0830.album.feed.dto.FeedResponse;
 import com.maeng0830.album.feed.dto.request.FeedAccuseRequestForm;
-import com.maeng0830.album.feed.dto.request.FeedRequestForm;
+import com.maeng0830.album.feed.dto.request.FeedModifiedForm;
+import com.maeng0830.album.feed.dto.request.FeedPostForm;
 import com.maeng0830.album.feed.repository.FeedAccuseRepository;
 import com.maeng0830.album.feed.repository.FeedImageRepository;
 import com.maeng0830.album.feed.repository.FeedRepository;
@@ -180,7 +181,7 @@ public class FeedService {
 	}
 
 	// 피드 등록
-	public FeedResponse feed(FeedRequestForm feedRequestForm, List<MultipartFile> imageFiles,
+	public FeedResponse feed(FeedPostForm feedPostForm, List<MultipartFile> imageFiles,
 							 MemberDto memberDto) {
 		if (memberDto == null) {
 			throw new AlbumException(REQUIRED_LOGIN);
@@ -191,8 +192,8 @@ public class FeedService {
 
 		// Feed 데이터 등록
 		Feed feed = Feed.builder()
-				.title(feedRequestForm.getTitle())
-				.content(feedRequestForm.getContent())
+				.title(feedPostForm.getTitle())
+				.content(feedPostForm.getContent())
 				.hits(0)
 				.commentCount(0)
 				.status(NORMAL)
@@ -235,7 +236,7 @@ public class FeedService {
 
 	// 피드 수정
 	@Transactional
-	public FeedResponse modifiedFeed(Long feedId, FeedRequestForm feedRequestForm, List<MultipartFile> imageFiles,
+	public FeedResponse modifiedFeed(FeedModifiedForm feedModifiedForm, List<MultipartFile> imageFiles,
 									 MemberDto memberDto) {
 
 		// 로그인 여부 확인
@@ -244,7 +245,7 @@ public class FeedService {
 		}
 
 		// 목표 피드 데이터 조회
-		Feed findFeed = feedRepository.findById(feedId)
+		Feed findFeed = feedRepository.findById(feedModifiedForm.getId())
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_FEED));
 
 		// 본인 여부 확인
@@ -253,7 +254,7 @@ public class FeedService {
 		}
 
 		// Feed 데이터 수정
-		findFeed.modified(feedRequestForm);
+		findFeed.modified(feedModifiedForm);
 
 		// 이전 FeedImage 데이터 삭제
 		feedImageRepository.deleteFeedImageByFeed_Id(findFeed.getId());

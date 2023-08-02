@@ -1,0 +1,56 @@
+[[get-feeds-main]]
+=== 정상 및 신고 상태 피드(로그인 상태인 경우, 팔로워 및 팔로잉이 작성한 피드) 조회
+==== HTTP Request
+include::{snippets}/get-feeds-main/http-request.adoc[]
+include::{snippets}/get-feeds-main/request-parameters.adoc[]
+==== HTTP Response
+include::{snippets}/get-feeds-main/http-response.adoc[]
+include::{snippets}/get-feeds-main/response-fields.adoc[]
+
+[[get-feed]]
+=== 특정 피드 조회
+==== HTTP Request
+include::{snippets}/get-feed/http-request.adoc[]
+include::{snippets}/get-feed/path-parameters.adoc[]
+==== HTTP Response
+include::{snippets}/get-feed/http-response.adoc[]
+include::{snippets}/get-feed/response-fields.adoc[]
+
+[[delete-feed]]
+=== 피드 삭제
+==== HTTP Request
+include::{snippets}/delete-feed/http-request.adoc[]
+include::{snippets}/delete-feed/path-parameters.adoc[]
+==== HTTP Response
+include::{snippets}/delete-feed/http-response.adoc[]
+include::{snippets}/delete-feed/response-fields.adoc[]
+
+[[modified-feed]]
+=== 피드 수정
+==== HTTP Request
+include::{snippets}/modified-feed/curl-request.adoc[]
+include::{snippets}/modified-feed/request-parts.adoc[]
+include::{snippets}/modified-feed/request-part-feedModifiedForm-fields.adoc[]
+==== HTTP Response
+include::{snippets}/modified-feed/http-response.adoc[]
+include::{snippets}/modified-feed/response-fields.adoc[]
+
+[[accuse-feed]]
+=== 피드 신고
+==== HTTP Request
+include::{snippets}/accuse-feed/http-request.adoc[]
+include::{snippets}/accuse-feed/path-parameters.adoc[]
+include::{snippets}/accuse-feed/request-fields.adoc[]
+==== HTTP Response
+include::{snippets}/accuse-feed/http-response.adoc[]
+include::{snippets}/accuse-feed/response-fields.adoc[]
+
+[[get-my-feeds]]
+=== 나의 피드 조회
+==== HTTP Request
+include::{snippets}/get-my-feeds/http-request.adoc[]
+include::{snippets}/get-my-feeds/path-parameters.adoc[]
+include::{snippets}/get-my-feeds/request-parameters.adoc[]
+==== HTTP Response
+include::{snippets}/get-my-feeds/http-response.adoc[]
+include::{snippets}/get-my-feeds/response-fields.adoc[]
