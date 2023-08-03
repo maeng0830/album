@@ -53,6 +53,11 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  redis:
+    host: ${dev.redis.host}
+    port: ${dev.redis.port}
+    password: ${dev.redis.password}
+
 ---
 spring:
   config:

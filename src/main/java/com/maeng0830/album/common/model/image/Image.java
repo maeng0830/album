@@ -1,6 +1,7 @@
 package com.maeng0830.album.common.model.image;
 
 import com.maeng0830.album.common.filedir.FileDir;
+import java.io.Serializable;
 import java.util.UUID;
 import javax.persistence.Embeddable;
 import lombok.AllArgsConstructor;
@@ -16,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Image {
+public class Image implements Serializable {
 
 	private String imageOriginalName;
 	private String imageStoreName;

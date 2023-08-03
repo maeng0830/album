@@ -46,6 +46,10 @@ dependencies {
 	asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
 	testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 
+	// redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'org.springframework.session:spring-session-data-redis'
+
 	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.7'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
