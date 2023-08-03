@@ -8,18 +8,33 @@ import com.maeng0830.album.common.util.AlbumUtil;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import javax.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
-@RequiredArgsConstructor
 @EnableConfigurationProperties(value = {FileDirProperties.class, DefaultImageProperties.class})
+@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 300)
 @EnableJpaAuditing
+@RequiredArgsConstructor
 @Configuration
 public class CommonConfig {
+
+	@Value("${spring.redis.host}")
+	private String redisHost;
+	@Value("${spring.redis.port}")
+	private String redisPort;
+	@Value("${spring.redis.password}")
+	private String redisPassword;
 
 	private final FileDirProperties fileDirProperties;
 	private final DefaultImageProperties defaultImageProperties;
@@ -57,5 +72,25 @@ public class CommonConfig {
 	@Bean
 	public DefaultImage defaultImage() {
 		return new DefaultImage(defaultImageProperties.getMember(), defaultImageProperties.getFeed());
+	}
+
+	@Bean
+	public RedisConnectionFactory redisConnectionFactory() {
+		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(
+				redisHost, Integer.parseInt(redisPort));
+		redisStandaloneConfiguration.setPassword(redisPassword);
+
+		return new LettuceConnectionFactory(redisStandaloneConfiguration);
+	}
+
+	@Bean
+	public RedisTemplate<?, ?> redisTemplate() {
+		RedisTemplate<?, ?> redisTemplate = new RedisTemplate<>();
+
+		redisTemplate.setConnectionFactory(redisConnectionFactory());
+		redisTemplate.setKeySerializer(new StringRedisSerializer());
+		redisTemplate.setValueSerializer(new StringRedisSerializer());
+
+		return redisTemplate;
 	}
 }

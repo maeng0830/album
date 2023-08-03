@@ -7,6 +7,7 @@ import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.domain.MemberStatus;
 import com.maeng0830.album.member.dto.request.MemberModifiedForm;
 import com.maeng0830.album.security.dto.LoginType;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.Getter;
@@ -18,7 +19,7 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-public class MemberDto extends BaseEntity {
+public class MemberDto extends BaseEntity implements Serializable {
 	private Long id;
 	private String username;
 	private String nickname;
