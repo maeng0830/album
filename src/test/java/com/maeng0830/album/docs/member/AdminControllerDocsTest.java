@@ -3,7 +3,6 @@ package com.maeng0830.album.docs.member;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
@@ -18,44 +17,28 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maeng0830.album.comment.domain.CommentStatus;
 import com.maeng0830.album.comment.dto.CommentAccuseDto;
 import com.maeng0830.album.comment.dto.CommentDto;
 import com.maeng0830.album.comment.dto.response.BasicComment;
-import com.maeng0830.album.comment.service.CommentService;
-import com.maeng0830.album.common.filedir.FileDir;
-import com.maeng0830.album.common.image.DefaultImage;
 import com.maeng0830.album.common.model.image.Image;
-import com.maeng0830.album.common.util.AlbumUtil;
 import com.maeng0830.album.feed.domain.FeedStatus;
 import com.maeng0830.album.feed.dto.FeedAccuseDto;
 import com.maeng0830.album.feed.dto.FeedDto;
 import com.maeng0830.album.feed.dto.FeedResponse;
-import com.maeng0830.album.feed.service.FeedService;
-import com.maeng0830.album.member.controller.AdminController;
 import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.domain.MemberStatus;
 import com.maeng0830.album.member.dto.MemberDto;
-import com.maeng0830.album.member.service.MemberService;
 import com.maeng0830.album.security.dto.LoginType;
-import com.maeng0830.album.security.formlogin.PrincipalDetails;
-import com.maeng0830.album.support.TestConfig;
-import com.maeng0830.album.support.TestPrincipalDetailsService;
+import com.maeng0830.album.support.DocsTestSupport;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -63,63 +46,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.RestDocumentationContextProvider;
-import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
-@ActiveProfiles("test")
-@Import(TestConfig.class)
-@ExtendWith(RestDocumentationExtension.class)
-@WebMvcTest(controllers = AdminController.class)
-public class AdminControllerDocsTest {
-
-	@Autowired
-	private WebApplicationContext context;
-
-	private MockMvc mockMvc;
-
-	@Autowired
-	private ObjectMapper objectMapper;
-
-	@Autowired
-	private FileDir fileDir;
-	@Autowired
-	private DefaultImage defaultImage;
-	@Autowired
-	private TestPrincipalDetailsService testPrincipalDetailsService;
-
-	private PrincipalDetails memberPrincipalDetails;
-
-	private PrincipalDetails adminPrincipalDetails;
-
-	private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-	@MockBean
-	private MemberService memberService;
-	@MockBean
-	private FeedService feedService;
-	@MockBean
-	private CommentService commentService;
-	@MockBean
-	private AlbumUtil albumUtil;
-
-	@BeforeEach
-	void setUp(RestDocumentationContextProvider provider) {
-		this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
-				.apply(documentationConfiguration(provider))
-				.build();
-
-		memberPrincipalDetails =
-				(PrincipalDetails) testPrincipalDetailsService.loadUserByUsername("member");
-
-		adminPrincipalDetails =
-				(PrincipalDetails) testPrincipalDetailsService.loadUserByUsername("admin");
-	}
+public class AdminControllerDocsTest extends DocsTestSupport {
 
 	@DisplayName("전체 피드 목록 조회 API")
 	@Test

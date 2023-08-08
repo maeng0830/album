@@ -54,9 +54,9 @@ spring:
       hibernate:
         format_sql: true
   redis:
-    host: ${dev.redis.host}
-    port: ${dev.redis.port}
-    password: ${dev.redis.password}
+    host: ${local.redis.host}
+    port: ${local.redis.port}
+    password: ${local.redis.password}
 
 ---
 spring:
@@ -84,3 +84,7 @@ spring:
     hibernate:
       ddl-auto: create
     show-sql: true
+  redis:
+    host: ${local.redis.host}
+    port: ${local.redis.port}
+    password: ${local.redis.password}

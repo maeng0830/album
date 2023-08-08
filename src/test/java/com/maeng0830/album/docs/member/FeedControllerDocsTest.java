@@ -4,7 +4,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
@@ -23,12 +22,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.maeng0830.album.common.filedir.FileDir;
-import com.maeng0830.album.common.image.DefaultImage;
 import com.maeng0830.album.common.model.image.Image;
-import com.maeng0830.album.common.util.AlbumUtil;
-import com.maeng0830.album.feed.controller.FeedController;
 import com.maeng0830.album.feed.domain.Feed;
 import com.maeng0830.album.feed.domain.FeedImage;
 import com.maeng0830.album.feed.domain.FeedStatus;
@@ -38,15 +33,12 @@ import com.maeng0830.album.feed.dto.FeedResponse;
 import com.maeng0830.album.feed.dto.request.FeedAccuseRequestForm;
 import com.maeng0830.album.feed.dto.request.FeedModifiedForm;
 import com.maeng0830.album.feed.dto.request.FeedPostForm;
-import com.maeng0830.album.feed.service.FeedService;
 import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.domain.MemberStatus;
 import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.security.dto.LoginType;
-import com.maeng0830.album.security.formlogin.PrincipalDetails;
-import com.maeng0830.album.support.TestConfig;
-import com.maeng0830.album.support.TestPrincipalDetailsService;
+import com.maeng0830.album.support.DocsTestSupport;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -56,14 +48,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -72,59 +58,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.restdocs.RestDocumentationContextProvider;
-import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
-@ActiveProfiles("test")
-@Import(TestConfig.class)
-@ExtendWith(RestDocumentationExtension.class)
-@WebMvcTest(controllers = FeedController.class)
-public class FeedControllerDocsTest {
-
-	@Autowired
-	private WebApplicationContext context;
-
-	private MockMvc mockMvc;
-
-	@Autowired
-	private ObjectMapper objectMapper;
-
-	@Autowired
-	private FileDir fileDir;
-	@Autowired
-	private DefaultImage defaultImage;
-	@Autowired
-	private TestPrincipalDetailsService testPrincipalDetailsService;
-
-	private PrincipalDetails memberPrincipalDetails;
-
-	private PrincipalDetails adminPrincipalDetails;
-
-	private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-	@MockBean
-	private FeedService feedService;
-	@MockBean
-	private AlbumUtil albumUtil;
-
-	@BeforeEach
-	void setUp(RestDocumentationContextProvider provider) {
-		this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
-				.apply(documentationConfiguration(provider))
-				.build();
-
-		memberPrincipalDetails =
-				(PrincipalDetails) testPrincipalDetailsService.loadUserByUsername("member");
-
-		adminPrincipalDetails =
-				(PrincipalDetails) testPrincipalDetailsService.loadUserByUsername("admin");
-	}
+public class FeedControllerDocsTest extends DocsTestSupport {
 
 	@DisplayName("정상 및 신고 상태인 피드(로그인 상태인 경우, 팔로워 및 팔로잉이 작성한 피드) 조회 API")
 	@Test
@@ -582,8 +518,10 @@ public class FeedControllerDocsTest {
 								fieldWithPath("memberDto.status").description("상태"),
 								fieldWithPath("memberDto.role").description("권한"),
 								fieldWithPath("memberDto.image").description("이미지"),
-								fieldWithPath("memberDto.image.imageOriginalName").description("원본 이름"),
-								fieldWithPath("memberDto.image.imageStoreName").description("저장 이름"),
+								fieldWithPath("memberDto.image.imageOriginalName").description(
+										"원본 이름"),
+								fieldWithPath("memberDto.image.imageStoreName").description(
+										"저장 이름"),
 								fieldWithPath("memberDto.image.imagePath").description("경로"),
 								fieldWithPath("memberDto.loginType").description("로그인 타입"),
 								fieldWithPath("memberDto.createdAt").description("가입 일자"),
@@ -711,7 +649,7 @@ public class FeedControllerDocsTest {
 	@DisplayName("피드 신고 API")
 	@Test
 	void accuseFeed() throws Exception {
-	    // given
+		// given
 		MemberDto feedWriter = MemberDto.builder()
 				.id(3L)
 				.username("feedWriter@naver.com")
@@ -761,13 +699,13 @@ public class FeedControllerDocsTest {
 				);
 		// when
 
-	    // then
+		// then
 		mockMvc.perform(
-				RestDocumentationRequestBuilders.put("/feeds/{feedId}/accuse", 1)
-						.with(user(memberPrincipalDetails))
-						.content(objectMapper.writeValueAsString(feedAccuseRequestForm))
-						.contentType(APPLICATION_JSON)
-		)
+						RestDocumentationRequestBuilders.put("/feeds/{feedId}/accuse", 1)
+								.with(user(memberPrincipalDetails))
+								.content(objectMapper.writeValueAsString(feedAccuseRequestForm))
+								.contentType(APPLICATION_JSON)
+				)
 				.andDo(print())
 				.andExpect(status().isOk())
 				.andDo(document("accuse-feed",
@@ -796,8 +734,10 @@ public class FeedControllerDocsTest {
 								fieldWithPath("memberDto.status").description("상태"),
 								fieldWithPath("memberDto.role").description("권한"),
 								fieldWithPath("memberDto.image").description("이미지"),
-								fieldWithPath("memberDto.image.imageOriginalName").description("원본 이름"),
-								fieldWithPath("memberDto.image.imageStoreName").description("저장 이름"),
+								fieldWithPath("memberDto.image.imageOriginalName").description(
+										"원본 이름"),
+								fieldWithPath("memberDto.image.imageStoreName").description(
+										"저장 이름"),
 								fieldWithPath("memberDto.image.imagePath").description("경로"),
 								fieldWithPath("memberDto.loginType").description("로그인 타입"),
 								fieldWithPath("memberDto.createdAt").description("가입 일자"),
@@ -824,9 +764,13 @@ public class FeedControllerDocsTest {
 								fieldWithPath("feedDto.memberDto.status").description("상태"),
 								fieldWithPath("feedDto.memberDto.role").description("권한"),
 								fieldWithPath("feedDto.memberDto.image").description("이미지"),
-								fieldWithPath("feedDto.memberDto.image.imageOriginalName").description("원본 이름"),
-								fieldWithPath("feedDto.memberDto.image.imageStoreName").description("저장 이름"),
-								fieldWithPath("feedDto.memberDto.image.imagePath").description("경로"),
+								fieldWithPath(
+										"feedDto.memberDto.image.imageOriginalName").description(
+										"원본 이름"),
+								fieldWithPath("feedDto.memberDto.image.imageStoreName").description(
+										"저장 이름"),
+								fieldWithPath("feedDto.memberDto.image.imagePath").description(
+										"경로"),
 								fieldWithPath("feedDto.memberDto.loginType").description("로그인 타입"),
 								fieldWithPath("feedDto.memberDto.createdAt").description("가입 일자"),
 								fieldWithPath("feedDto.memberDto.modifiedAt").description("수정 일자"),
