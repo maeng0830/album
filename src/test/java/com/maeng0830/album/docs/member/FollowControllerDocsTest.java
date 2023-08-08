@@ -3,7 +3,6 @@ package com.maeng0830.album.docs.member;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
@@ -20,104 +19,28 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.maeng0830.album.common.filedir.FileDir;
-import com.maeng0830.album.common.image.DefaultImage;
 import com.maeng0830.album.common.model.image.Image;
-import com.maeng0830.album.common.util.AlbumUtil;
-import com.maeng0830.album.follow.controller.FollowController;
 import com.maeng0830.album.follow.dto.FollowDto;
-import com.maeng0830.album.follow.service.FollowService;
 import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.domain.MemberStatus;
 import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.security.dto.LoginType;
-import com.maeng0830.album.security.formlogin.PrincipalDetails;
-import com.maeng0830.album.security.formlogin.handler.FormLoginFailureHandler;
-import com.maeng0830.album.security.formlogin.handler.FormLoginSuccessHandler;
-import com.maeng0830.album.security.oauthlogin.handler.OAuthLoginFailureHandler;
-import com.maeng0830.album.security.oauthlogin.handler.OAuthLoginSuccessHandler;
-import com.maeng0830.album.support.TestConfig;
-import com.maeng0830.album.support.TestPrincipalDetailsService;
+import com.maeng0830.album.support.DocsTestSupport;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.restdocs.RestDocumentationContextProvider;
-import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
-@ActiveProfiles("test")
-@Import(TestConfig.class)
-@ExtendWith(RestDocumentationExtension.class)
-@WebMvcTest(controllers = FollowController.class)
-public class FollowControllerDocsTest {
-
-	@Autowired
-	private WebApplicationContext context;
-
-	private MockMvc mockMvc;
-
-	@Autowired
-	private ObjectMapper objectMapper;
-
-	@Autowired
-	private FileDir fileDir;
-	@Autowired
-	private DefaultImage defaultImage;
-	@Autowired
-	private TestPrincipalDetailsService testPrincipalDetailsService;
-
-	private PrincipalDetails memberPrincipalDetails;
-
-	private PrincipalDetails adminPrincipalDetails;
-
-	private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-	@MockBean
-	private FollowService followService;
-	@MockBean
-	private AlbumUtil albumUtil;
-	@MockBean
-	private FormLoginSuccessHandler formLoginSuccessHandler;
-	@MockBean
-	private FormLoginFailureHandler formLoginFailureHandler;
-	@MockBean
-	private OAuthLoginSuccessHandler oAuthLoginSuccessHandler;
-	@MockBean
-	private OAuthLoginFailureHandler oAuthLoginFailureHandler;
-
-	@BeforeEach
-	void setUp(RestDocumentationContextProvider provider) {
-		this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
-				.apply(documentationConfiguration(provider))
-				.build();
-
-		memberPrincipalDetails =
-				(PrincipalDetails) testPrincipalDetailsService.loadUserByUsername("member");
-
-		adminPrincipalDetails =
-				(PrincipalDetails) testPrincipalDetailsService.loadUserByUsername("admin");
-	}
+public class FollowControllerDocsTest extends DocsTestSupport {
 
 	@DisplayName("팔로우 API")
 	@Test
@@ -336,7 +259,8 @@ public class FollowControllerDocsTest {
 
 		Page<FollowDto> followDtoPage = new PageImpl<>(followDtos, pageRequest, 2);
 
-		given(followService.getFollowings(any(Long.class), any(), any(String.class), any(Pageable.class)))
+		given(followService.getFollowings(any(Long.class), any(), any(String.class),
+				any(Pageable.class)))
 				.willReturn(
 						followDtoPage
 				);
@@ -390,9 +314,11 @@ public class FollowControllerDocsTest {
 										.description("팔로워 권한"),
 								fieldWithPath("content.[].follower.image").type(OBJECT)
 										.description("팔로워 이미지"),
-								fieldWithPath("content.[].follower.image.imageOriginalName").type(STRING)
+								fieldWithPath("content.[].follower.image.imageOriginalName").type(
+												STRING)
 										.description("팔로워 원본 이름"),
-								fieldWithPath("content.[].follower.image.imageStoreName").type(STRING)
+								fieldWithPath("content.[].follower.image.imageStoreName").type(
+												STRING)
 										.description("팔로워 저장 이름"),
 								fieldWithPath("content.[].follower.image.imagePath").type(STRING)
 										.description("팔로워 경로"),
@@ -422,9 +348,11 @@ public class FollowControllerDocsTest {
 										.description("팔로잉 권한"),
 								fieldWithPath("content.[].following.image").type(OBJECT)
 										.description("팔로잉 이미지"),
-								fieldWithPath("content.[].following.image.imageOriginalName").type(STRING)
+								fieldWithPath("content.[].following.image.imageOriginalName").type(
+												STRING)
 										.description("팔로잉 원본 이름"),
-								fieldWithPath("content.[].following.image.imageStoreName").type(STRING)
+								fieldWithPath("content.[].following.image.imageStoreName").type(
+												STRING)
 										.description("팔로잉 저장 이름"),
 								fieldWithPath("content.[].following.image.imagePath").type(STRING)
 										.description("팔로잉 경로"),
@@ -514,7 +442,8 @@ public class FollowControllerDocsTest {
 
 		Page<FollowDto> followDtoPage = new PageImpl<>(followDtos, pageRequest, 2);
 
-		given(followService.getFollowers(any(Long.class), any(), any(String.class), any(Pageable.class)))
+		given(followService.getFollowers(any(Long.class), any(), any(String.class),
+				any(Pageable.class)))
 				.willReturn(
 						followDtoPage
 				);
@@ -568,9 +497,11 @@ public class FollowControllerDocsTest {
 										.description("팔로워 권한"),
 								fieldWithPath("content.[].follower.image").type(OBJECT)
 										.description("팔로워 이미지"),
-								fieldWithPath("content.[].follower.image.imageOriginalName").type(STRING)
+								fieldWithPath("content.[].follower.image.imageOriginalName").type(
+												STRING)
 										.description("팔로워 원본 이름"),
-								fieldWithPath("content.[].follower.image.imageStoreName").type(STRING)
+								fieldWithPath("content.[].follower.image.imageStoreName").type(
+												STRING)
 										.description("팔로워 저장 이름"),
 								fieldWithPath("content.[].follower.image.imagePath").type(STRING)
 										.description("팔로워 경로"),
@@ -600,9 +531,11 @@ public class FollowControllerDocsTest {
 										.description("팔로잉 권한"),
 								fieldWithPath("content.[].following.image").type(OBJECT)
 										.description("팔로잉 이미지"),
-								fieldWithPath("content.[].following.image.imageOriginalName").type(STRING)
+								fieldWithPath("content.[].following.image.imageOriginalName").type(
+												STRING)
 										.description("팔로잉 원본 이름"),
-								fieldWithPath("content.[].following.image.imageStoreName").type(STRING)
+								fieldWithPath("content.[].following.image.imageStoreName").type(
+												STRING)
 										.description("팔로잉 저장 이름"),
 								fieldWithPath("content.[].following.image.imagePath").type(STRING)
 										.description("팔로잉 경로"),
