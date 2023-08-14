@@ -430,7 +430,7 @@ public class MemberControllerDocsTest extends DocsTestSupport {
 				"jsondata", "application/json", content.getBytes(
 				StandardCharsets.UTF_8));
 
-		MockMultipartFile imageFile = createImageFile("imageFile", "testImage.png",
+		MockMultipartFile imageFile = createImageFile("imageFile", "testImage.PNG",
 				"multipart/mixed", fileDir);
 
 		// response 데이터

@@ -368,7 +368,7 @@ public class FeedControllerDocsTest extends DocsTestSupport {
 				"feedPostForm", "jsondata",
 				"application/json", content.getBytes(StandardCharsets.UTF_8));
 
-		List<MockMultipartFile> imageFiles = createImageFiles("imageFiles", "testImage.png",
+		List<MockMultipartFile> imageFiles = createImageFiles("imageFiles", "testImage.PNG",
 				"multipart/mixed", fileDir, 2);
 
 		// Response 데이터 세팅
@@ -376,15 +376,15 @@ public class FeedControllerDocsTest extends DocsTestSupport {
 		UUID uuid2 = UUID.randomUUID();
 
 		Image image1 = Image.builder()
-				.imageOriginalName("testImage.png")
-				.imageStoreName(uuid1 + ".png")
-				.imagePath(fileDir.getDir() + uuid1 + ".png")
+				.imageOriginalName("testImage.PNG")
+				.imageStoreName(uuid1 + ".PNG")
+				.imagePath(fileDir.getDir() + uuid1 + ".PNG")
 				.build();
 
 		Image image2 = Image.builder()
-				.imageOriginalName("testImage.png")
-				.imageStoreName(uuid2 + ".png")
-				.imagePath(fileDir.getDir() + uuid2 + ".png")
+				.imageOriginalName("testImage.PNG")
+				.imageStoreName(uuid2 + ".PNG")
+				.imagePath(fileDir.getDir() + uuid2 + ".PNG")
 				.build();
 
 		FeedResponse feedResponse = FeedResponse.builder()
@@ -548,7 +548,7 @@ public class FeedControllerDocsTest extends DocsTestSupport {
 				"feedModifiedForm", "jsondata",
 				"application/json", content.getBytes(StandardCharsets.UTF_8));
 
-		List<MockMultipartFile> imageFiles = createImageFiles("imageFiles", "testImage.png",
+		List<MockMultipartFile> imageFiles = createImageFiles("imageFiles", "testImage.PNG",
 				"multipart/mixed", fileDir, 2);
 
 		// Response 데이터 세팅
@@ -556,15 +556,15 @@ public class FeedControllerDocsTest extends DocsTestSupport {
 		UUID uuid2 = UUID.randomUUID();
 
 		Image image1 = Image.builder()
-				.imageOriginalName("testImage.png")
-				.imageStoreName(uuid1 + ".png")
-				.imagePath(fileDir.getDir() + uuid1 + ".png")
+				.imageOriginalName("testImage.PNG")
+				.imageStoreName(uuid1 + ".PNG")
+				.imagePath(fileDir.getDir() + uuid1 + ".PNG")
 				.build();
 
 		Image image2 = Image.builder()
-				.imageOriginalName("testImage.png")
-				.imageStoreName(uuid2 + ".png")
-				.imagePath(fileDir.getDir() + uuid2 + ".png")
+				.imageOriginalName("testImage.PNG")
+				.imageStoreName(uuid2 + ".PNG")
+				.imagePath(fileDir.getDir() + uuid2 + ".PNG")
 				.build();
 
 		FeedResponse feedResponse = FeedResponse.builder()
