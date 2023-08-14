@@ -54,7 +54,6 @@ spring:
   redis:
     host: ${local.redis.host}
     port: ${local.redis.port}
-    password: ${local.redis.password}
 ---
 spring:
   config:
@@ -77,7 +76,6 @@ spring:
   redis:
     host: ${aws.redis.host}
     port: ${aws.redis.port}
-    password:
 ---
 spring:
   config:
@@ -98,4 +96,3 @@ spring:
   redis:
     host: ${local.redis.host}
     port: ${local.redis.port}
-    password: ${local.redis.password}
