@@ -7,18 +7,13 @@ import com.maeng0830.album.feed.domain.Feed;
 import com.maeng0830.album.feed.domain.FeedAccuse;
 import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.repository.MemberRepository;
+import com.maeng0830.album.support.RepositoryTestSupport;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
-@ActiveProfiles("test")
-@SpringBootTest
-class FeedAccuseRepositoryTest {
+class FeedAccuseRepositoryTest extends RepositoryTestSupport {
 
 	@Autowired
 	private FeedAccuseRepository feedAccuseRepository;
@@ -32,7 +27,7 @@ class FeedAccuseRepositoryTest {
 	@DisplayName("주어진 피드아이디와 일치하는 피드신고 목록을 조회한다.")
 	@Test
 	void findFeedAccuseByFeed_Id() {
-	    // given
+		// given
 		// 멤버 세팅
 		Member member1 = Member.builder()
 				.build();

@@ -1,32 +1,20 @@
 package com.maeng0830.album.member.repository;
 
-import static com.maeng0830.album.member.domain.MemberStatus.*;
+import static com.maeng0830.album.member.domain.MemberStatus.NORMAL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
 import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.domain.MemberStatus;
+import com.maeng0830.album.support.RepositoryTestSupport;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort.Direction;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
-@ActiveProfiles("test")
-@Transactional
-@SpringBootTest
-class MemberRepositoryTest {
+class MemberRepositoryTest extends RepositoryTestSupport {
 
 	@Autowired
 	private MemberRepository memberRepository;
@@ -125,7 +113,7 @@ class MemberRepositoryTest {
 	@DisplayName("주어진 searchText와 username 또는 nickname이 전방 일치하는 회원들을 조회할 수 있다.")
 	@Test
 	void searchBySearchText() {
-	    // given
+		// given
 		// 회원 세팅
 		Member member1 = Member.builder()
 				.status(NORMAL)

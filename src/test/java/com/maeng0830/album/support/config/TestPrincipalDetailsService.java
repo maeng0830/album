@@ -1,4 +1,4 @@
-package com.maeng0830.album.support;
+package com.maeng0830.album.support.config;
 
 import static com.maeng0830.album.member.domain.MemberStatus.NORMAL;
 

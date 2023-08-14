@@ -1,23 +1,16 @@
 package com.maeng0830.album.feed.repository;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.maeng0830.album.feed.domain.Feed;
 import com.maeng0830.album.feed.domain.FeedImage;
+import com.maeng0830.album.support.RepositoryTestSupport;
 import java.util.List;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
-@ActiveProfiles("test")
-@SpringBootTest
-class FeedImageRepositoryTest {
+class FeedImageRepositoryTest extends RepositoryTestSupport {
 
 	@Autowired
 	FeedRepository feedRepository;
@@ -28,7 +21,7 @@ class FeedImageRepositoryTest {
 	@DisplayName("피드 아이디를 통해 관련된 피드 이미지를 조회할 수 있다.")
 	@Test
 	void findByFeed_Id() {
-	    // given
+		// given
 		FeedImage feedImage1 = FeedImage.builder()
 				.build();
 		FeedImage feedImage2 = FeedImage.builder()
@@ -64,7 +57,7 @@ class FeedImageRepositoryTest {
 	@DisplayName("피드 아이디를 통해 관련된 피드 이미지를 삭제할 수 있다.")
 	@Test
 	void deleteFeedImageByFeed_Id() {
-	    // given
+		// given
 		FeedImage feedImage1 = FeedImage.builder()
 				.build();
 		FeedImage feedImage2 = FeedImage.builder()
@@ -84,7 +77,7 @@ class FeedImageRepositoryTest {
 		feedRepository.saveAll(List.of(feed1, feed2));
 		feedImageRepository.saveAll(List.of(feedImage1, feedImage2, feedImage3, feedImage4));
 
-	    // when
+		// when
 		feedImageRepository.deleteFeedImageByFeed_Id(feed1.getId());
 		feedImageRepository.deleteFeedImageByFeed_Id(feed2.getId());
 
@@ -95,7 +88,7 @@ class FeedImageRepositoryTest {
 			System.out.println("feedImage = " + feedImage);
 		}
 
-	    // then
+		// then
 		assertThat(result1.isEmpty()).isTrue();
 		assertThat(result2.isEmpty()).isTrue();
 	}

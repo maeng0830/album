@@ -4,7 +4,6 @@ import static com.maeng0830.album.comment.domain.CommentStatus.ACCUSE;
 import static com.maeng0830.album.comment.domain.CommentStatus.DELETE;
 import static com.maeng0830.album.comment.domain.CommentStatus.NORMAL;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
 
 import com.maeng0830.album.comment.domain.Comment;
 import com.maeng0830.album.comment.domain.CommentAccuse;
@@ -13,6 +12,7 @@ import com.maeng0830.album.feed.domain.Feed;
 import com.maeng0830.album.feed.repository.FeedRepository;
 import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.repository.MemberRepository;
+import com.maeng0830.album.support.RepositoryTestSupport;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -20,16 +20,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
-@ActiveProfiles("test")
-@Transactional
-@SpringBootTest
-class CommentRepositoryTest {
+class CommentRepositoryTest extends RepositoryTestSupport {
 
 	@Autowired
 	private CommentRepository commentRepository;
@@ -212,7 +206,8 @@ class CommentRepositoryTest {
 		List<CommentStatus> status = List.of(NORMAL, ACCUSE, DELETE);
 
 		// when
-		List<Comment> basicComment = commentRepository.findBasicComment(feed.getId(), status, groupCommentNormal.getId(),
+		List<Comment> basicComment = commentRepository.findBasicComment(feed.getId(), status,
+				groupCommentNormal.getId(),
 				groupCommentDelete.getId());
 
 		// then

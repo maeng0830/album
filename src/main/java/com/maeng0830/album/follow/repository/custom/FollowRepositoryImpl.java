@@ -11,17 +11,15 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import javax.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 
+@RequiredArgsConstructor
 public class FollowRepositoryImpl implements FollowRepositoryCustom {
 
 	private final JPAQueryFactory queryFactory;
-
-	public FollowRepositoryImpl(EntityManager em) {
-		this.queryFactory = new JPAQueryFactory(em);
-	}
 
 	@Override
 	public List<Follow> searchByFollowerOrFollowee(Member follower, Member following) {

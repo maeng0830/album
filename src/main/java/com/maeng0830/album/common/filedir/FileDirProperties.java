@@ -9,6 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("file.dir")
 public class FileDirProperties {
 
+	private String prod;
 	private String dev;
 	private String test;
 }
