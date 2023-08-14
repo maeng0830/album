@@ -1,7 +1,5 @@
 package com.maeng0830.album.common;
 
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.maeng0830.album.common.aws.AwsS3Manager;
 import com.maeng0830.album.common.filedir.FileDir;
 import com.maeng0830.album.common.filedir.FileDirProperties;
 import com.maeng0830.album.common.image.DefaultImage;
@@ -25,18 +23,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 @EnableConfigurationProperties(value = {FileDirProperties.class, DefaultImageProperties.class})
-@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 300)
 @EnableJpaAuditing
 @RequiredArgsConstructor
 @Configuration
 public class CommonConfig {
-
-	@Value("${spring.redis.host}")
-	private String redisHost;
-	@Value("${spring.redis.port}")
-	private String redisPort;
-	@Value("${spring.redis.password}")
-	private String redisPassword;
 
 	private final FileDirProperties fileDirProperties;
 	private final DefaultImageProperties defaultImageProperties;
@@ -83,26 +73,5 @@ public class CommonConfig {
 		return new DefaultImage(defaultImageProperties.getMember(), defaultImageProperties.getFeed());
 	}
 
-	@Bean
-	public RedisConnectionFactory redisConnectionFactory() {
-		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(
-				redisHost, Integer.parseInt(redisPort));
 
-		if (redisPassword != null) {
-			redisStandaloneConfiguration.setPassword(redisPassword);
-		}
-
-		return new LettuceConnectionFactory(redisStandaloneConfiguration);
-	}
-
-	@Bean
-	public RedisTemplate<?, ?> redisTemplate() {
-		RedisTemplate<?, ?> redisTemplate = new RedisTemplate<>();
-
-		redisTemplate.setConnectionFactory(redisConnectionFactory());
-		redisTemplate.setKeySerializer(new StringRedisSerializer());
-		redisTemplate.setValueSerializer(new StringRedisSerializer());
-
-		return redisTemplate;
-	}
 }
