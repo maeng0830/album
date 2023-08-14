@@ -20,6 +20,8 @@ import com.maeng0830.album.security.oauthlogin.handler.OAuthLoginFailureHandler;
 import com.maeng0830.album.security.oauthlogin.handler.OAuthLoginSuccessHandler;
 import com.maeng0830.album.support.config.ControllerAndDocsTestConfig;
 import com.maeng0830.album.support.config.TestPrincipalDetailsService;
+import com.maeng0830.album.support.util.TestFileManager;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -59,8 +61,6 @@ public abstract class ControllerTestSupport {
 
 	protected PrincipalDetails adminPrincipalDetails;
 
-	protected BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
 	@MockBean
 	protected MemberService memberService;
 	@MockBean
@@ -80,6 +80,9 @@ public abstract class ControllerTestSupport {
 	@MockBean
 	protected OAuthLoginFailureHandler oAuthLoginFailureHandler;
 
+	@Autowired
+	protected TestFileManager testFileManager;
+
 	@BeforeEach
 	public void setup() {
 		mockMvc = MockMvcBuilders
@@ -92,5 +95,10 @@ public abstract class ControllerTestSupport {
 
 		adminPrincipalDetails =
 				(PrincipalDetails) testPrincipalDetailsService.loadUserByUsername("admin");
+	}
+
+	@AfterEach
+	void cleanUp() {
+		testFileManager.deleteTestFile();
 	}
 }
