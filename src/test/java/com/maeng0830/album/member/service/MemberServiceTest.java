@@ -362,7 +362,7 @@ class MemberServiceTest extends ServiceTestSupport {
 				.birthDate(modifiedBirthDate)
 				.build();
 
-		MockMultipartFile imageFile = createImageFile("imageFile", "testImage.png",
+		MockMultipartFile imageFile = createImageFile("imageFile", "testImage.PNG",
 				"multipart/mixed", fileDir);
 
 		// Image 객체

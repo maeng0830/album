@@ -1,4 +1,4 @@
-package com.maeng0830.album.docs.member;
+package com.maeng0830.album.docs;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;

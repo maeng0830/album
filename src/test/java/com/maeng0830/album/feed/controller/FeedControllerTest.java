@@ -78,7 +78,7 @@ class FeedControllerTest extends ControllerTestSupport {
 				"feedPostForm", "jsondata",
 				"application/json", content.getBytes(StandardCharsets.UTF_8));
 
-		List<MockMultipartFile> imageFiles = createImageFiles("imageFiles", "testImage.png",
+		List<MockMultipartFile> imageFiles = createImageFiles("imageFiles", "testImage.PNG",
 				"multipart/mixed", fileDir, 2);
 
 		// when
@@ -110,7 +110,7 @@ class FeedControllerTest extends ControllerTestSupport {
 				"feedPostForm", "jsondata",
 				"application/json", content.getBytes(StandardCharsets.UTF_8));
 
-		List<MockMultipartFile> imageFiles = createImageFiles("imageFiles", "testImage.png",
+		List<MockMultipartFile> imageFiles = createImageFiles("imageFiles", "testImage.PNG",
 				"multipart/mixed", fileDir, 2);
 
 		// when
@@ -144,7 +144,7 @@ class FeedControllerTest extends ControllerTestSupport {
 				"feedPostForm", "jsondata",
 				"application/json", content.getBytes(StandardCharsets.UTF_8));
 
-		List<MockMultipartFile> imageFiles = createImageFiles("imageFiles", "testImage.png",
+		List<MockMultipartFile> imageFiles = createImageFiles("imageFiles", "testImage.PNG",
 				"multipart/mixed", fileDir, 2);
 
 		// when
@@ -198,7 +198,7 @@ class FeedControllerTest extends ControllerTestSupport {
 				"feedModifiedForm", "jsondata",
 				"application/json", content.getBytes(StandardCharsets.UTF_8));
 
-		List<MockMultipartFile> imageFiles = createImageFiles("imageFiles", "testImage.png",
+		List<MockMultipartFile> imageFiles = createImageFiles("imageFiles", "testImage.PNG",
 				"multipart/mixed", fileDir, 2);
 
 		// when
@@ -231,7 +231,7 @@ class FeedControllerTest extends ControllerTestSupport {
 				"feedModifiedForm", "jsondata",
 				"application/json", content.getBytes(StandardCharsets.UTF_8));
 
-		List<MockMultipartFile> imageFiles = createImageFiles("imageFiles", "testImage.png",
+		List<MockMultipartFile> imageFiles = createImageFiles("imageFiles", "testImage.PNG",
 				"multipart/mixed", fileDir, 2);
 
 		// when
@@ -266,7 +266,7 @@ class FeedControllerTest extends ControllerTestSupport {
 				"feedModifiedForm", "jsondata",
 				"application/json", content.getBytes(StandardCharsets.UTF_8));
 
-		List<MockMultipartFile> imageFiles = createImageFiles("imageFiles", "testImage.png",
+		List<MockMultipartFile> imageFiles = createImageFiles("imageFiles", "testImage.PNG",
 				"multipart/mixed", fileDir, 2);
 
 		// when
@@ -301,7 +301,7 @@ class FeedControllerTest extends ControllerTestSupport {
 				"feedModifiedForm", "jsondata",
 				"application/json", content.getBytes(StandardCharsets.UTF_8));
 
-		List<MockMultipartFile> imageFiles = createImageFiles("imageFiles", "testImage.png",
+		List<MockMultipartFile> imageFiles = createImageFiles("imageFiles", "testImage.PNG",
 				"multipart/mixed", fileDir, 2);
 
 		// when
