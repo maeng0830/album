@@ -479,7 +479,7 @@ class FeedServiceTest extends ServiceTestSupport {
 				.build());
 		MemberDto memberDto = MemberDto.from(loginMember);
 
-		List<MultipartFile> imageFiles = createImageFiles("imageFile", "testImage.png",
+		List<MultipartFile> imageFiles = createImageFiles("imageFile", "testImage.PNG",
 				"multipart/mixed", fileDir, 3);
 
 		// stub
@@ -520,7 +520,7 @@ class FeedServiceTest extends ServiceTestSupport {
 
 		MemberDto memberDto = null;
 
-		List<MultipartFile> imageFiles = createImageFiles("imageFile", "testImage.png",
+		List<MultipartFile> imageFiles = createImageFiles("imageFile", "testImage.PNG",
 				"multipart/mixed", fileDir, 3);
 
 		// when
@@ -633,7 +633,7 @@ class FeedServiceTest extends ServiceTestSupport {
 		feedRepository.save(feed);
 
 		// feedImage 세팅
-		List<MultipartFile> imageFiles = createImageFiles("imageFile", "prevTestImage.png",
+		List<MultipartFile> imageFiles = createImageFiles("imageFile", "prevTestImage.PNG",
 				"multipart/mixed", fileDir, 3);
 
 		List<Image> images = createImage(imageFiles);
@@ -654,7 +654,7 @@ class FeedServiceTest extends ServiceTestSupport {
 				.content("modContent")
 				.build();
 
-		List<MultipartFile> modImageFiles = createImageFiles("imageFile", "testImage.png",
+		List<MultipartFile> modImageFiles = createImageFiles("imageFile", "testImage.PNG",
 				"multipart/mixed", fileDir, 3);
 
 		MemberDto writerDto = MemberDto.from(writer);
