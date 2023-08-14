@@ -12,6 +12,7 @@ import static com.maeng0830.album.member.exception.MemberExceptionCode.NOT_SAME_
 import static com.maeng0830.album.member.exception.MemberExceptionCode.NO_AUTHORITY;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.REQUIRED_LOGIN;
 
+import com.maeng0830.album.common.aws.AwsS3Manager;
 import com.maeng0830.album.common.exception.AlbumException;
 import com.maeng0830.album.common.filedir.FileDir;
 import com.maeng0830.album.common.image.DefaultImage;
@@ -48,6 +49,7 @@ public class MemberService {
 
 	private final MemberRepository memberRepository;
 	private final BCryptPasswordEncoder passwordEncoder;
+	private final AwsS3Manager awsS3Manager;
 	private final FileDir fileDir;
 	private final DefaultImage defaultImage;
 
@@ -170,7 +172,9 @@ public class MemberService {
 		findMember.modifiedBasicInfo(memberModifiedForm);
 
 		// multipart 요청 데이터(회원 이미지) 처리
-		saveMemberImage(imageFile, findMember);
+		Image image = awsS3Manager.uploadImage(imageFile);
+
+		saveMemberImage(image, findMember);
 
 		return MemberDto.from(findMember);
 	}
@@ -212,15 +216,9 @@ public class MemberService {
 	}
 
 	// 회원 이미지 저장
-	public void saveMemberImage(MultipartFile imageFile, Member findMember) {
-		if (imageFile != null) {
-			findMember.setImage(new Image(imageFile, fileDir));
-
-			try {
-				imageFile.transferTo(new File(findMember.getImage().getImagePath()));
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
+	private void saveMemberImage(Image image, Member findMember) {
+		if (image != null) {
+			findMember.setImage(image);
 		} else {
 			findMember.setImage(Image.createDefaultImage(fileDir, defaultImage.getMemberImage()));
 		}

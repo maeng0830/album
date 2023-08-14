@@ -1,5 +1,7 @@
 package com.maeng0830.album.common;
 
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.maeng0830.album.common.aws.AwsS3Manager;
 import com.maeng0830.album.common.filedir.FileDir;
 import com.maeng0830.album.common.filedir.FileDirProperties;
 import com.maeng0830.album.common.image.DefaultImage;
@@ -54,6 +56,13 @@ public class CommonConfig {
 		return new JPAQueryFactory(em);
 	}
 
+	@Profile("prod")
+	@Bean(name = "fileDir")
+	public FileDir fileDirProd() {
+		System.out.println("fileDirProperties.getProd() = " + fileDirProperties.getProd());
+		return new FileDir(fileDirProperties.getProd());
+	}
+
 	@Profile("dev")
 	@Bean(name = "fileDir")
 	public FileDir fileDirDev() {
@@ -78,7 +87,10 @@ public class CommonConfig {
 	public RedisConnectionFactory redisConnectionFactory() {
 		RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(
 				redisHost, Integer.parseInt(redisPort));
-		redisStandaloneConfiguration.setPassword(redisPassword);
+
+		if (redisPassword != null) {
+			redisStandaloneConfiguration.setPassword(redisPassword);
+		}
 
 		return new LettuceConnectionFactory(redisStandaloneConfiguration);
 	}

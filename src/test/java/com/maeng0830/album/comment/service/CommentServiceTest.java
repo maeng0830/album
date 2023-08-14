@@ -3,7 +3,8 @@ package com.maeng0830.album.comment.service;
 import static com.maeng0830.album.comment.domain.CommentStatus.ACCUSE;
 import static com.maeng0830.album.comment.domain.CommentStatus.DELETE;
 import static com.maeng0830.album.comment.domain.CommentStatus.NORMAL;
-import static com.maeng0830.album.member.domain.MemberRole.*;
+import static com.maeng0830.album.member.domain.MemberRole.ROLE_ADMIN;
+import static com.maeng0830.album.member.domain.MemberRole.ROLE_MEMBER;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.NO_AUTHORITY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -24,9 +25,9 @@ import com.maeng0830.album.common.exception.AlbumException;
 import com.maeng0830.album.feed.domain.Feed;
 import com.maeng0830.album.feed.repository.FeedRepository;
 import com.maeng0830.album.member.domain.Member;
-import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.repository.MemberRepository;
+import com.maeng0830.album.support.ServiceTestSupport;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -34,16 +35,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
-@ActiveProfiles("test")
-@Transactional
-@SpringBootTest
-class CommentServiceTest {
+class CommentServiceTest extends ServiceTestSupport {
 
 	@Autowired
 	private CommentService commentService;
@@ -135,7 +130,8 @@ class CommentServiceTest {
 		PageRequest pageRequest = PageRequest.of(0, 20);
 
 		// when
-		List<GroupComment> groupComments = commentService.getFeedComments(feed.getId(), pageRequest);
+		List<GroupComment> groupComments = commentService.getFeedComments(feed.getId(),
+				pageRequest);
 
 		// then
 		assertThat(groupComments).hasSize(3)
@@ -529,8 +525,8 @@ class CommentServiceTest {
 	@CsvSource(value = {",", "username1", "nickname1", "username2", "nickname2"})
 	@ParameterizedTest
 	void getCommentsForAdmin(String searchText) {
-	    // given
-	    // 관리자 세팅
+		// given
+		// 관리자 세팅
 		Member admin = Member.builder()
 				.role(ROLE_ADMIN)
 				.build();
@@ -658,24 +654,24 @@ class CommentServiceTest {
 			+ "예외가 발생한다.")
 	@Test
 	void getCommentsForAdmin_noAdmin() {
-	    // given
+		// given
 		Member noAdmin = Member.builder()
 				.role(ROLE_MEMBER)
 				.build();
 		MemberDto noAdminDto = MemberDto.from(noAdmin);
 
 		// when
-	    assertThatThrownBy(() -> commentService.getCommentsForAdmin(noAdminDto, null, null))
+		assertThatThrownBy(() -> commentService.getCommentsForAdmin(noAdminDto, null, null))
 				.isInstanceOf(AlbumException.class)
 				.hasMessage(NO_AUTHORITY.getMessage());
 
-	    // then
+		// then
 	}
 
 	@DisplayName("관리자인 경우, 주어진 댓글아이디에 해당하는 댓글신고 목록을 조회할 수 있다.")
 	@Test
 	void getCommentAccuses() {
-	    // given
+		// given
 		// 관리자 세팅
 		Member admin = Member.builder()
 				.role(ROLE_ADMIN)
@@ -720,7 +716,7 @@ class CommentServiceTest {
 			CommentAccuse commentAccuse;
 
 			if (i % 2 == 0) {
-				 commentAccuse = CommentAccuse.builder()
+				commentAccuse = CommentAccuse.builder()
 						.member(commentAccuseWriter)
 						.comment(comment1)
 						.build();
@@ -746,19 +742,21 @@ class CommentServiceTest {
 		assertThat(result1).hasSize(5)
 				.extracting("comment.id")
 				.containsExactlyInAnyOrder(
-						comment1.getId(), comment1.getId(), comment1.getId(), comment1.getId(), comment1.getId()
+						comment1.getId(), comment1.getId(), comment1.getId(), comment1.getId(),
+						comment1.getId()
 				);
 		assertThat(result2).hasSize(5)
 				.extracting("comment.id")
 				.containsExactlyInAnyOrder(
-						comment2.getId(), comment2.getId(), comment2.getId(), comment2.getId(), comment2.getId()
+						comment2.getId(), comment2.getId(), comment2.getId(), comment2.getId(),
+						comment2.getId()
 				);
 	}
 
 	@DisplayName("관리자가 아닌 경우, 주어진 댓글아이디에 해당하는 댓글신고 목록을 조회할 때 예외가 발생한다.")
 	@Test
 	void getCommentAccuses_noAdmin() {
-	    // given
+		// given
 		Member noAdmin = Member.builder()
 				.role(ROLE_MEMBER)
 				.build();
@@ -768,6 +766,6 @@ class CommentServiceTest {
 				.isInstanceOf(AlbumException.class)
 				.hasMessage(NO_AUTHORITY.getMessage());
 
-	    // then
+		// then
 	}
 }

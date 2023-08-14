@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.tuple;
 import com.maeng0830.album.follow.domain.Follow;
 import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.repository.MemberRepository;
+import com.maeng0830.album.support.RepositoryTestSupport;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -13,16 +14,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
-@ActiveProfiles("test")
-@Transactional
-@SpringBootTest
-class FollowRepositoryTest {
+class FollowRepositoryTest extends RepositoryTestSupport {
 
 	@Autowired
 	private FollowRepository followRepository;
@@ -159,9 +154,11 @@ class FollowRepositoryTest {
 		followRepository.saveAll(List.of(follow1, follow2));
 
 		// when
-		List<Follow> byFollower1AndFollowee2 = followRepository.searchByFollowerOrFollowee(follower1,
+		List<Follow> byFollower1AndFollowee2 = followRepository.searchByFollowerOrFollowee(
+				follower1,
 				following2);
-		List<Follow> byFollower2AndFollowee1 = followRepository.searchByFollowerOrFollowee(follower2,
+		List<Follow> byFollower2AndFollowee1 = followRepository.searchByFollowerOrFollowee(
+				follower2,
 				following1);
 
 		// then
@@ -181,7 +178,7 @@ class FollowRepositoryTest {
 	@CsvSource(value = {", 15", "aaa, 5", "bbb, 10"})
 	@ParameterizedTest
 	void searchForMyFollowings(String followingNickname, int size) {
-	    // given
+		// given
 		List<Member> members = new ArrayList<>();
 		List<Follow> follows = new ArrayList<>();
 

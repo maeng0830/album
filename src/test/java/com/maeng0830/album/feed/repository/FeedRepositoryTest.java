@@ -1,7 +1,10 @@
 package com.maeng0830.album.feed.repository;
 
-import static com.maeng0830.album.feed.domain.FeedStatus.*;
-import static org.assertj.core.api.Assertions.*;
+import static com.maeng0830.album.feed.domain.FeedStatus.ACCUSE;
+import static com.maeng0830.album.feed.domain.FeedStatus.DELETE;
+import static com.maeng0830.album.feed.domain.FeedStatus.NORMAL;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 import com.maeng0830.album.common.filedir.FileDir;
 import com.maeng0830.album.common.image.DefaultImage;
@@ -11,6 +14,7 @@ import com.maeng0830.album.feed.domain.FeedImage;
 import com.maeng0830.album.feed.domain.FeedStatus;
 import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.repository.MemberRepository;
+import com.maeng0830.album.support.RepositoryTestSupport;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -20,18 +24,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.security.access.method.P;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
-@ActiveProfiles("test")
-@SpringBootTest
-class FeedRepositoryTest {
+class FeedRepositoryTest extends RepositoryTestSupport {
 
 	@Autowired
 	private FeedRepository feedRepository;
@@ -238,8 +235,9 @@ class FeedRepositoryTest {
 			+ "null이 아닌 경우, searchText와 피드 작성자의 username 또는 nickname이 전방 일치하는 피드를 조회한다.")
 	@MethodSource("argumentsForSearchBySearchText")
 	@ParameterizedTest
-	void searchBySearchText(List<FeedStatus> statuses, String searchText, List<String> usernames, List<String> nicknames, int size) {
-	    // given
+	void searchBySearchText(List<FeedStatus> statuses, String searchText, List<String> usernames,
+							List<String> nicknames, int size) {
+		// given
 		// 멤버 세팅
 		Member member1 = Member.builder()
 				.username("username11")
@@ -316,7 +314,8 @@ class FeedRepositoryTest {
 		if (searchText != null) {
 			assertThat(result.getContent()).hasSize(size)
 					.extracting("status", "member.username", "member.nickname")
-					.containsExactlyInAnyOrder(tuple(statuses.get(0), usernames.get(0), nicknames.get(0)));
+					.containsExactlyInAnyOrder(
+							tuple(statuses.get(0), usernames.get(0), nicknames.get(0)));
 
 			assertThat(result.getContent().get(0).getFeedImages().get(0))
 					.extracting("image")
@@ -346,21 +345,36 @@ class FeedRepositoryTest {
 
 	private static Stream<Arguments> argumentsForSearchBySearchText() {
 		return Stream.of(
-				Arguments.of(List.of(NORMAL), "username1", List.of("username11"), List.of("nickname11"), 1),
-				Arguments.of(List.of(NORMAL), "nickname1", List.of("username11"), List.of("nickname11"), 1),
-				Arguments.of(List.of(NORMAL), "username2", List.of("username22"), List.of("nickname22"), 1),
-				Arguments.of(List.of(NORMAL), "nickname2", List.of("username22"), List.of("nickname22"), 1),
-				Arguments.of(List.of(NORMAL), null, List.of("username11", "username22"), List.of("nickname11", "nickname22"), 2),
-				Arguments.of(List.of(ACCUSE), "username1", List.of("username11"), List.of("nickname11"), 1),
-				Arguments.of(List.of(ACCUSE), "nickname1", List.of("username11"), List.of("nickname11"), 1),
-				Arguments.of(List.of(ACCUSE), "username2", List.of("username22"), List.of("nickname22"), 1),
-				Arguments.of(List.of(ACCUSE), "nickname2", List.of("username22"), List.of("nickname22"), 1),
-				Arguments.of(List.of(ACCUSE), null, List.of("username11", "username22"), List.of("nickname11", "nickname22"), 2),
-				Arguments.of(List.of(DELETE), "username1", List.of("username11"), List.of("nickname11"), 1),
-				Arguments.of(List.of(DELETE), "nickname1", List.of("username11"), List.of("nickname11"), 1),
-				Arguments.of(List.of(DELETE), "username2", List.of("username22"), List.of("nickname22"), 1),
-				Arguments.of(List.of(DELETE), "nickname2", List.of("username22"), List.of("nickname22"), 1),
-				Arguments.of(List.of(DELETE), null, List.of("username11", "username22"), List.of("nickname11", "nickname22"), 2)
+				Arguments.of(List.of(NORMAL), "username1", List.of("username11"),
+						List.of("nickname11"), 1),
+				Arguments.of(List.of(NORMAL), "nickname1", List.of("username11"),
+						List.of("nickname11"), 1),
+				Arguments.of(List.of(NORMAL), "username2", List.of("username22"),
+						List.of("nickname22"), 1),
+				Arguments.of(List.of(NORMAL), "nickname2", List.of("username22"),
+						List.of("nickname22"), 1),
+				Arguments.of(List.of(NORMAL), null, List.of("username11", "username22"),
+						List.of("nickname11", "nickname22"), 2),
+				Arguments.of(List.of(ACCUSE), "username1", List.of("username11"),
+						List.of("nickname11"), 1),
+				Arguments.of(List.of(ACCUSE), "nickname1", List.of("username11"),
+						List.of("nickname11"), 1),
+				Arguments.of(List.of(ACCUSE), "username2", List.of("username22"),
+						List.of("nickname22"), 1),
+				Arguments.of(List.of(ACCUSE), "nickname2", List.of("username22"),
+						List.of("nickname22"), 1),
+				Arguments.of(List.of(ACCUSE), null, List.of("username11", "username22"),
+						List.of("nickname11", "nickname22"), 2),
+				Arguments.of(List.of(DELETE), "username1", List.of("username11"),
+						List.of("nickname11"), 1),
+				Arguments.of(List.of(DELETE), "nickname1", List.of("username11"),
+						List.of("nickname11"), 1),
+				Arguments.of(List.of(DELETE), "username2", List.of("username22"),
+						List.of("nickname22"), 1),
+				Arguments.of(List.of(DELETE), "nickname2", List.of("username22"),
+						List.of("nickname22"), 1),
+				Arguments.of(List.of(DELETE), null, List.of("username11", "username22"),
+						List.of("nickname11", "nickname22"), 2)
 		);
 	}
 }

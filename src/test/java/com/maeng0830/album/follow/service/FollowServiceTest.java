@@ -12,6 +12,7 @@ import com.maeng0830.album.follow.repository.FollowRepository;
 import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.repository.MemberRepository;
+import com.maeng0830.album.support.ServiceTestSupport;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,23 +21,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
-@ActiveProfiles("test")
-@Transactional
-@SpringBootTest
-class FollowServiceTest {
+class FollowServiceTest extends ServiceTestSupport {
 
 	@Autowired
 	private FollowService followService;
-
 	@Autowired
 	private FollowRepository followRepository;
-
 	@Autowired
 	private MemberRepository memberRepository;
 
@@ -113,7 +106,8 @@ class FollowServiceTest {
 
 		//then
 		assertThat(result.get("message")).isEqualTo(
-				String.format("%s님이 %s님에 대한 팔로우를 취소하였습니다.", follower.getUsername(), followee.getUsername()));
+				String.format("%s님이 %s님에 대한 팔로우를 취소하였습니다.", follower.getUsername(),
+						followee.getUsername()));
 	}
 
 	@DisplayName("주어진 ID의 회원에 대한 팔로우를 취소할 때, 팔로우가 존재하지 않는다면 예외가 발생한다.")
@@ -142,7 +136,7 @@ class FollowServiceTest {
 	@CsvSource(value = {", 15", "aaa, 5", "bbb, 10"})
 	@ParameterizedTest
 	void getFollowings(String searchText, int size) {
-	    // given
+		// given
 		List<Member> members = new ArrayList<>();
 		List<Follow> follows = new ArrayList<>();
 

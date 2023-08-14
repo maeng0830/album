@@ -9,6 +9,7 @@ import static com.maeng0830.album.member.exception.MemberExceptionCode.NOT_EXIST
 import static com.maeng0830.album.member.exception.MemberExceptionCode.NO_AUTHORITY;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.REQUIRED_LOGIN;
 
+import com.maeng0830.album.common.aws.AwsS3Manager;
 import com.maeng0830.album.common.exception.AlbumException;
 import com.maeng0830.album.common.filedir.FileDir;
 import com.maeng0830.album.common.image.DefaultImage;
@@ -58,31 +59,26 @@ public class FeedService {
 	private final FeedAccuseRepository feedAccuseRepository;
 	private final MemberRepository memberRepository;
 	private final FollowRepository followRepository;
+	private final AwsS3Manager awsS3Manager;
 	private final FileDir fileDir;
 	private final DefaultImage defaultImage;
 
 	// FeedImage 데이터 등록
-	public List<FeedImage> saveFeedImage(List<MultipartFile> imageFiles, Feed findFeed) {
+	private List<FeedImage> saveFeedImage(List<Image> images, Feed findFeed) {
 		// 첨부 파일이 없을 경우, 기본 이미지 파일 사용
 		// 첨부 파일이 있을 경우, 파일 저장.
-		if (imageFiles.isEmpty()) {
+		if (images.isEmpty()) {
 			FeedImage feedImage = FeedImage.builder()
 					.image(Image.createDefaultImage(fileDir, defaultImage.getFeedImage()))
 					.build();
 
 			feedImageRepository.save(feedImage);
 		} else {
-			for (MultipartFile imageFile : imageFiles) {
+			for (Image image : images) {
 				FeedImage feedImage = FeedImage.builder()
-						.image(new Image(imageFile, fileDir))
+						.image(image)
 						.feed(findFeed)
 						.build();
-
-				try {
-					imageFile.transferTo(new File(feedImage.getImage().getImagePath()));
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
 
 				feedImageRepository.save(feedImage);
 			}
@@ -203,7 +199,8 @@ public class FeedService {
 		feedRepository.save(feed);
 
 		// FeedImage 데이터 등록
-		List<FeedImage> feedImages = saveFeedImage(imageFiles, feed);
+		List<Image> images = awsS3Manager.uploadImage(imageFiles);
+		List<FeedImage> feedImages = saveFeedImage(images, feed);
 
 		return FeedResponse.createFeedResponse(feed, feedImages);
 	}
@@ -260,7 +257,8 @@ public class FeedService {
 		feedImageRepository.deleteFeedImageByFeed_Id(findFeed.getId());
 
 		// 새로운 FeedImage 데이터 등록
-		List<FeedImage> feedImages = saveFeedImage(imageFiles, findFeed);
+		List<Image> images = awsS3Manager.uploadImage(imageFiles);
+		List<FeedImage> feedImages = saveFeedImage(images, findFeed);
 
 		return FeedResponse.createFeedResponse(findFeed, feedImages);
 	}

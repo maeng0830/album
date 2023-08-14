@@ -11,6 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.BDDMockito.given;
 
 import com.maeng0830.album.common.exception.AlbumException;
 import com.maeng0830.album.common.filedir.FileDir;
@@ -33,32 +34,27 @@ import com.maeng0830.album.follow.repository.FollowRepository;
 import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.repository.MemberRepository;
+import com.maeng0830.album.support.ServiceTestSupport;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-@ActiveProfiles("test")
-@Transactional
-@SpringBootTest
-class FeedServiceTest {
+class FeedServiceTest extends ServiceTestSupport {
 
 	@Autowired
 	private FeedService feedService;
-
 	@Autowired
 	private MemberRepository memberRepository;
 	@Autowired
@@ -69,34 +65,8 @@ class FeedServiceTest {
 	private FeedAccuseRepository feedAccuseRepository;
 	@Autowired
 	private FollowRepository followRepository;
-
 	@Autowired
 	private FileDir fileDir;
-
-	@DisplayName("주어진 Feed에 대한 FeedImage를 등록할 수 있다")
-	@Test
-	void saveFeedImage() throws IOException {
-		// given
-		List<MultipartFile> imageFiles = createImageFiles("imageFile", "testImage.png",
-				"multipart/mixed", fileDir, 3);
-
-		Feed feed = Feed.builder()
-				.status(NORMAL)
-				.build();
-		feedRepository.save(feed);
-
-		// when
-		List<FeedImage> feedImages = feedService.saveFeedImage(imageFiles, feed);
-
-		// then
-		assertThat(feedImages).hasSize(3)
-				.extracting("feed", "image.imageOriginalName")
-				.containsExactlyInAnyOrder(
-						tuple(feed, "testImage.png"),
-						tuple(feed, "testImage.png"),
-						tuple(feed, "testImage.png")
-				);
-	}
 
 	@DisplayName("정상 및 신고 상태인 피드 목록을 조회할 수 있다. 로그인 했을 경우, 팔로워 및 팔로이의 피드를 조회한다."
 			+ "조회수 내림차순으로 정렬된다.")
@@ -512,6 +482,14 @@ class FeedServiceTest {
 		List<MultipartFile> imageFiles = createImageFiles("imageFile", "testImage.png",
 				"multipart/mixed", fileDir, 3);
 
+		// stub
+		List<Image> images = createImage(imageFiles);
+
+		given(awsS3Manager.uploadImage(imageFiles))
+				.willReturn(
+						images
+				);
+
 		// when
 		FeedResponse feedResponse = feedService.feed(feedPostForm, imageFiles, memberDto);
 
@@ -519,13 +497,15 @@ class FeedServiceTest {
 		assertThat(feedResponse)
 				.extracting("title", "content", "hits", "commentCount")
 				.containsExactlyInAnyOrder("testTitle", "testContent", 0, 0);
-
 		assertThat(feedResponse.getFeedImages()).hasSize(3)
-				.extracting("imageOriginalName")
+				.extracting("imageOriginalName", "imageStoreName", "imagePath")
 				.containsExactlyInAnyOrder(
-						imageFiles.get(0).getOriginalFilename(),
-						imageFiles.get(1).getOriginalFilename(),
-						imageFiles.get(2).getOriginalFilename()
+						tuple(images.get(0).getImageOriginalName(),
+								images.get(0).getImageStoreName(), images.get(0).getImagePath()),
+						tuple(images.get(1).getImageOriginalName(),
+								images.get(1).getImageStoreName(), images.get(1).getImagePath()),
+						tuple(images.get(2).getImageOriginalName(),
+								images.get(2).getImageStoreName(), images.get(2).getImagePath())
 				);
 	}
 
@@ -655,9 +635,12 @@ class FeedServiceTest {
 		// feedImage 세팅
 		List<MultipartFile> imageFiles = createImageFiles("imageFile", "prevTestImage.png",
 				"multipart/mixed", fileDir, 3);
-		for (MultipartFile imageFile : imageFiles) {
+
+		List<Image> images = createImage(imageFiles);
+
+		for (Image image : images) {
 			FeedImage feedImage = FeedImage.builder()
-					.image(new Image(imageFile, fileDir))
+					.image(image)
 					.feed(feed)
 					.build();
 
@@ -670,25 +653,40 @@ class FeedServiceTest {
 				.title("modTitle")
 				.content("modContent")
 				.build();
+
 		List<MultipartFile> modImageFiles = createImageFiles("imageFile", "testImage.png",
 				"multipart/mixed", fileDir, 3);
+
 		MemberDto writerDto = MemberDto.from(writer);
 
-		System.out.println("feed.getId() = " + feed.getId());
+		// stub
+		List<Image> modImages = createImage(modImageFiles);
+
+		given(awsS3Manager.uploadImage(modImageFiles))
+				.willReturn(
+						modImages
+				);
 
 		// when
-		FeedResponse feedResponse = feedService.modifiedFeed(feedModifiedForm, modImageFiles, writerDto);
+		FeedResponse feedResponse = feedService.modifiedFeed(feedModifiedForm, modImageFiles,
+				writerDto);
 
 		// then
 		assertThat(feedResponse)
 				.extracting("title", "content")
 				.containsExactly(feedModifiedForm.getTitle(), feedModifiedForm.getContent());
 		assertThat(feedResponse.getFeedImages()).hasSize(3)
-				.extracting("imageOriginalName")
+				.extracting("imageOriginalName", "imageStoreName", "imagePath")
 				.containsExactlyInAnyOrder(
-						modImageFiles.get(0).getOriginalFilename(),
-						modImageFiles.get(1).getOriginalFilename(),
-						modImageFiles.get(2).getOriginalFilename()
+						tuple(modImages.get(0).getImageOriginalName(),
+								modImages.get(0).getImageStoreName(),
+								modImages.get(0).getImagePath()),
+						tuple(modImages.get(1).getImageOriginalName(),
+								modImages.get(1).getImageStoreName(),
+								modImages.get(1).getImagePath()),
+						tuple(modImages.get(2).getImageOriginalName(),
+								modImages.get(2).getImageStoreName(),
+								modImages.get(2).getImagePath())
 				);
 	}
 
@@ -965,5 +963,23 @@ class FeedServiceTest {
 		}
 
 		return imageFiles;
+	}
+
+	private List<Image> createImage(List<MultipartFile> imageFiles) {
+		List<Image> images = new ArrayList<>();
+
+		for (MultipartFile imageFile : imageFiles) {
+			String storeName = UUID.randomUUID() + "." + imageFile.getOriginalFilename();
+
+			Image image = Image.builder()
+					.imageOriginalName(imageFile.getOriginalFilename())
+					.imageStoreName(storeName)
+					.imagePath(fileDir.getDir() + storeName)
+					.build();
+
+			images.add(image);
+		}
+
+		return images;
 	}
 }
