@@ -9,6 +9,7 @@ import com.maeng0830.album.common.util.AlbumUtil;
 import com.maeng0830.album.feed.repository.custom.FeedRepositoryImpl;
 import com.maeng0830.album.follow.repository.custom.FollowRepositoryImpl;
 import com.maeng0830.album.member.repository.custom.MemberRepositoryImpl;
+import com.maeng0830.album.support.util.TestFileManager;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import javax.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,5 +66,10 @@ public class RepositoryTestConfig {
 	@Bean
 	public CommentRepositoryImpl commentRepositoryImpl(EntityManager em) {
 		return new CommentRepositoryImpl(jpaQueryFactory(em), util());
+	}
+
+	@Bean
+	public TestFileManager testFileManager() {
+		return new TestFileManager();
 	}
 }

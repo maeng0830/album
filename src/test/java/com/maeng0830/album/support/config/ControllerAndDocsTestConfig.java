@@ -4,6 +4,7 @@ import com.maeng0830.album.common.filedir.FileDir;
 import com.maeng0830.album.common.filedir.FileDirProperties;
 import com.maeng0830.album.common.image.DefaultImage;
 import com.maeng0830.album.common.image.DefaultImageProperties;
+import com.maeng0830.album.support.util.TestFileManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -33,5 +34,10 @@ public class ControllerAndDocsTestConfig {
 	@Bean
 	public TestPrincipalDetailsService testPrincipalDetailsService() {
 		return new TestPrincipalDetailsService();
+	}
+
+	@Bean
+	public TestFileManager testFileManager() {
+		return new TestFileManager();
 	}
 }
