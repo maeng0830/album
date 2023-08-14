@@ -22,6 +22,8 @@ import com.maeng0830.album.security.oauthlogin.handler.OAuthLoginFailureHandler;
 import com.maeng0830.album.security.oauthlogin.handler.OAuthLoginSuccessHandler;
 import com.maeng0830.album.support.config.ControllerAndDocsTestConfig;
 import com.maeng0830.album.support.config.TestPrincipalDetailsService;
+import com.maeng0830.album.support.util.TestFileManager;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,6 +85,9 @@ public abstract class DocsTestSupport {
 	@MockBean
 	protected OAuthLoginFailureHandler oAuthLoginFailureHandler;
 
+	@Autowired
+	protected TestFileManager testFileManager;
+
 	@BeforeEach
 	void setUp(RestDocumentationContextProvider provider) {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(context)
@@ -94,5 +99,10 @@ public abstract class DocsTestSupport {
 
 		adminPrincipalDetails =
 				(PrincipalDetails) testPrincipalDetailsService.loadUserByUsername("admin");
+	}
+
+	@AfterEach
+	void cleanUp() {
+		testFileManager.deleteTestFile();
 	}
 }
