@@ -60,10 +60,10 @@ public class EmbeddedRedisConfig {
 	 * 해당 port를 사용중인 프로세스 확인하는 sh 실행
 	 */
 	private Process executeGrepProcessCommand(int port) throws IOException {
-		String OS = System.getProperty("os.name").toLowerCase();
+		String os = System.getProperty("os.name").toLowerCase();
 
-		if (OS.contains("win")) {
-			log.info("OS is  " + OS + " " + port);
+		if (os.contains("win")) {
+			log.info("os is  " + os + " " + port);
 			String command = String.format("netstat -nao | find \"LISTEN\" | find \"%d\"", port);
 			String[] shell = {"cmd.exe", "/y", "/c", command};
 			return Runtime.getRuntime().exec(shell);
