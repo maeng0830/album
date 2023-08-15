@@ -26,7 +26,7 @@ public class viewController {
 
 		model.addAttribute("searchText", searchText);
 
-		return "/index";
+		return "index";
 	}
 
 	@GetMapping("/form-signup")
@@ -37,7 +37,7 @@ public class viewController {
 	@GetMapping("/members/post-feed")
 	public String postFeed() {
 
-		return "/postFeed";
+		return "postFeed";
 	}
 
 	@GetMapping("/members/modified-feed/{feedId}")
@@ -46,7 +46,7 @@ public class viewController {
 
 		model.addAttribute("feed", feed);
 
-		return "/modifiedFeed";
+		return "modifiedFeed";
 	}
 
 	@GetMapping("/feed-page/{feedId}")
@@ -60,22 +60,22 @@ public class viewController {
 		} else {
 			model.addAttribute("loginId", -1);
 		}
-		return "/feedPage";
+		return "feedPage";
 	}
 
 	@GetMapping("/admin/feedList")
 	public String adminFeedList() {
-		return "/adminFeeds";
+		return "adminFeeds";
 	}
 
 	@GetMapping("/admin/memberList")
 	public String adminMemberList() {
-		return "/adminMembers";
+		return "adminMembers";
 	}
 
 	@GetMapping("/admin/commentList")
 	public String adminCommentList() {
-		return "/adminComments";
+		return "adminComments";
 	}
 
 	@GetMapping("/members/my-profile")
@@ -85,7 +85,7 @@ public class viewController {
 
 		model.addAttribute("memberDto", memberDto);
 
-		return "/myProfile";
+		return "myProfile";
 	}
 
 	@GetMapping("/members/my-follow")
@@ -97,7 +97,7 @@ public class viewController {
 		model.addAttribute("memberDto", memberDto);
 		model.addAttribute("searchText", searchText);
 
-		return "/myFollow";
+		return "myFollow";
 	}
 
 	@GetMapping("/members/my-feed")

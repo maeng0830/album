@@ -60,6 +60,9 @@ spring:
   messages:
     basename: errors
 
+  thymeleaf:
+    prefix: classpath:/templates/
+
 cloud:
   aws:
     s3:
