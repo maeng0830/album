@@ -6,21 +6,15 @@ import com.maeng0830.album.common.image.DefaultImage;
 import com.maeng0830.album.common.image.DefaultImageProperties;
 import com.maeng0830.album.common.util.AlbumUtil;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.io.File;
 import javax.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 @EnableConfigurationProperties(value = {FileDirProperties.class, DefaultImageProperties.class})
 @EnableJpaAuditing
@@ -57,20 +51,41 @@ public class CommonConfig {
 	@Bean(name = "fileDir")
 	public FileDir fileDirDev() {
 
-		System.out.println("fileDirProperties.getDev() = " + fileDirProperties.getDev());
-		return new FileDir(fileDirProperties.getDev());
+		String relativePath = fileDirProperties.getDev();
+		String absolutePath = null;
+
+		String os = System.getProperty("os.name").toLowerCase();
+
+		if (os.contains("win")) {
+			absolutePath = new File(relativePath).getAbsolutePath() + "\\";
+		} else {
+			absolutePath = new File(relativePath).getAbsolutePath() + "/";
+		}
+
+		return new FileDir(absolutePath);
 	}
 
 	@Profile("test")
 	@Bean(name = "fileDir")
 	public FileDir fileDirTest() {
-		System.out.println("fileDirProperties.getTest() = " + fileDirProperties.getTest());
-		return new FileDir(fileDirProperties.getTest());
+		String relativePath = fileDirProperties.getTest();
+		String absolutePath = null;
+
+		String os = System.getProperty("os.name").toLowerCase();
+
+		if (os.contains("win")) {
+			absolutePath = new File(relativePath).getAbsolutePath() + "\\";
+		} else {
+			absolutePath = new File(relativePath).getAbsolutePath() + "/";
+		}
+
+		return new FileDir(absolutePath);
 	}
 
 	@Bean
 	public DefaultImage defaultImage() {
-		return new DefaultImage(defaultImageProperties.getMember(), defaultImageProperties.getFeed());
+		return new DefaultImage(defaultImageProperties.getMember(),
+				defaultImageProperties.getFeed());
 	}
 
 
