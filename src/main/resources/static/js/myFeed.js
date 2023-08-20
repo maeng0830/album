@@ -19,22 +19,21 @@ function getMyFeeds(memberId) {
 
         feeds.forEach(feed => {
           var feedImage = feed.feedImages.length !== 0 ? feed.feedImages[0].imagePath : '#';
-          var createdByImage = feed.createdByImage != null ? feed.createdByImage : '#';
+          var memberImage = feed.member.image.imageStoreName;
+          var memberNickname = feed.member.nickname;
           var feedPath = '/feed-page/' + feed.id;
 
           feedHtml += `
             <a href="${feedPath}">
               <div class="col-7 mb-4">
                 <div class="card shadow-sm">
-                  <img src="${feedImage}" class="bd-placeholder-img card-img-top" width="100%" height="225" role="img" aria-label="Card Image" preserveAspectRatio="xMidYMid slice" focusable="false">
+                  <img src="/images/${feedImage}" class="bd-placeholder-img card-img-top" width="100%" height="225" role="img" aria-label="Card Image" preserveAspectRatio="xMidYMid slice" focusable="false">
                   <div class="card-body">
                     <h5 class="card-title">${feed.title}</h5>
                     <p class="card-text">${feed.content}</p>
                     <div class="d-flex justify-content-between align-items-center">
                       <div>
-                        <a href="/member-view/${feed.createdById}" class="rounded-circle">
-                          <img src="${createdByImage}" alt="작성자 이미지" width="30" height="30">
-                        </a>
+                          <img src="/images/${memberImage}" alt="${memberNickname}" width="30" height="30">
                       </div>
                       <div class="ms-auto">
                         <div class="d-flex flex-column">
