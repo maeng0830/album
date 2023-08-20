@@ -32,7 +32,7 @@ public class AwsS3Manager {
 			String storeNameWithDirectory = S3_BUCKET_DIRECTORY + storeName;
 
 			try {
-				amazonS3Client.putObject(new PutObjectRequest(s3Bucket, storeName, imageFile.getInputStream(), objectMetadata).withCannedAcl(
+				amazonS3Client.putObject(new PutObjectRequest(s3Bucket, storeNameWithDirectory, imageFile.getInputStream(), objectMetadata).withCannedAcl(
 						CannedAccessControlList.PublicRead));
 
 				Image image = createImage(imageFile, storeName, storeNameWithDirectory);
