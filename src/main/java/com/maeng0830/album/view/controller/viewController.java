@@ -31,7 +31,7 @@ public class viewController {
 
 	@GetMapping("/form-signup")
 	public String formSignup() {
-		return "/formSignup";
+		return "formSignup";
 	}
 
 	@GetMapping("/members/post-feed")
