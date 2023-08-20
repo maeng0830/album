@@ -35,14 +35,14 @@ spring:
               - email
               - profile
           naver:
-            client-id: ${naver.client-id}
-            client-secret: ${naver.client-secret}
+            client-id: ${aws.naver.client-id}
+            client-secret: ${aws.naver.client-secret}
             scope:
               - name
               - email
             client-name: Naver
             authorization-grant-type: authorization_code
-            redirect-uri: ${prod.naver.redirect.url} #네이버는 주소가 고정은 아니다. 그렇지만 표준을 따르자
+            redirect-uri: ${aws.naver.redirect.url} #네이버는 주소가 고정은 아니다. 그렇지만 표준을 따르자
 
         provider: # 네이버는 provider가 등록되어있지 않기 때문에 직접 등록해준다.
           naver:
