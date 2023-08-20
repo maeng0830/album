@@ -12,6 +12,7 @@ import com.maeng0830.album.security.formlogin.PrincipalDetails;
 import com.maeng0830.album.security.oauthlogin.userinfo.GoogleUserInfo;
 import com.maeng0830.album.security.oauthlogin.userinfo.NaverUserInfo;
 import com.maeng0830.album.security.oauthlogin.userinfo.OAuthUserInfo;
+import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +50,7 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 			oAuthUserInfo = new GoogleUserInfo(oAuth2User.getAttributes());
 		} else if (userRequest.getClientRegistration().getRegistrationId().equals("naver")) {
 			log.info("네이버 로그인 요청");
-			oAuthUserInfo = new NaverUserInfo(oAuth2User.getAttributes());
+			oAuthUserInfo = new NaverUserInfo((Map) oAuth2User.getAttributes().get("response"));
 		} else {
 			log.info("지원하지 않는 소셜 로그인 요청");
 			return null;
