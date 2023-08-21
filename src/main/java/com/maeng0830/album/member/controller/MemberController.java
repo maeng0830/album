@@ -5,6 +5,7 @@ import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.dto.request.MemberJoinForm;
 import com.maeng0830.album.member.dto.request.MemberModifiedForm;
 import com.maeng0830.album.member.dto.request.MemberPasswordModifiedForm;
+import com.maeng0830.album.member.dto.request.MemberWithdrawForm;
 import com.maeng0830.album.member.service.MemberService;
 import com.maeng0830.album.security.formlogin.PrincipalDetails;
 import java.util.List;
@@ -40,17 +41,11 @@ public class MemberController {
 		return memberService.join(memberJoinForm);
 	}
 
-	// 로그인 예외 발생 시 호출
-	@PostMapping("/loginForm")
-	public String loginForm(HttpServletRequest request) {
-
-		return String.valueOf(request.getAttribute("loginFailMsg"));
-	}
-
 	// 회원 탈퇴
 	@DeleteMapping("/members")
-	public MemberDto withdrawMember(@AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return memberService.withdraw(albumUtil.checkLogin(principalDetails));
+	public MemberDto withdrawMember(@AuthenticationPrincipal PrincipalDetails principalDetails,
+									@Valid @RequestBody MemberWithdrawForm memberWithdrawForm) {
+		return memberService.withdraw(albumUtil.checkLogin(principalDetails), memberWithdrawForm);
 	}
 
 	// 전체 회원 조회

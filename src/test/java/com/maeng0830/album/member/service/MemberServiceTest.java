@@ -25,6 +25,7 @@ import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.dto.request.MemberJoinForm;
 import com.maeng0830.album.member.dto.request.MemberModifiedForm;
 import com.maeng0830.album.member.dto.request.MemberPasswordModifiedForm;
+import com.maeng0830.album.member.dto.request.MemberWithdrawForm;
 import com.maeng0830.album.member.repository.MemberRepository;
 import com.maeng0830.album.support.ServiceTestSupport;
 import java.io.File;
@@ -143,13 +144,19 @@ class MemberServiceTest extends ServiceTestSupport {
 	public void withdraw() {
 		//given
 		Member member = Member.builder()
+				.password(passwordEncoder.encode("123"))
 				.build();
 		memberRepository.save(member);
 
 		MemberDto memberDto = MemberDto.from(member);
 
+		MemberWithdrawForm memberWithdrawForm = MemberWithdrawForm.builder()
+				.password("123")
+				.checkedPassword("123")
+				.build();
+
 		//when
-		MemberDto result = memberService.withdraw(memberDto);
+		MemberDto result = memberService.withdraw(memberDto, memberWithdrawForm);
 
 		//then
 		assertThat(result.getStatus()).isEqualTo(WITHDRAW);

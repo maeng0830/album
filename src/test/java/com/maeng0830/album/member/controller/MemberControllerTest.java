@@ -16,6 +16,7 @@ import com.maeng0830.album.common.filedir.FileDir;
 import com.maeng0830.album.member.dto.request.MemberJoinForm;
 import com.maeng0830.album.member.dto.request.MemberModifiedForm;
 import com.maeng0830.album.member.dto.request.MemberPasswordModifiedForm;
+import com.maeng0830.album.member.dto.request.MemberWithdrawForm;
 import com.maeng0830.album.support.ControllerTestSupport;
 import java.io.File;
 import java.io.FileInputStream;
@@ -157,6 +158,10 @@ class MemberControllerTest extends ControllerTestSupport {
 	@Test
 	void withdrawMember() throws Exception {
 		// given
+		MemberWithdrawForm memberWithdrawForm = MemberWithdrawForm.builder()
+				.password("123")
+				.checkedPassword("123")
+				.build();
 
 		// when
 
@@ -165,10 +170,61 @@ class MemberControllerTest extends ControllerTestSupport {
 						delete("/members")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
+								.content(objectMapper.writeValueAsString(memberWithdrawForm))
+								.contentType(APPLICATION_JSON)
 				)
 				.andDo(print())
 				.andExpect(status().isOk());
 	}
+
+	@DisplayName("회원 탈퇴 시, password는 필수이다.")
+	@Test
+	void withdrawMember_blankPassword() throws Exception {
+		// given
+		MemberWithdrawForm memberWithdrawForm = MemberWithdrawForm.builder()
+				.checkedPassword("123")
+				.build();
+
+		// when
+
+		// then
+		mockMvc.perform(
+						delete("/members")
+								.with(csrf())
+								.with(user(memberPrincipalDetails))
+								.content(objectMapper.writeValueAsString(memberWithdrawForm))
+								.contentType(APPLICATION_JSON)
+				)
+				.andDo(print())
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$[0].code").value("NotBlank"))
+				.andExpect(jsonPath(("$[0].message")).value("password, 값을 입력해주시기 바랍니다."));
+	}
+
+	@DisplayName("회원 탈퇴 시, checkedPassword는 필수이다.")
+	@Test
+	void withdrawMember_blankCheckedPassword() throws Exception {
+		// given
+		MemberWithdrawForm memberWithdrawForm = MemberWithdrawForm.builder()
+				.password("123")
+				.build();
+
+		// when
+
+		// then
+		mockMvc.perform(
+						delete("/members")
+								.with(csrf())
+								.with(user(memberPrincipalDetails))
+								.content(objectMapper.writeValueAsString(memberWithdrawForm))
+								.contentType(APPLICATION_JSON)
+				)
+				.andDo(print())
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$[0].code").value("NotBlank"))
+				.andExpect(jsonPath(("$[0].message")).value("checkedPassword, 값을 입력해주시기 바랍니다."));
+	}
+
 
 	@DisplayName("로그인한 경우, 전제 회원을 조회할 수 있다. "
 			+ "페이징 기능을 지원한다. "

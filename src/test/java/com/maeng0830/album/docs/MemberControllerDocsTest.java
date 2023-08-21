@@ -42,6 +42,7 @@ import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.dto.request.MemberJoinForm;
 import com.maeng0830.album.member.dto.request.MemberModifiedForm;
 import com.maeng0830.album.member.dto.request.MemberPasswordModifiedForm;
+import com.maeng0830.album.member.dto.request.MemberWithdrawForm;
 import com.maeng0830.album.security.dto.LoginType;
 import com.maeng0830.album.support.DocsTestSupport;
 import java.io.File;
@@ -161,7 +162,12 @@ public class MemberControllerDocsTest extends DocsTestSupport {
 		// given
 		MemberDto memberDto = memberPrincipalDetails.getMemberDto();
 
-		given(memberService.withdraw(any()))
+		MemberWithdrawForm memberWithdrawForm = MemberWithdrawForm.builder()
+				.password("123")
+				.checkedPassword("123")
+				.build();
+
+		given(memberService.withdraw(any(), any(MemberWithdrawForm.class)))
 				.willReturn(
 						MemberDto.builder()
 								.id(memberDto.getId())
@@ -186,11 +192,18 @@ public class MemberControllerDocsTest extends DocsTestSupport {
 		mockMvc.perform(
 						delete("/members")
 								.with(user(memberPrincipalDetails))
+								.content(objectMapper.writeValueAsString(memberWithdrawForm))
+								.contentType(APPLICATION_JSON)
 				)
 				.andDo(print())
 				.andExpect(status().isOk())
 				.andDo(document("withdraw-member",
+						preprocessRequest(prettyPrint()),
 						preprocessResponse(prettyPrint()),
+						requestFields(
+						fieldWithPath("password").type(STRING).description("현재 비밀번호"),
+						fieldWithPath("checkedPassword").type(STRING).description("현재 비밀번호 확인")
+						),
 						responseFields(
 								fieldWithPath("id").type(NUMBER)
 										.description("회원 번호"),

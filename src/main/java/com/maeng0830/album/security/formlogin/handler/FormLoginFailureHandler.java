@@ -28,10 +28,12 @@ public class FormLoginFailureHandler implements AuthenticationFailureHandler {
 		} else if (exception instanceof LockedException) {
 			request.setAttribute("loginFailMsg", "정지된 회원입니다.");
 		} else if (exception instanceof DisabledException) {
-			request.setAttribute("loginFailMsg", "인증이 필요한 회원입니다.");
+			request.setAttribute("loginFailMsg", "탈퇴된 회원입니다.");
 		}
 
-		RequestDispatcher dispatcher = request.getRequestDispatcher("/");
+
+
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/fail-Authentication");
 		dispatcher.forward(request, response);
 	}
 }
