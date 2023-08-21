@@ -24,6 +24,8 @@ import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.dto.request.MemberJoinForm;
 import com.maeng0830.album.member.dto.request.MemberModifiedForm;
 import com.maeng0830.album.member.dto.request.MemberPasswordModifiedForm;
+import com.maeng0830.album.member.dto.request.MemberWithdrawForm;
+import com.maeng0830.album.member.exception.MemberExceptionCode;
 import com.maeng0830.album.member.repository.MemberRepository;
 import com.maeng0830.album.security.dto.LoginType;
 import java.io.File;
@@ -90,7 +92,8 @@ public class MemberService {
 	}
 
 	// 회원 탈퇴
-	public MemberDto withdraw(MemberDto memberDto) {
+	@Transactional
+	public MemberDto withdraw(MemberDto memberDto, MemberWithdrawForm memberWithdrawForm) {
 
 		if (memberDto == null) {
 			throw new AlbumException(REQUIRED_LOGIN);
@@ -98,6 +101,14 @@ public class MemberService {
 
 		Member findMember = memberRepository.findById(memberDto.getId())
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_MEMBER));
+
+		if (!memberWithdrawForm.getPassword().equals(memberWithdrawForm.getCheckedPassword())) {
+			throw new AlbumException(NOT_SAME_PASSWORD_REPASSWORD);
+		}
+
+		if (!passwordEncoder.matches(memberWithdrawForm.getPassword(), findMember.getPassword())) {
+			throw new AlbumException(INCORRECT_PASSWORD);
+		}
 
 		findMember.setStatus(WITHDRAW);
 

@@ -47,7 +47,9 @@ public class SecurityConfig {
 				.failureHandler(oAuthLoginFailureHandler)
 				.and()
 				.logout()
-				.logoutSuccessUrl("/");
+				.logoutSuccessUrl("/")
+				.and()
+				.exceptionHandling().accessDeniedPage("/fail-authorize");
 
 		return http.build();
 	}
