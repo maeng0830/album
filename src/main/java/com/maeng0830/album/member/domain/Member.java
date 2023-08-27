@@ -9,7 +9,6 @@ import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.dto.request.MemberModifiedForm;
 import com.maeng0830.album.security.dto.LoginType;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Convert;
@@ -24,12 +23,10 @@ import javax.persistence.OneToMany;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Entity
 @Getter
-@Setter
 @SuperBuilder
 @NoArgsConstructor
 public class Member extends BaseEntity {
@@ -89,5 +86,13 @@ public class Member extends BaseEntity {
 		this.nickname = memberModifiedForm.getNickname();
 		this.phone = memberModifiedForm.getPhone();
 		this.birthDate = memberModifiedForm.getBirthDate();
+	}
+
+	public void changePassword(String encodingPassword) {
+		this.password = encodingPassword;
+	}
+
+	public void changeImage(Image image) {
+		this.image = image;
 	}
 }

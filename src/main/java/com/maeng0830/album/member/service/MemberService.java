@@ -110,7 +110,7 @@ public class MemberService {
 			throw new AlbumException(INCORRECT_PASSWORD);
 		}
 
-		findMember.setStatus(WITHDRAW);
+		findMember.changeStatus(WITHDRAW);
 
 		return MemberDto.from(findMember);
 	}
@@ -205,7 +205,7 @@ public class MemberService {
 		if (memberPasswordModifiedForm.getModPassword().equals(memberPasswordModifiedForm.getCheckedModPassword())) {
 			if (passwordEncoder.matches(memberPasswordModifiedForm.getCurrentPassword(),
 					findMember.getPassword())) {
-				findMember.setPassword(passwordEncoder.encode(memberPasswordModifiedForm.getModPassword()));
+				findMember.changePassword(passwordEncoder.encode(memberPasswordModifiedForm.getModPassword()));
 			} else {
 				throw new AlbumException(INCORRECT_PASSWORD);
 			}
@@ -221,7 +221,7 @@ public class MemberService {
 		Member findMember = memberRepository.findById(id).orElseThrow(() -> new AlbumException(
 				NOT_EXIST_MEMBER));
 
-		findMember.setStatus(memberStatus);
+		findMember.changeStatus(memberStatus);
 
 		return MemberDto.from(findMember);
 	}
@@ -229,9 +229,9 @@ public class MemberService {
 	// 회원 이미지 저장
 	private void saveMemberImage(Image image, Member findMember) {
 		if (image != null) {
-			findMember.setImage(image);
+			findMember.changeImage(image);
 		} else {
-			findMember.setImage(Image.createDefaultImage(fileDir, defaultImage.getMemberImage()));
+			findMember.changeImage(Image.createDefaultImage(fileDir, defaultImage.getMemberImage()));
 		}
 	}
 }
