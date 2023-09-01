@@ -35,12 +35,14 @@ import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.repository.MemberRepository;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -108,23 +110,29 @@ public class FeedService {
 			Set<String> createdBy = new HashSet<>();
 
 			members.stream()
-					.filter(f -> !f.getFollowing().getUsername().equals(loginMember.getUsername()))
 					.map(f -> f.getFollowing().getUsername()).forEach(createdBy::add);
 			members.stream()
-					.filter(f -> !f.getFollower().getUsername().equals(loginMember.getUsername()))
 					.map(f -> f.getFollower().getUsername()).forEach(createdBy::add);
 
-			Page<Feed> feeds = feedRepository.searchByCreatedBy(feedStatuses, createdBy,
-					pageRequest);
+			Page<Feed> feeds = feedRepository.searchByCreatedBy(feedStatuses, createdBy, pageRequest);
 
-			return feeds.map(f -> FeedResponse.createFeedResponse(f, f.getFeedImages()));
-		} else {
-			//비로그인 상태
-			Page<Feed> feeds = feedRepository.searchByCreatedBy(feedStatuses, null,
-					pageRequest);
+			if (feeds.getSize() != 0) { // 가져올 피드가 있으면 반환
+				return feeds.map(f -> FeedResponse.createFeedResponse(f, f.getFeedImages()));
+			} else if (pageRequest.getPageNumber() == 0) { // 가져올 피드가 없고, 요청 페이지 넘버가 0이면, 팔로워 및 팔로우 조건 없는 0번 페이지 반환
+				feeds = feedRepository.searchByCreatedBy(feedStatuses, null, pageRequest);
 
-			return feeds.map(f -> FeedResponse.createFeedResponse(f, f.getFeedImages()));
+				return feeds.map(f -> FeedResponse.createFeedResponse(f, f.getFeedImages()));
+			} else { // 가져올 피드가 없고, 요청 페이지 넘버가 0이 아니면, 빈 리스트 반환
+				feeds = new PageImpl<>(new ArrayList<>());
+
+				return feeds.map(f -> FeedResponse.createFeedResponse(f, f.getFeedImages()));
+			}
 		}
+		//비로그인 상태
+		Page<Feed> feeds = feedRepository.searchByCreatedBy(feedStatuses, null,
+				pageRequest);
+
+		return feeds.map(f -> FeedResponse.createFeedResponse(f, f.getFeedImages()));
 	}
 
 	// 헤더 검색창(닉네임)을 통한 피드 목록 반환
