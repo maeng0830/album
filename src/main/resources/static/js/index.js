@@ -22,6 +22,7 @@ function getFeeds(searchText, currentPage) {
 
         feeds.forEach(feed => {
           var feedImage = feed.feedImages.length !== 0 ? feed.feedImages[0].imageStoreName : '#';
+          var memberId = feed.member.id;
           var memberImage = feed.member.image.imageStoreName;
           var memberNickname = feed.member.nickname;
           var feedPath = '/feed-page/' + feed.id;
@@ -36,7 +37,13 @@ function getFeeds(searchText, currentPage) {
                       <p class="card-text">${feed.content}</p>
                       <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <img src="/images/${memberImage}" alt="${memberNickname}" width="30" height="30">
+                          <a class="nav-link px-2 text-white dropdown-toggle" role="button" id="memberDropdown_${memberId}" data-bs-toggle="dropdown" aria-expanded="false" href="#">
+                           <img src="/images/${memberImage}" alt="${memberNickname}" width="30" height="30">
+                          </a>
+                          <ul class="dropdown-menu" aria-labelledby="memberDropdown_${memberId}">
+                            <li><p class="dropdown-item">${memberNickname}</p></li>
+                            <li><a class="dropdown-item" onclick="follow(${memberId})">팔로우 하기</a></li>
+                          </ul>
                         </div>
                         <div class="ms-auto">
                           <div class="d-flex flex-column">
@@ -60,6 +67,31 @@ function getFeeds(searchText, currentPage) {
     },
     error: function () {
       alert("피드 목록을 가져오는데 실패했습니다.");
+    }
+  })
+}
+
+// 팔로우 하기
+function follow(followingId) {
+  console.log('follow 호출');
+
+  let url = `/follows/${followingId}`;
+
+  $.ajax({
+    type: 'POST',
+    url: url,
+    success: function (response) {
+      if (response.code && response.message) {
+        alert(response.message);
+      } else {
+        var follower = response.follower.nickname;
+        var following = response.following.nickname;
+
+        alert(`${follower}님이 ${following}님을 팔로우 했습니다.`);
+      }
+    },
+    error: function () {
+      alert("팔로우를 실패했습니다.");
     }
   })
 }

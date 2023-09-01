@@ -69,7 +69,13 @@ function getFeed(feedId, loginId) {
                   <div class="col-md-8 offset-md-2">
                     <div class="d-flex align-items-center justify-content-end mb-3">
                       <div class="avatar">
-                        <img src="/images/${feedMemberImage}" alt="${feedMemberNickname}" class="img-fluid rounded-circle">
+                        <a class="nav-link px-2 text-white dropdown-toggle" role="button" id="memberDropdown_${feedMemberId}" data-bs-toggle="dropdown" aria-expanded="false" href="#">
+                          <img src="/images/${feedMemberImage}" alt="${feedMemberNickname}" class="img-fluid rounded-circle">
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="memberDropdown_${feedMemberId}">
+                            <li><p class="dropdown-item">${feedMemberNickname}</p></li>
+                            <li><a class="dropdown-item" onclick="follow(${feedMemberId})">팔로우 하기</a></li>
+                          </ul>
                       </div>
                       <div class="author-date ms-3">
                         ${feedCreatedAt}
@@ -153,7 +159,12 @@ function getComments(feedId, currentPage, loginId) {
                           <div class="comment-header d-flex align-items-center justify-content-between">
                             <div class="author-info d-flex align-items-center">
                               <div class="avatar">
-                                <img src="/images/${memberImage}" alt="이미지" class="img-fluid rounded-circle">
+                                <a class="nav-link px-2 text-white dropdown-toggle" role="button" id="memberDropdown_${memberId}" data-bs-toggle="dropdown" aria-expanded="false" href="#">
+                                  <img src="/images/${memberImage}" alt="${memberNickname}" class="img-fluid rounded-circle">
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="memberDropdown_${memberId}">
+                                  <li><a class="dropdown-item" onclick="follow(${memberId})">팔로우 하기</a></li>
+                                </ul>
                               </div>
                               <div class="author-name ms-3">
                                 ${memberNickname}
@@ -453,6 +464,31 @@ function postAccuse(domain, id, content) {
     },
     error: function () {
       alert("신고 제출이 실패했습니다.");
+    }
+  })
+}
+
+// 팔로우 하기
+function follow(followingId) {
+  console.log('follow 호출');
+
+  let url = `/follows/${followingId}`;
+
+  $.ajax({
+    type: 'POST',
+    url: url,
+    success: function (response) {
+      if (response.code && response.message) {
+        alert(response.message);
+      } else {
+        var follower = response.follower.nickname;
+        var following = response.following.nickname;
+
+        alert(`${follower}님이 ${following}님을 팔로우 했습니다.`);
+      }
+    },
+    error: function () {
+      alert("팔로우를 실패했습니다.");
     }
   })
 }
