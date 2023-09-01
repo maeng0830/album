@@ -35,9 +35,14 @@ public class FollowService {
 
 	@Transactional
 	public FollowDto follow(Long followingId, MemberDto memberDto) {
-
+		// 로그인 여부 확인
 		if (memberDto == null) {
 			throw new AlbumException(REQUIRED_LOGIN);
+		}
+
+		// 본인한테 신청하는지 확인
+		if (memberDto.getId().equals(followingId)) {
+			throw new AlbumException(NOT_ALLOW_FOLLOW_YOURSELF);
 		}
 
 		log.info("본인 조회");
