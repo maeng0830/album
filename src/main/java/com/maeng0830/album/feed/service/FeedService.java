@@ -116,7 +116,7 @@ public class FeedService {
 
 			Page<Feed> feeds = feedRepository.searchByCreatedBy(feedStatuses, createdBy, pageRequest);
 
-			if (feeds.getSize() != 0) { // 가져올 피드가 있으면 반환
+			if (feeds.getContent().size() != 0) { // 가져올 피드가 있으면 반환
 				return feeds.map(f -> FeedResponse.createFeedResponse(f, f.getFeedImages()));
 			} else if (pageRequest.getPageNumber() == 0) { // 가져올 피드가 없고, 요청 페이지 넘버가 0이면, 팔로워 및 팔로우 조건 없는 0번 페이지 반환
 				feeds = feedRepository.searchByCreatedBy(feedStatuses, null, pageRequest);
