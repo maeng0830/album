@@ -18,7 +18,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.DefaultRedirectStrategy;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
@@ -32,6 +34,9 @@ import org.springframework.stereotype.Service;
 public class OAuthLoginSuccessHandler implements AuthenticationSuccessHandler {
 
 	private final MemberRepository memberRepository;
+	private final BCryptPasswordEncoder passwordEncoder;
+	@Value("${oauth2.password}")
+	private String oauth2Password;
 
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -56,7 +61,10 @@ public class OAuthLoginSuccessHandler implements AuthenticationSuccessHandler {
 		DefaultRedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
 		// 로그인 페이지에서 로그인한 경우
-		if (loginInfo.getMemberStatus().equals(FIRST)) {
+		if (passwordEncoder.matches(oauth2Password, loginInfo.getPassword())) {
+			log.info("소셜 로그인 비밀번호 설정이 되지 않았습니다. 비밀 번호 설정 페이지로 이동합니다.");
+			redirectStrategy.sendRedirect(request, response, "/set-password-oauth2");
+		} else if (loginInfo.getMemberStatus().equals(FIRST)) {
 			log.info("첫 번째 소셜 로그인입니다. 추가 정보 입력 페이지로 이동합니다.");
 			// memberStatus: FIRST -> NORMAL
 			changeMemberStatus(loginInfo.getId());
@@ -87,6 +95,7 @@ public class OAuthLoginSuccessHandler implements AuthenticationSuccessHandler {
 				.username(memberDto.getUsername())
 				.memberRoles(memberDto.getRole())
 				.memberStatus(memberDto.getStatus())
+				.password(memberDto.getPassword())
 				.build();
 
 		log.info("loginInfo = {}", loginInfo);

@@ -7,7 +7,8 @@ $('#signup-form').submit(function (event) {
     username: $('#username').val(),
     nickname: $('#nickname').val(),
     password: $('#password').val(),
-    checkedPassword: $('#checkedPassword').val()
+    checkedPassword: $('#checkedPassword').val(),
+    phone: $('#phone').val()
   }
 
   $.ajax({

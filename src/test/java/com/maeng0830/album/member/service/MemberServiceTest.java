@@ -6,11 +6,14 @@ import static com.maeng0830.album.member.domain.MemberStatus.FIRST;
 import static com.maeng0830.album.member.domain.MemberStatus.LOCKED;
 import static com.maeng0830.album.member.domain.MemberStatus.NORMAL;
 import static com.maeng0830.album.member.domain.MemberStatus.WITHDRAW;
+import static com.maeng0830.album.member.exception.MemberExceptionCode.ALREADY_SET_REQUIRED_OAUTH2_PASSWORD;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.EXIST_NICKNAME;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.EXIST_USERNAME;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.INCORRECT_PASSWORD;
+import static com.maeng0830.album.member.exception.MemberExceptionCode.NOT_OAUTH2_LOGIN_MEMBER;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.NOT_SAME_PASSWORD_REPASSWORD;
 import static com.maeng0830.album.security.dto.LoginType.FORM;
+import static com.maeng0830.album.security.dto.LoginType.OAUTH_GOOGLE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
@@ -26,7 +29,9 @@ import com.maeng0830.album.member.dto.request.MemberJoinForm;
 import com.maeng0830.album.member.dto.request.MemberModifiedForm;
 import com.maeng0830.album.member.dto.request.MemberPasswordModifiedForm;
 import com.maeng0830.album.member.dto.request.MemberWithdrawForm;
+import com.maeng0830.album.member.dto.request.Oauth2PasswordForm;
 import com.maeng0830.album.member.repository.MemberRepository;
+import com.maeng0830.album.security.dto.LoginType;
 import com.maeng0830.album.support.ServiceTestSupport;
 import java.io.File;
 import java.io.FileInputStream;
@@ -41,6 +46,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.mock.web.MockMultipartFile;
@@ -66,8 +72,9 @@ class MemberServiceTest extends ServiceTestSupport {
 		MemberJoinForm memberJoinForm = MemberJoinForm.builder()
 				.username("test@naver.com")
 				.nickname("testNickname")
-				.password("123")
-				.checkedPassword("123")
+				.phone("01000000000")
+				.password("!@asd123")
+				.checkedPassword("!@asd123")
 				.build();
 
 		//when
@@ -75,10 +82,11 @@ class MemberServiceTest extends ServiceTestSupport {
 
 		//then
 		assertThat(result)
-				.extracting("username", "nickname", "status", "role", "loginType")
+				.extracting("username", "nickname", "phone", "status", "role", "loginType")
 				.containsExactlyInAnyOrder(
 						memberJoinForm.getUsername(),
 						memberJoinForm.getNickname(),
+						memberJoinForm.getPhone(),
 						FIRST,
 						ROLE_MEMBER,
 						FORM);
@@ -104,8 +112,9 @@ class MemberServiceTest extends ServiceTestSupport {
 		MemberJoinForm memberJoinForm = MemberJoinForm.builder()
 				.username("test@naver.com")
 				.nickname("testNickname2")
-				.password("123")
-				.checkedPassword("123")
+				.phone("01000000000")
+				.password("!@asd123")
+				.checkedPassword("!@asd123")
 				.build();
 
 		// when
@@ -129,8 +138,9 @@ class MemberServiceTest extends ServiceTestSupport {
 		MemberJoinForm memberJoinForm = MemberJoinForm.builder()
 				.username("test2@naver.com")
 				.nickname("testNickname")
-				.password("123")
-				.checkedPassword("123")
+				.phone("01000000000")
+				.password("!@asd123")
+				.checkedPassword("!@asd123")
 				.build();
 
 		// when
@@ -144,15 +154,15 @@ class MemberServiceTest extends ServiceTestSupport {
 	public void withdraw() {
 		//given
 		Member member = Member.builder()
-				.password(passwordEncoder.encode("123"))
+				.password(passwordEncoder.encode("!@asd123"))
 				.build();
 		memberRepository.save(member);
 
 		MemberDto memberDto = MemberDto.from(member);
 
 		MemberWithdrawForm memberWithdrawForm = MemberWithdrawForm.builder()
-				.password("123")
-				.checkedPassword("123")
+				.password("!@asd123")
+				.checkedPassword("!@asd123")
 				.build();
 
 		//when
@@ -355,8 +365,8 @@ class MemberServiceTest extends ServiceTestSupport {
 		// 로그인 회원
 		Member loginMember = Member.builder()
 				.nickname("prevNickname")
-				.phone("010-0000-0000")
-				.password(passwordEncoder.encode("123"))
+				.phone("01000000000")
+				.password(passwordEncoder.encode("!@asd123"))
 				.build();
 		memberRepository.save(loginMember);
 		MemberDto loginMemberDto = MemberDto.from(loginMember);
@@ -365,7 +375,7 @@ class MemberServiceTest extends ServiceTestSupport {
 		LocalDate modifiedBirthDate = LocalDate.now();
 		MemberModifiedForm memberModifiedForm = MemberModifiedForm.builder()
 				.nickname("nextNickname")
-				.phone("010-1111-1111")
+				.phone("01011111111")
 				.birthDate(modifiedBirthDate)
 				.build();
 
@@ -412,15 +422,15 @@ class MemberServiceTest extends ServiceTestSupport {
 		// given
 		// 로그인 회원
 		Member loginMember = Member.builder()
-				.password(passwordEncoder.encode("123"))
+				.password(passwordEncoder.encode("!@asd123"))
 				.build();
 		memberRepository.save(loginMember);
 		MemberDto loginMemberDto = MemberDto.from(loginMember);
 
 		MemberPasswordModifiedForm memberPasswordModifiedForm = MemberPasswordModifiedForm.builder()
-				.currentPassword("123")
-				.modPassword("1234")
-				.checkedModPassword("1234")
+				.currentPassword("!@asd123")
+				.modPassword("!@asd1234")
+				.checkedModPassword("!@asd1234")
 				.build();
 
 		// when
@@ -439,15 +449,15 @@ class MemberServiceTest extends ServiceTestSupport {
 		// given
 		// 로그인 회원
 		Member loginMember = Member.builder()
-				.password(passwordEncoder.encode("123"))
+				.password(passwordEncoder.encode("!@asd123"))
 				.build();
 		memberRepository.save(loginMember);
 		MemberDto loginMemberDto = MemberDto.from(loginMember);
 
 		MemberPasswordModifiedForm memberPasswordModifiedForm = MemberPasswordModifiedForm.builder()
-				.currentPassword("1234")
-				.modPassword("12345")
-				.checkedModPassword("12345")
+				.currentPassword("!@asd1234")
+				.modPassword("!@asd12345")
+				.checkedModPassword("!@asd12345")
 				.build();
 
 		// when
@@ -465,15 +475,15 @@ class MemberServiceTest extends ServiceTestSupport {
 		// given
 		// 로그인 회원
 		Member loginMember = Member.builder()
-				.password(passwordEncoder.encode("123"))
+				.password(passwordEncoder.encode("!@asd123"))
 				.build();
 		memberRepository.save(loginMember);
 		MemberDto loginMemberDto = MemberDto.from(loginMember);
 
 		MemberPasswordModifiedForm memberPasswordModifiedForm = MemberPasswordModifiedForm.builder()
-				.currentPassword("123")
-				.modPassword("1234")
-				.checkedModPassword("12345")
+				.currentPassword("!@asd123")
+				.modPassword("!@asd1234")
+				.checkedModPassword("!@asd12345")
 				.build();
 
 		// when
@@ -482,6 +492,114 @@ class MemberServiceTest extends ServiceTestSupport {
 				.isInstanceOf(AlbumException.class)
 				.hasMessage(NOT_SAME_PASSWORD_REPASSWORD.getMessage());
 
+		// then
+	}
+
+	@DisplayName("소셜 로그인한 경우, 필수 비밀번호 세팅을 할 수 있다.")
+	@CsvSource({"OAUTH_GOOGLE", "OAUTH_NAVER"})
+	@ParameterizedTest
+	void setOauth2Password(LoginType loginType) {
+		// given
+		// 로그인 회원
+		Member loginMember = Member.builder()
+				.password(passwordEncoder.encode(testOauth2Password))
+				.loginType(loginType)
+				.status(FIRST)
+				.build();
+		memberRepository.save(loginMember);
+		MemberDto loginMemberDto = MemberDto.from(loginMember);
+
+		Oauth2PasswordForm oauth2PasswordForm = Oauth2PasswordForm.builder()
+				.password("!@asd123")
+				.checkedPassword("!@asd123")
+				.build();
+
+		// when
+		MemberDto result = memberService.setOauth2Password(loginMemberDto,
+				oauth2PasswordForm);
+
+		// then
+		assertThat(passwordEncoder.matches(oauth2PasswordForm.getPassword(),
+				result.getPassword()))
+				.isTrue();
+	}
+
+	@DisplayName("소셜 로그인이 아닌 경우, 필수 비밀번호 세팅 시 예외가 발생한다")
+	@Test
+	void setOauth2Password_notOauth2LoginMember() {
+		// given
+		// 로그인 회원
+		Member loginMember = Member.builder()
+				.password(passwordEncoder.encode(testOauth2Password))
+				.loginType(FORM)
+				.status(FIRST)
+				.build();
+		memberRepository.save(loginMember);
+		MemberDto loginMemberDto = MemberDto.from(loginMember);
+
+		Oauth2PasswordForm oauth2PasswordForm = Oauth2PasswordForm.builder()
+				.password("!@asd123")
+				.checkedPassword("!@asd123")
+				.build();
+
+		// when
+		assertThatThrownBy(() -> memberService.setOauth2Password(loginMemberDto,
+				oauth2PasswordForm))
+				.isInstanceOf(AlbumException.class)
+				.hasMessage(NOT_OAUTH2_LOGIN_MEMBER.getMessage());
+		// then
+	}
+
+	@DisplayName("회원 상태가 FIRST가 아닌 경우, 필수 비밀번호 세팅 시 예외가 발생한다")
+	@CsvSource({"NORMAL", "LOCKED", "WITHDRAW"})
+	@ParameterizedTest
+	void setOauth2Password_alreadySetRequiredOauth2Password(MemberStatus memberStatus) {
+		// given
+		// 로그인 회원
+		Member loginMember = Member.builder()
+				.password(passwordEncoder.encode(testOauth2Password))
+				.loginType(OAUTH_GOOGLE)
+				.status(memberStatus)
+				.build();
+		memberRepository.save(loginMember);
+		MemberDto loginMemberDto = MemberDto.from(loginMember);
+
+		Oauth2PasswordForm oauth2PasswordForm = Oauth2PasswordForm.builder()
+				.password("!@asd123")
+				.checkedPassword("!@asd123")
+				.build();
+
+		// when
+		assertThatThrownBy(() -> memberService.setOauth2Password(loginMemberDto,
+				oauth2PasswordForm))
+				.isInstanceOf(AlbumException.class)
+				.hasMessage(ALREADY_SET_REQUIRED_OAUTH2_PASSWORD.getMessage());
+		// then
+	}
+
+	@DisplayName("비밀번호와 확인 비밀번호가 일치하지 않는 경우, 필수 비밀번호 세팅 시 예외가 발생한다.")
+	@Test
+	void setOauth2Password_notSamePasswordRepassword() {
+		// given
+		// 로그인 회원
+		Member loginMember = Member.builder()
+				.password(passwordEncoder.encode(testOauth2Password))
+				.loginType(OAUTH_GOOGLE)
+				.status(FIRST)
+				.build();
+		memberRepository.save(loginMember);
+		MemberDto loginMemberDto = MemberDto.from(loginMember);
+
+		Oauth2PasswordForm oauth2PasswordForm = Oauth2PasswordForm.builder()
+				.password("!@asd123")
+				.checkedPassword("!@asd456")
+				.build();
+
+		// when
+		assertThatThrownBy(() -> memberService.setOauth2Password(loginMemberDto,
+				oauth2PasswordForm))
+				.isInstanceOf(AlbumException.class)
+				.hasMessage(NOT_SAME_PASSWORD_REPASSWORD.getMessage());
 		// then
 	}
 
@@ -501,7 +619,6 @@ class MemberServiceTest extends ServiceTestSupport {
 		assertThat(result.getId()).isEqualTo(member.getId());
 		assertThat(result.getStatus()).isEqualTo(status);
 	}
-
 
 	private MockMultipartFile createImageFile(String name, String originalFilename,
 											  String contentType, FileDir fileDir)

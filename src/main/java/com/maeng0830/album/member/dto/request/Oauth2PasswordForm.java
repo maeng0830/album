@@ -7,13 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class MemberJoinForm {
-
-	@Pattern(regexp = "^[A-Za-z0-9]{6,16}$")
-	private String username;
-
-	@Pattern(regexp = "^[A-Za-z0-9]{6,16}$")
-	private String nickname;
+public class Oauth2PasswordForm {
 
 	@Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@#$%^&+=!])(?=\\S+$).{8,16}$")
 	private String password;
@@ -21,16 +15,9 @@ public class MemberJoinForm {
 	@Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@#$%^&+=!])(?=\\S+$).{8,16}$")
 	private String checkedPassword;
 
-	@Pattern(regexp = "^[0-9]{9,12}$")
-	private String phone;
-
 	@Builder
-	private MemberJoinForm(String username, String nickname, String password,
-						   String checkedPassword, String phone) {
-		this.username = username;
-		this.nickname = nickname;
+	private Oauth2PasswordForm(String password, String checkedPassword) {
 		this.password = password;
 		this.checkedPassword = checkedPassword;
-		this.phone = phone;
 	}
 }

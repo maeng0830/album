@@ -23,6 +23,8 @@ public abstract class ServiceTestSupport {
 	@Autowired
 	protected TestFileManager testFileManager;
 
+	protected String testOauth2Password = "123456789";
+
 	@AfterEach
 	void cleanUp() {
 		testFileManager.deleteTestFile();

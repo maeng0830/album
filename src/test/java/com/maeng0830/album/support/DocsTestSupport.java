@@ -64,6 +64,8 @@ public abstract class DocsTestSupport {
 
 	protected PrincipalDetails adminPrincipalDetails;
 
+	protected PrincipalDetails oauth2MemberPrincipalDetails;
+
 	protected BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 	@MockBean
@@ -99,6 +101,9 @@ public abstract class DocsTestSupport {
 
 		adminPrincipalDetails =
 				(PrincipalDetails) testPrincipalDetailsService.loadUserByUsername("admin");
+
+		oauth2MemberPrincipalDetails =
+				(PrincipalDetails) testPrincipalDetailsService.loadUserByUsername("oauth2Member");
 	}
 
 	@AfterEach
