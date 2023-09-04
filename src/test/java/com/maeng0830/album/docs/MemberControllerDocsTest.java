@@ -43,6 +43,7 @@ import com.maeng0830.album.member.dto.request.MemberJoinForm;
 import com.maeng0830.album.member.dto.request.MemberModifiedForm;
 import com.maeng0830.album.member.dto.request.MemberPasswordModifiedForm;
 import com.maeng0830.album.member.dto.request.MemberWithdrawForm;
+import com.maeng0830.album.member.dto.request.Oauth2PasswordForm;
 import com.maeng0830.album.security.dto.LoginType;
 import com.maeng0830.album.support.DocsTestSupport;
 import java.io.File;
@@ -74,8 +75,9 @@ public class MemberControllerDocsTest extends DocsTestSupport {
 		MemberJoinForm memberJoinForm = MemberJoinForm.builder()
 				.username("testUsername")
 				.nickname("testNickname")
-				.password("123")
-				.checkedPassword("123")
+				.phone("01000000000")
+				.password("!@asd123")
+				.checkedPassword("!@asd123")
 				.build();
 
 		LocalDateTime now = LocalDateTime.now();
@@ -87,7 +89,7 @@ public class MemberControllerDocsTest extends DocsTestSupport {
 								.username(memberJoinForm.getUsername())
 								.nickname(memberJoinForm.getNickname())
 								.password(passwordEncoder.encode(memberJoinForm.getPassword()))
-								.phone(null)
+								.phone(memberJoinForm.getPhone())
 								.status(FIRST)
 								.role(ROLE_MEMBER)
 								.image(Image.createDefaultImage(fileDir,
@@ -114,6 +116,8 @@ public class MemberControllerDocsTest extends DocsTestSupport {
 										.description("아이디"),
 								fieldWithPath("nickname").type(STRING)
 										.description("닉네임"),
+								fieldWithPath("phone").type(STRING)
+										.description("연락처"),
 								fieldWithPath("password").type(STRING)
 										.description("비밀번호"),
 								fieldWithPath("checkedPassword").type(STRING)
@@ -128,7 +132,7 @@ public class MemberControllerDocsTest extends DocsTestSupport {
 										.description("닉네임"),
 								fieldWithPath("password").type(STRING)
 										.description("암호화 비밀번호"),
-								fieldWithPath("phone").type(NULL)
+								fieldWithPath("phone").type(STRING)
 										.description("연락처"),
 								fieldWithPath("birthDate").type(NULL)
 										.description("생년월일"),
@@ -163,8 +167,8 @@ public class MemberControllerDocsTest extends DocsTestSupport {
 		MemberDto memberDto = memberPrincipalDetails.getMemberDto();
 
 		MemberWithdrawForm memberWithdrawForm = MemberWithdrawForm.builder()
-				.password("123")
-				.checkedPassword("123")
+				.password("!@asd123")
+				.checkedPassword("!@asd123")
 				.build();
 
 		given(memberService.withdraw(any(), any(MemberWithdrawForm.class)))
@@ -256,7 +260,7 @@ public class MemberControllerDocsTest extends DocsTestSupport {
 					.role(MemberRole.ROLE_MEMBER)
 					.loginType(LoginType.FORM)
 					.password("123")
-					.phone("010-1111-1111")
+					.phone("01011111111")
 					.image(Image.createDefaultImage(fileDir, defaultImage.getMemberImage()))
 					.birthDate(LocalDate.now())
 					.createdAt(LocalDateTime.now())
@@ -433,7 +437,7 @@ public class MemberControllerDocsTest extends DocsTestSupport {
 		// given
 		MemberModifiedForm memberModifiedForm = MemberModifiedForm.builder()
 				.nickname("modNickname")
-				.phone("010-2222-2222")
+				.phone("01022222222")
 				.birthDate(LocalDate.now())
 				.build();
 
@@ -522,9 +526,9 @@ public class MemberControllerDocsTest extends DocsTestSupport {
 	void modifiedMemberPassword() throws Exception {
 		// given
 		MemberPasswordModifiedForm memberPasswordModifiedForm = MemberPasswordModifiedForm.builder()
-				.currentPassword("123")
-				.modPassword("1234")
-				.checkedModPassword("1234")
+				.currentPassword("!@asd123")
+				.modPassword("!@asd1234")
+				.checkedModPassword("!@asd1234")
 				.build();
 
 		// response 데이터
@@ -592,6 +596,79 @@ public class MemberControllerDocsTest extends DocsTestSupport {
 				));
 	}
 
+	@DisplayName("소셜 로그인 대상, 필수 비밀번호 변경 API")
+	@Test
+	void setOauth2Password() throws Exception {
+		// given
+		Oauth2PasswordForm oauth2PasswordForm = Oauth2PasswordForm.builder()
+				.password("!@asd1234")
+				.checkedPassword("!@asd1234")
+				.build();
+
+		// response 데이터
+		MemberDto memberDto = modPassword(oauth2MemberPrincipalDetails.getMemberDto(),
+				oauth2PasswordForm);
+
+		given(memberService.setOauth2Password(any(), any(Oauth2PasswordForm.class)))
+				.willReturn(
+						memberDto
+				);
+
+		// when
+
+		// then
+		mockMvc.perform(
+						put("/members/oauth2-password")
+								.with(user(memberPrincipalDetails))
+								.content(objectMapper.writeValueAsString(oauth2PasswordForm))
+								.contentType(APPLICATION_JSON)
+				)
+				.andDo(print())
+				.andExpect(status().isOk())
+				.andDo(document("set-oauth2-password",
+						preprocessRequest(prettyPrint()),
+						preprocessResponse(prettyPrint()),
+						requestFields(
+								fieldWithPath("password").description("변경 비밀번호"),
+								fieldWithPath("checkedPassword").description("변경 비밀번호 확인")
+						),
+						responseFields(
+								fieldWithPath("id").type(NUMBER)
+										.description("회원 번호"),
+								fieldWithPath("username").type(STRING)
+										.description("아이디"),
+								fieldWithPath("nickname").type(STRING)
+										.description("닉네임"),
+								fieldWithPath("password").type(STRING)
+										.description("암호화 비밀번호"),
+								fieldWithPath("phone").type(STRING)
+										.description("연락처"),
+								fieldWithPath("birthDate").type(STRING)
+										.description("생년월일"),
+								fieldWithPath("status").type(STRING)
+										.description("상태"),
+								fieldWithPath("role").type(STRING)
+										.description("권한"),
+								fieldWithPath("image").type(OBJECT)
+										.description("이미지"),
+								fieldWithPath("image.imageOriginalName").type(STRING)
+										.description("원본 이름"),
+								fieldWithPath("image.imageStoreName").type(STRING)
+										.description("저장 이름"),
+								fieldWithPath("image.imagePath").type(STRING)
+										.description("경로"),
+								fieldWithPath("loginType").type(STRING)
+										.description("로그인 타입"),
+								fieldWithPath("createdAt").type(STRING)
+										.description("가입 일자"),
+								fieldWithPath("modifiedAt").type(STRING)
+										.description("수정 일자"),
+								fieldWithPath("modifiedBy").type(STRING)
+										.description("수정자")
+						)
+				));
+	}
+
 	private MockMultipartFile createImageFile(String name, String originalFilename,
 											  String contentType, FileDir fileDir)
 			throws IOException {
@@ -609,6 +686,25 @@ public class MemberControllerDocsTest extends DocsTestSupport {
 				.username(memberDto.getUsername())
 				.nickname(memberDto.getNickname())
 				.password(passwordEncoder.encode(memberPasswordModifiedForm.getModPassword()))
+				.phone(memberDto.getPhone())
+				.status(memberDto.getStatus())
+				.role(memberDto.getRole())
+				.image(memberDto.getImage())
+				.loginType(memberDto.getLoginType())
+				.birthDate(memberDto.getBirthDate())
+				.createdAt(memberDto.getCreatedAt())
+				.modifiedAt(LocalDateTime.now())
+				.modifiedBy(memberDto.getModifiedBy())
+				.build();
+	}
+
+	private MemberDto modPassword(MemberDto memberDto,
+								  Oauth2PasswordForm oauth2PasswordForm) {
+		return MemberDto.builder()
+				.id(memberDto.getId())
+				.username(memberDto.getUsername())
+				.nickname(memberDto.getNickname())
+				.password(passwordEncoder.encode(oauth2PasswordForm.getPassword()))
 				.phone(memberDto.getPhone())
 				.status(memberDto.getStatus())
 				.role(memberDto.getRole())

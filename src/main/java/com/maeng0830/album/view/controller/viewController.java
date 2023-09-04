@@ -15,6 +15,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 @RequiredArgsConstructor
@@ -39,6 +41,11 @@ public class viewController {
 	@GetMapping("/withdraw")
 	public String withdraw() {
 		return "withdraw";
+	}
+
+	@GetMapping("/set-password-oauth2")
+	public String setPasswordOauth2() {
+		return "setPasswordOauth2";
 	}
 
 	@GetMapping("/members/post-feed")
@@ -119,7 +126,7 @@ public class viewController {
 	}
 
 	// 로그인 예외 발생 시 호출
-	@PostMapping("/fail-Authentication")
+	@RequestMapping(value = "/fail-Authentication", method = {RequestMethod.GET, RequestMethod.POST})
 	public String loginForm(HttpServletRequest request, Model model) {
 		String loginFailMsg = String.valueOf(request.getAttribute("loginFailMsg"));
 
@@ -128,7 +135,7 @@ public class viewController {
 		return "failAuthentication";
 	}
 
-	@GetMapping("/fail-authorize")
+	@GetMapping(value = {"/fail-authorize", "/require-login"})
 	public String failAuthorize() {
 		return "failAuthorize";
 	}

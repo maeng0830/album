@@ -1,6 +1,6 @@
 package com.maeng0830.album.member.dto.request;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,15 +8,19 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class MemberPasswordModifiedForm {
-	@NotBlank
+
+	@Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@#$%^&+=!])(?=\\S+$).{8,16}$")
 	private String currentPassword;
-	@NotBlank
+
+	@Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@#$%^&+=!])(?=\\S+$).{8,16}$")
 	private String modPassword;
-	@NotBlank
+
+	@Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@#$%^&+=!])(?=\\S+$).{8,16}$")
 	private String checkedModPassword;
 
 	@Builder
-	private MemberPasswordModifiedForm(String currentPassword, String modPassword, String checkedModPassword) {
+	private MemberPasswordModifiedForm(String currentPassword, String modPassword,
+									   String checkedModPassword) {
 		this.currentPassword = currentPassword;
 		this.modPassword = modPassword;
 		this.checkedModPassword = checkedModPassword;

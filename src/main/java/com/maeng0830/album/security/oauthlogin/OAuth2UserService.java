@@ -1,5 +1,6 @@
 package com.maeng0830.album.security.oauthlogin;
 
+import com.amazonaws.services.kms.model.DisabledException;
 import com.maeng0830.album.common.filedir.FileDir;
 import com.maeng0830.album.common.image.DefaultImage;
 import com.maeng0830.album.common.model.image.Image;
@@ -17,6 +18,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -59,6 +61,10 @@ public class OAuth2UserService extends DefaultOAuth2UserService {
 		Optional<Member> findMember = memberRepository.findByUsername(oAuthUserInfo.getUsername());
 
 		if (findMember.isPresent()) {
+			if (findMember.get().getStatus().equals(MemberStatus.WITHDRAW)) {
+				throw new InternalAuthenticationServiceException("탈퇴된 회원입니다.");
+			}
+
 			return new PrincipalDetails(MemberDto.from(findMember.get()), oAuth2User.getAttributes());
 		} else {
 			Member saveMember = memberRepository.save(

@@ -61,6 +61,8 @@ public abstract class ControllerTestSupport {
 
 	protected PrincipalDetails adminPrincipalDetails;
 
+	protected PrincipalDetails oauth2MemberPrincipalDetails;
+
 	@MockBean
 	protected MemberService memberService;
 	@MockBean
@@ -95,6 +97,9 @@ public abstract class ControllerTestSupport {
 
 		adminPrincipalDetails =
 				(PrincipalDetails) testPrincipalDetailsService.loadUserByUsername("admin");
+
+		oauth2MemberPrincipalDetails =
+				(PrincipalDetails) testPrincipalDetailsService.loadUserByUsername("oauth2Member");
 	}
 
 	@AfterEach

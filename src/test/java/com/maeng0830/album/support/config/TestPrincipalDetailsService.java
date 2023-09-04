@@ -31,8 +31,8 @@ public class TestPrincipalDetailsService implements UserDetailsService {
 				.status(NORMAL)
 				.role(MemberRole.ROLE_MEMBER)
 				.loginType(LoginType.FORM)
-				.password("123")
-				.phone("010-1111-1111")
+				.password("!@asd123")
+				.phone("01011111111")
 				.birthDate(LocalDate.now())
 				.image(Image.createDefaultImage(fileDir, defaultImage.getMemberImage()))
 				.createdAt(LocalDateTime.now())
@@ -49,13 +49,31 @@ public class TestPrincipalDetailsService implements UserDetailsService {
 				.status(NORMAL)
 				.role(MemberRole.ROLE_ADMIN)
 				.loginType(LoginType.FORM)
-				.password("123")
-				.phone("010-1111-1111")
+				.password("!@asd123")
+				.phone("01011111111")
 				.birthDate(LocalDate.now())
 				.image(Image.createDefaultImage(fileDir, defaultImage.getMemberImage()))
 				.createdAt(LocalDateTime.now())
 				.modifiedAt(LocalDateTime.now())
 				.modifiedBy("testAdmin@naver.com")
+				.build();
+	}
+
+	private MemberDto getOauth2Member() {
+		return MemberDto.builder()
+				.id(3L)
+				.username("testOauth2Member@naver.com")
+				.nickname("testOauth2Member")
+				.status(NORMAL)
+				.role(MemberRole.ROLE_MEMBER)
+				.loginType(LoginType.OAUTH_GOOGLE)
+				.password("!@asd123")
+				.phone("01033333333")
+				.birthDate(LocalDate.now())
+				.image(Image.createDefaultImage(fileDir, defaultImage.getMemberImage()))
+				.createdAt(LocalDateTime.now())
+				.modifiedAt(LocalDateTime.now())
+				.modifiedBy("testOauth2Member@naver.com")
 				.build();
 	}
 
@@ -65,6 +83,8 @@ public class TestPrincipalDetailsService implements UserDetailsService {
 			return new PrincipalDetails(getMember());
 		} else if (role.equals("admin")) {
 			return new PrincipalDetails(getAdmin());
+		} else if (role.equals("oauth2Member")){
+			return new PrincipalDetails(getOauth2Member());
 		}
 
 		return null;

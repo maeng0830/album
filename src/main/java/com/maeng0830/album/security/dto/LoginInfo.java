@@ -23,4 +23,5 @@ public class LoginInfo {
 	private MemberRole memberRoles;
 	private MemberStatus memberStatus;
 	private LoginType loginType;
+	private String password;
 }

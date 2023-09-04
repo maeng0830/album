@@ -37,7 +37,7 @@ public class SecurityConfig {
 				.anyRequest().permitAll()
 				.and()
 				.formLogin()
-				.loginPage("/loginForm")
+				.loginPage("/require-login")
 				.loginProcessingUrl("/login")
 				.successHandler(formLoginSuccessHandler)
 				.failureHandler(formLoginFailureHandler)

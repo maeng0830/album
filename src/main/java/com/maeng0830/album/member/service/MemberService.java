@@ -4,10 +4,12 @@ import static com.maeng0830.album.member.domain.MemberStatus.*;
 import static com.maeng0830.album.member.domain.MemberStatus.FIRST;
 import static com.maeng0830.album.member.domain.MemberStatus.LOCKED;
 import static com.maeng0830.album.member.domain.MemberStatus.WITHDRAW;
+import static com.maeng0830.album.member.exception.MemberExceptionCode.ALREADY_SET_REQUIRED_OAUTH2_PASSWORD;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.EXIST_NICKNAME;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.EXIST_USERNAME;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.INCORRECT_PASSWORD;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.NOT_EXIST_MEMBER;
+import static com.maeng0830.album.member.exception.MemberExceptionCode.NOT_OAUTH2_LOGIN_MEMBER;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.NOT_SAME_PASSWORD_REPASSWORD;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.NO_AUTHORITY;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.REQUIRED_LOGIN;
@@ -25,11 +27,9 @@ import com.maeng0830.album.member.dto.request.MemberJoinForm;
 import com.maeng0830.album.member.dto.request.MemberModifiedForm;
 import com.maeng0830.album.member.dto.request.MemberPasswordModifiedForm;
 import com.maeng0830.album.member.dto.request.MemberWithdrawForm;
-import com.maeng0830.album.member.exception.MemberExceptionCode;
+import com.maeng0830.album.member.dto.request.Oauth2PasswordForm;
 import com.maeng0830.album.member.repository.MemberRepository;
 import com.maeng0830.album.security.dto.LoginType;
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -79,6 +79,7 @@ public class MemberService {
 				.username(memberJoinForm.getUsername())
 				.nickname(memberJoinForm.getNickname())
 				.password(passwordEncoder.encode(memberJoinForm.getPassword()))
+				.phone(memberJoinForm.getPhone())
 				.status(FIRST)
 				.role(MemberRole.ROLE_MEMBER)
 				.loginType(LoginType.FORM)
@@ -209,6 +210,33 @@ public class MemberService {
 			} else {
 				throw new AlbumException(INCORRECT_PASSWORD);
 			}
+		} else {
+			throw new AlbumException(NOT_SAME_PASSWORD_REPASSWORD);
+		}
+
+		return MemberDto.from(findMember);
+	}
+
+	@Transactional
+	public MemberDto setOauth2Password(MemberDto loginMemberDto, Oauth2PasswordForm oauth2PasswordForm) {
+		// 로그인 확인
+		if (loginMemberDto == null) {
+			throw new AlbumException(REQUIRED_LOGIN);
+		}
+
+		// 소셜 로그인 여부, 필수 비밀번호 세팅 완료 여부 확인
+		if (loginMemberDto.getLoginType() == LoginType.FORM) {
+			throw new AlbumException(NOT_OAUTH2_LOGIN_MEMBER);
+		} else if (loginMemberDto.getStatus() != FIRST) {
+			throw new AlbumException(ALREADY_SET_REQUIRED_OAUTH2_PASSWORD);
+		}
+
+		Member findMember = memberRepository.findById(loginMemberDto.getId())
+				.orElseThrow(() -> new AlbumException(NOT_EXIST_MEMBER));
+
+		// 비밀 번호 변경
+		if (oauth2PasswordForm.getPassword().equals(oauth2PasswordForm.getCheckedPassword())) {
+			findMember.changePassword(passwordEncoder.encode(oauth2PasswordForm.getPassword()));
 		} else {
 			throw new AlbumException(NOT_SAME_PASSWORD_REPASSWORD);
 		}
