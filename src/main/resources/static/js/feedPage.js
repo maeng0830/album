@@ -404,7 +404,11 @@ function deleteFeedOrComment(domain, id) {
           alert(response.message);
         } else {
           alert("삭제 되었습니다.");
-          location.reload();
+          if (domain == 'feed') {
+            location.href = "/";
+          } else {
+            location.reload();
+          }
         }
       },
       error: function () {

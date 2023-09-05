@@ -27,7 +27,7 @@ public class AwsS3Manager {
 		for (MultipartFile imageFile : imageFiles) {
 			ObjectMetadata objectMetadata = createObjectMetadata(imageFile);
 
-			String storeName = UUID.randomUUID() + "." + imageFile.getOriginalFilename();
+			String storeName = UUID.randomUUID() + "." + getFileExtension(imageFile.getOriginalFilename());
 
 			String storeNameWithDirectory = S3_BUCKET_DIRECTORY + storeName;
 
@@ -80,5 +80,15 @@ public class AwsS3Manager {
 				.imageStoreName(storeName)
 				.imagePath(amazonS3Client.getUrl(s3Bucket, storeNameWithDirectory).toString())
 				.build();
+	}
+
+	private String getFileExtension(String originalFilename) {
+		if (originalFilename == null) {
+			throw new AlbumException(ApiExceptionCode.FAIL_UPLOAD);
+		}
+
+		int index = originalFilename.lastIndexOf(".");
+
+		return originalFilename.substring(index + 1);
 	}
 }
