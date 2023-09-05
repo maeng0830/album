@@ -18,7 +18,7 @@ function getMyFeeds(memberId) {
         var feedHtml = '';
 
         feeds.forEach(feed => {
-          var feedImage = feed.feedImages.length !== 0 ? feed.feedImages[0].imagePath : '#';
+          var feedImage = feed.feedImages.length !== 0 ? feed.feedImages[0].imageStoreName : '#';
           var memberId = feed.member.id;
           var memberImage = feed.member.image.imageStoreName;
           var memberNickname = feed.member.nickname;

@@ -159,10 +159,10 @@ function getComments(feedId, currentPage, loginId) {
                           <div class="comment-header d-flex align-items-center justify-content-between">
                             <div class="author-info d-flex align-items-center">
                               <div class="avatar">
-                                <a class="nav-link px-2 text-white dropdown-toggle" role="button" id="memberDropdown_${memberId}" data-bs-toggle="dropdown" aria-expanded="false" href="#">
+                                <a class="nav-link px-2 text-white dropdown-toggle" role="button" id="memberDropdown_${commentId}" data-bs-toggle="dropdown" aria-expanded="false" href="#">
                                   <img src="/images/${memberImage}" alt="${memberNickname}" class="img-fluid rounded-circle">
                                 </a>
-                                <ul class="dropdown-menu" aria-labelledby="memberDropdown_${memberId}">
+                                <ul class="dropdown-menu" aria-labelledby="memberDropdown_${commentId}">
                                   <li><a class="dropdown-item" onclick="follow(${memberId})">팔로우 하기</a></li>
                                 </ul>
                               </div>
@@ -218,7 +218,12 @@ function getComments(feedId, currentPage, loginId) {
                           <div class="comment-header d-flex align-items-center justify-content-between">
                             <div class="author-info d-flex align-items-center">
                               <div class="avatar">
-                                <img src="/images/${memberImage}" alt="이미지" class="img-fluid rounded-circle">
+                                <a class="nav-link px-2 text-white dropdown-toggle" role="button" id="memberDropdown_${commentId}" data-bs-toggle="dropdown" aria-expanded="false" href="#">
+                                  <img src="/images/${memberImage}" alt="${memberNickname}" class="img-fluid rounded-circle">
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="memberDropdown_${commentId}">
+                                  <li><a class="dropdown-item" onclick="follow(${memberId})">팔로우 하기</a></li>
+                                </ul>
                               </div>
                               <div class="author-name ms-3">
                                 ${memberNickname}

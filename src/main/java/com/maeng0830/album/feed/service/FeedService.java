@@ -118,7 +118,7 @@ public class FeedService {
 
 			if (feeds.getContent().size() != 0) { // 가져올 피드가 있으면 반환
 				return feeds.map(f -> FeedResponse.createFeedResponse(f, f.getFeedImages()));
-			} else if (pageRequest.getPageNumber() <= 2) { // 가져올 피드가 없고, 요청 페이지 넘버가 2 이하면, 팔로워 및 팔로우 조건 없는 n번 페이지 반환
+			} else if (pageRequest.getPageNumber() <= 3) { // 가져올 피드가 없고, 요청 페이지 넘버가 3 이하면, 팔로워 및 팔로우 조건 없는 n번 페이지 반환
 				feeds = feedRepository.searchByCreatedBy(feedStatuses, null, pageRequest);
 
 				return feeds.map(f -> FeedResponse.createFeedResponse(f, f.getFeedImages()));
