@@ -52,7 +52,6 @@ public class FeedController {
 		return feedService.getFeed(feedId);
 	}
 
-	@PreAuthorize("isAuthenticated()")
 	@PostMapping
 	public FeedResponse feed(@Valid @RequestPart FeedPostForm feedPostForm,
 							 @RequestPart(required = false) List<MultipartFile> imageFiles,
@@ -60,14 +59,12 @@ public class FeedController {
 		return feedService.feed(feedPostForm, imageFiles, albumUtil.checkLogin(principalDetails));
 	}
 
-	@PreAuthorize("isAuthenticated()")
 	@DeleteMapping("/{domainId}")
 	public FeedDto deleteFeed(@PathVariable Long domainId,
 							  @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		return feedService.deleteFeed(domainId, albumUtil.checkLogin(principalDetails));
 	}
 
-	@PreAuthorize("isAuthenticated()")
 	@PutMapping
 	public FeedResponse modifiedFeed(@Valid @RequestPart FeedModifiedForm feedModifiedForm,
 									 @RequestPart(required = false) List<MultipartFile> imageFiles,
@@ -76,7 +73,6 @@ public class FeedController {
 				albumUtil.checkLogin(principalDetails));
 	}
 
-	@PreAuthorize("isAuthenticated()")
 	@PutMapping("/{domainId}/accuse")
 	public FeedAccuseDto accuseFeed(@PathVariable Long domainId,
 									@Valid @RequestBody FeedAccuseRequestForm feedAccuseRequestForm,
@@ -84,7 +80,6 @@ public class FeedController {
 		return feedService.accuseFeed(domainId, feedAccuseRequestForm, albumUtil.checkLogin(principalDetails));
 	}
 
-	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/members/{memberId}")
 	public Page<FeedResponse> getMyFeeds(@PathVariable Long memberId,
 										 @AuthenticationPrincipal PrincipalDetails principalDetails,
