@@ -63,3 +63,14 @@ include::{snippets}/modified-password/request-fields.adoc[]
 === HTTP Response
 include::{snippets}/modified-password/http-response.adoc[]
 include::{snippets}/modified-password/response-fields.adoc[]
+
+[[set-oauth2-password]]
+=== 소셜로그인 회원 필수 비밀번호 변경
+
+==== HTTP Request
+include::{snippets}/set-oauth2-password/http-request.adoc[]
+include::{snippets}/set-oauth2-password/request-fields.adoc[]
+
+=== HTTP Response
+include::{snippets}/set-oauth2-password/http-response.adoc[]
+include::{snippets}/set-oauth2-password/response-fields.adoc[]
