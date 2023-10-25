@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.tuple;
 
 import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.domain.MemberStatus;
+import com.maeng0830.album.member.repository.MemberRepository;
 import com.maeng0830.album.support.RepositoryTestSupport;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;

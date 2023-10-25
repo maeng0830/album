@@ -31,6 +31,7 @@ import com.maeng0830.album.member.dto.request.MemberPasswordModifiedForm;
 import com.maeng0830.album.member.dto.request.MemberWithdrawForm;
 import com.maeng0830.album.member.dto.request.Oauth2PasswordForm;
 import com.maeng0830.album.member.repository.MemberRepository;
+import com.maeng0830.album.member.service.MemberService;
 import com.maeng0830.album.security.dto.LoginType;
 import com.maeng0830.album.support.ServiceTestSupport;
 import java.io.File;

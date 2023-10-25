@@ -1,10 +1,13 @@
 package com.maeng0830.album.support.config;
 
 import com.maeng0830.album.comment.repository.custom.CommentRepositoryImpl;
+import com.maeng0830.album.common.aop.AopConfig;
+import com.maeng0830.album.common.aop.aspect.LoggingAspect;
 import com.maeng0830.album.common.filedir.FileDir;
 import com.maeng0830.album.common.filedir.FileDirProperties;
 import com.maeng0830.album.common.image.DefaultImage;
 import com.maeng0830.album.common.image.DefaultImageProperties;
+import com.maeng0830.album.common.logging.LogTrace;
 import com.maeng0830.album.common.util.AlbumUtil;
 import com.maeng0830.album.feed.repository.custom.FeedRepositoryImpl;
 import com.maeng0830.album.follow.repository.custom.FollowRepositoryImpl;
@@ -12,10 +15,12 @@ import com.maeng0830.album.member.repository.custom.MemberRepositoryImpl;
 import com.maeng0830.album.support.util.TestFileManager;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import javax.persistence.EntityManager;
+import org.springframework.aop.aspectj.autoproxy.AspectJAwareAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 
 @EnableConfigurationProperties(value = {FileDirProperties.class, DefaultImageProperties.class})
 @TestConfiguration
