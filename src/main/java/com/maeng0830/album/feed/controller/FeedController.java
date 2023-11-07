@@ -59,10 +59,10 @@ public class FeedController {
 		return feedService.feed(feedPostForm, imageFiles, albumUtil.checkLogin(principalDetails));
 	}
 
-	@DeleteMapping("/{domainId}")
-	public FeedDto deleteFeed(@PathVariable Long domainId,
+	@DeleteMapping("/{feedId}")
+	public FeedDto deleteFeed(@PathVariable Long feedId,
 							  @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return feedService.deleteFeed(domainId, albumUtil.checkLogin(principalDetails));
+		return feedService.deleteFeed(feedId, albumUtil.checkLogin(principalDetails));
 	}
 
 	@PutMapping
@@ -73,11 +73,10 @@ public class FeedController {
 				albumUtil.checkLogin(principalDetails));
 	}
 
-	@PutMapping("/{domainId}/accuse")
-	public FeedAccuseDto accuseFeed(@PathVariable Long domainId,
-									@Valid @RequestBody FeedAccuseRequestForm feedAccuseRequestForm,
+	@PutMapping("/accuse")
+	public FeedResponse accuseFeed(@Valid @RequestBody FeedAccuseRequestForm feedAccuseRequestForm,
 									@AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return feedService.accuseFeed(domainId, feedAccuseRequestForm, albumUtil.checkLogin(principalDetails));
+		return feedService.accuseFeed(feedAccuseRequestForm, albumUtil.checkLogin(principalDetails));
 	}
 
 	@GetMapping("/members/{memberId}")

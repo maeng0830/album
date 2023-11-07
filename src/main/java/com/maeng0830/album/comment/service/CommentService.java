@@ -1,9 +1,8 @@
 package com.maeng0830.album.comment.service;
 
 import static com.maeng0830.album.comment.exception.CommentExceptionCode.NOT_EXIST_COMMENT;
-import static com.maeng0830.album.feed.domain.FeedStatus.*;
 import static com.maeng0830.album.feed.exception.FeedExceptionCode.NOT_EXIST_FEED;
-import static com.maeng0830.album.member.domain.MemberRole.*;
+import static com.maeng0830.album.member.domain.MemberRole.ROLE_ADMIN;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.NOT_EXIST_MEMBER;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.NO_AUTHORITY;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.REQUIRED_LOGIN;
@@ -13,6 +12,7 @@ import com.maeng0830.album.comment.domain.CommentAccuse;
 import com.maeng0830.album.comment.domain.CommentStatus;
 import com.maeng0830.album.comment.dto.CommentAccuseDto;
 import com.maeng0830.album.comment.dto.request.CommentAccuseForm;
+import com.maeng0830.album.comment.dto.request.CommentChangeStatusForm;
 import com.maeng0830.album.comment.dto.request.CommentModifiedForm;
 import com.maeng0830.album.comment.dto.request.CommentPostForm;
 import com.maeng0830.album.comment.dto.response.BasicComment;
@@ -21,15 +21,14 @@ import com.maeng0830.album.comment.repository.CommentAccuseRepository;
 import com.maeng0830.album.comment.repository.CommentRepository;
 import com.maeng0830.album.common.exception.AlbumException;
 import com.maeng0830.album.feed.domain.Feed;
-import com.maeng0830.album.feed.domain.FeedStatus;
 import com.maeng0830.album.feed.repository.FeedRepository;
 import com.maeng0830.album.member.domain.Member;
-import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.repository.MemberRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -156,8 +155,7 @@ public class CommentService {
 	}
 
 	@Transactional
-	public CommentAccuseDto accuseComment(Long commentId, CommentAccuseForm commentAccuseForm,
-										  MemberDto memberDto) {
+	public CommentAccuseDto accuseComment(CommentAccuseForm commentAccuseForm, MemberDto memberDto) {
 
 		// 로그인 여부 확인
 		if (memberDto == null) {
@@ -167,7 +165,7 @@ public class CommentService {
 		Member findMember = memberRepository.findById(memberDto.getId())
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_MEMBER));
 
-		Comment findComment = commentRepository.findById(commentId)
+		Comment findComment = commentRepository.findById(commentAccuseForm.getId())
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_COMMENT));
 
 		findComment.accuseComment();
@@ -184,9 +182,7 @@ public class CommentService {
 	}
 
 	@Transactional
-	public BasicComment deleteComment(Long commentId,
-									  MemberDto memberDto) {
-
+	public BasicComment deleteComment(Long commentId, MemberDto memberDto) {
 		// 로그인 여부 확인
 		if (memberDto == null) {
 			throw new AlbumException(REQUIRED_LOGIN);
@@ -206,11 +202,11 @@ public class CommentService {
 	}
 
 	@Transactional
-	public BasicComment changeCommentStatus(Long commentId, CommentStatus commentStatus) {
-		Comment findComment = commentRepository.findById(commentId)
+	public BasicComment changeCommentStatus(CommentChangeStatusForm commentChangeStatusForm) {
+		Comment findComment = commentRepository.findById(commentChangeStatusForm.getId())
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_COMMENT));
 
-		findComment.changeStatus(commentStatus);
+		findComment.changeStatus(commentChangeStatusForm.getCommentStatus());
 
 		return BasicComment.from(findComment);
 	}
@@ -252,5 +248,13 @@ public class CommentService {
 
 		// 데이터 변환 및 반환
 		return commentAccuses.stream().map(CommentAccuseDto::from).collect(Collectors.toList());
+	}
+
+	public Long getCommentFeedId(Long commentId) {
+		Comment comment = commentRepository.findById(commentId)
+				.orElseThrow(() -> new AlbumException(
+						NOT_EXIST_COMMENT));
+
+		return comment.getFeed().getId();
 	}
 }

@@ -27,7 +27,7 @@ function getFeed(feedId, loginId) {
         buttonsHtml = `
               <button class="btn btn-sm btn-outline-primary me-2" onclick="location.href='/members/modified-feed/${feedId}';">수정</button>
               <button class="btn btn-sm btn-outline-danger" onclick="deleteFeedOrComment('feeds', ${feedId})">삭제</button>`;
-      } else if (loginId !== -1) {
+      } else if (loginId !== feedMemberId) {
         // 로그인한 사용자와 댓글 작성자의 memberId가 일치하지 않는 경우
         buttonsHtml = `
               <button class="btn btn-sm btn-outline-danger" onclick="accuseTemplate('feeds', ${feedId})">신고</button>`;
@@ -145,7 +145,7 @@ function getComments(feedId, currentPage, loginId) {
             if (loginId === memberId) {
               // 로그인한 사용자와 댓글 작성자의 memberId가 일치하는 경우
               buttonsHtml = `
-              <button class="btn btn-sm btn-outline-primary me-2" onclick="modifiedCommentTemplate(${commentId}, '${content}')">수정</button>
+              <button class="btn btn-sm btn-outline-primary me-2" onclick="modifiedCommentTemplate(${commentId}, '${content}', ${feedId})">수정</button>
               <button class="btn btn-sm btn-outline-danger" onclick="deleteFeedOrComment('comments', ${commentId})">삭제</button>`;
             } else if (loginId !== -1) {
               // 로그인한 사용자와 댓글 작성자의 memberId가 일치하지 않는 경우
@@ -204,7 +204,7 @@ function getComments(feedId, currentPage, loginId) {
               if (loginId === memberId) {
                 // 로그인한 사용자와 댓글 작성자의 memberId가 일치하는 경우
                 buttonsHtml = `
-              <button class="btn btn-sm btn-outline-primary me-2" onclick="modifiedCommentTemplate(${commentId}, '${content}')">수정</button>
+              <button class="btn btn-sm btn-outline-primary me-2" onclick="modifiedCommentTemplate(${commentId}, '${content}', ${feedId})">수정</button>
               <button class="btn btn-sm btn-outline-danger" onclick="deleteFeedOrComment('comments', ${commentId})">삭제</button>`;
               } else if (loginId !== -1) {
                 // 로그인한 사용자와 댓글 작성자의 memberId가 일치하지 않는 경우
@@ -346,7 +346,7 @@ function postCommentReply(feedId, groupId, parentId, content) {
 }
 
 // 댓글 수정 모달
-function modifiedCommentTemplate(id, prevContent) {
+function modifiedCommentTemplate(id, prevContent, feedId) {
   console.log('modifiedTemplate 호출');
 
   var modifiedTemplateHtml = `
@@ -361,7 +361,7 @@ function modifiedCommentTemplate(id, prevContent) {
                         <input type="text" class="form-control rounded-3" name="content" id="content" value="${prevContent}">
                         <label for="content">수정 내용</label>
                       </div>
-                      <button class="w-100 mb-2 btn btn-lg rounded-3 btn-primary text-center" onclick="putModifiedComment(${id}, $('#content').val())">댓글 수정</button>
+                      <button class="w-100 mb-2 btn btn-lg rounded-3 btn-primary text-center" onclick="putModifiedComment(${id}, $('#content').val(), ${feedId})">댓글 수정</button>
                    </div>`;
 
   console.log(modifiedTemplateHtml);
@@ -370,10 +370,11 @@ function modifiedCommentTemplate(id, prevContent) {
 }
 
 // 댓글 수정
-function putModifiedComment(id, content) {
+function putModifiedComment(id, content, feedId) {
   var commentModifiedForm = {
     id: id,
-    content: content
+    content: content,
+    feedId: feedId
   }
 
   $.ajax({
@@ -409,7 +410,7 @@ function deleteFeedOrComment(domain, id) {
           alert(response.message);
         } else {
           alert("삭제 되었습니다.");
-          if (domain == 'feed') {
+          if (`${domain}` == 'feeds') {
             location.href = "/";
           } else {
             location.reload();
@@ -449,13 +450,14 @@ function accuseTemplate(domain, id) {
   $('#accuseTemplate').modal('show');
 }
 
-// 신고 등록
+// 피드 및 댓글 신고 등록
 function postAccuse(domain, id, content) {
-  var url = `/${domain}/${id}/accuse`;
+  var url = `/${domain}/accuse`;
 
   var jsonData = {
+    id: id,
     content: content
-  }
+  };
 
   $.ajax({
     type: 'PUT',
@@ -468,7 +470,7 @@ function postAccuse(domain, id, content) {
         alert(response.message);
       } else {
         alert("신고 제출이 완료되었습니다.");
-        location.reload();
+          location.reload();
       }
     },
     error: function () {

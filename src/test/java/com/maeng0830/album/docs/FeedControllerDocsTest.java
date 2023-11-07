@@ -650,58 +650,65 @@ public class FeedControllerDocsTest extends DocsTestSupport {
 	@Test
 	void accuseFeed() throws Exception {
 		// given
-		MemberDto feedWriter = MemberDto.builder()
-				.id(3L)
-				.username("feedWriter@naver.com")
-				.nickname("feedWriter")
+		// 작성자 세팅
+		Member member1 = Member.builder()
+				.id(2L)
+				.username("username1@naver.com")
+				.nickname("nickname1")
 				.password(passwordEncoder.encode("123"))
-				.phone("010-3333-3333")
+				.phone("010-1111-1111")
 				.birthDate(LocalDate.now())
-				.status(MemberStatus.NORMAL)
 				.role(MemberRole.ROLE_MEMBER)
+				.status(MemberStatus.NORMAL)
 				.loginType(LoginType.FORM)
 				.image(Image.createDefaultImage(fileDir, defaultImage.getMemberImage()))
 				.createdAt(LocalDateTime.now())
 				.modifiedAt(LocalDateTime.now())
-				.modifiedBy("feedWriter@naver.com")
+				.modifiedBy("username1@naver.com")
 				.build();
 
-		FeedDto feedDto = FeedDto.builder()
+		// 피드 이미지 세팅
+		FeedImage feedImage1 = FeedImage.builder()
 				.id(1L)
-				.title("testTitle")
-				.content("content")
-				.hits(1)
-				.commentCount(1)
-				.status(FeedStatus.ACCUSE)
-				.memberDto(feedWriter)
+				.feed(null)
+				.image(Image.createDefaultImage(fileDir, defaultImage.getFeedImage()))
 				.createdAt(LocalDateTime.now())
 				.modifiedAt(LocalDateTime.now())
-				.modifiedBy(feedWriter.getUsername())
+				.modifiedBy(member1.getUsername())
 				.build();
 
+		// 피드 세팅
+		Feed feed1 = Feed.builder()
+				.id(1L)
+				.member(member1)
+				.title("title1")
+				.content("content1")
+				.status(FeedStatus.ACCUSE)
+				.hits(1)
+				.commentCount(1)
+				.feedImages(new ArrayList<>())
+				.createdAt(LocalDateTime.now())
+				.modifiedAt(LocalDateTime.now())
+				.modifiedBy(member1.getUsername())
+				.build();
+		feed1.addFeedImage(feedImage1);
+
+		FeedResponse feedResponse1 = FeedResponse.createFeedResponse(feed1, feed1.getFeedImages());
+
 		FeedAccuseRequestForm feedAccuseRequestForm = FeedAccuseRequestForm.builder()
+				.id(feed1.getId())
 				.content("testContent")
 				.build();
 
-		FeedAccuseDto feedAccuseDto = FeedAccuseDto.builder()
-				.id(1L)
-				.content(feedAccuseRequestForm.getContent())
-				.feedDto(feedDto)
-				.memberDto(memberPrincipalDetails.getMemberDto())
-				.createdAt(LocalDateTime.now())
-				.modifiedAt(LocalDateTime.now())
-				.modifiedBy(memberPrincipalDetails.getMemberDto().getUsername())
-				.build();
-
-		given(feedService.accuseFeed(any(Long.class), any(FeedAccuseRequestForm.class), any()))
+		given(feedService.accuseFeed(any(FeedAccuseRequestForm.class), any()))
 				.willReturn(
-						feedAccuseDto
+						feedResponse1
 				);
 		// when
 
 		// then
 		mockMvc.perform(
-						RestDocumentationRequestBuilders.put("/feeds/{feedId}/accuse", 1)
+						RestDocumentationRequestBuilders.put("/feeds/accuse")
 								.with(user(memberPrincipalDetails))
 								.content(objectMapper.writeValueAsString(feedAccuseRequestForm))
 								.contentType(APPLICATION_JSON)
@@ -711,70 +718,42 @@ public class FeedControllerDocsTest extends DocsTestSupport {
 				.andDo(document("accuse-feed",
 						preprocessRequest(prettyPrint()),
 						preprocessResponse(prettyPrint()),
-						pathParameters(
-								parameterWithName("feedId").description("피드 번호")
-						),
 						requestFields(
+								fieldWithPath("id").description("피드 번호"),
 								fieldWithPath("content").description("신고 내용")
 						),
 						responseFields(
-								fieldWithPath("id").description("피드 신고 번호"),
-								fieldWithPath("content").description("신고 내용"),
-								fieldWithPath("createdAt").description("신고 일자"),
+								fieldWithPath("id").description("피드 번호"),
+								fieldWithPath("title").description("피드 제목"),
+								fieldWithPath("content").description("피드 내용"),
+								fieldWithPath("hits").description("조회수"),
+								fieldWithPath("commentCount").description("댓글 개수"),
+								fieldWithPath("status").description("피드 상태"),
+								fieldWithPath("createdAt").description("작성 일자"),
 								fieldWithPath("modifiedAt").description("수정 일자"),
 								fieldWithPath("modifiedBy").description("수정자"),
-								// MemberDto
-								fieldWithPath("memberDto").description("신고자"),
-								fieldWithPath("memberDto.id").description("회원 번호"),
-								fieldWithPath("memberDto.username").description("아이디"),
-								fieldWithPath("memberDto.nickname").description("닉네임"),
-								fieldWithPath("memberDto.password").description("암호화 비밀번호"),
-								fieldWithPath("memberDto.phone").description("연락처"),
-								fieldWithPath("memberDto.birthDate").description("생년월일"),
-								fieldWithPath("memberDto.status").description("상태"),
-								fieldWithPath("memberDto.role").description("권한"),
-								fieldWithPath("memberDto.image").description("이미지"),
-								fieldWithPath("memberDto.image.imageOriginalName").description(
+								fieldWithPath("member.id").description("회원 번호"),
+								fieldWithPath("member.username").description("아이디"),
+								fieldWithPath("member.nickname").description("닉네임"),
+								fieldWithPath("member.password").description("암호화 비밀번호"),
+								fieldWithPath("member.phone").description("연락처"),
+								fieldWithPath("member.birthDate").description("생년월일"),
+								fieldWithPath("member.status").description("상태"),
+								fieldWithPath("member.role").description("권한"),
+								fieldWithPath("member.image").description("이미지"),
+								fieldWithPath("member.image.imageOriginalName").description(
 										"원본 이름"),
-								fieldWithPath("memberDto.image.imageStoreName").description(
-										"저장 이름"),
-								fieldWithPath("memberDto.image.imagePath").description("경로"),
-								fieldWithPath("memberDto.loginType").description("로그인 타입"),
-								fieldWithPath("memberDto.createdAt").description("가입 일자"),
-								fieldWithPath("memberDto.modifiedAt").description("수정 일자"),
-								fieldWithPath("memberDto.modifiedBy").description("수정자"),
-
-								// FeedDto
-								fieldWithPath("feedDto.id").description("피드 번호"),
-								fieldWithPath("feedDto.title").description("피드 제목"),
-								fieldWithPath("feedDto.content").description("피드 내용"),
-								fieldWithPath("feedDto.hits").description("조회수"),
-								fieldWithPath("feedDto.commentCount").description("댓글 개수"),
-								fieldWithPath("feedDto.status").description("피드 상태"),
-								fieldWithPath("feedDto.createdAt").description("작성 일자"),
-								fieldWithPath("feedDto.modifiedAt").description("수정 일자"),
-								fieldWithPath("feedDto.modifiedBy").description("수정자"),
-								fieldWithPath("feedDto.memberDto").description("피드 작성자"),
-								fieldWithPath("feedDto.memberDto.id").description("회원 번호"),
-								fieldWithPath("feedDto.memberDto.username").description("아이디"),
-								fieldWithPath("feedDto.memberDto.nickname").description("닉네임"),
-								fieldWithPath("feedDto.memberDto.password").description("암호화 비밀번호"),
-								fieldWithPath("feedDto.memberDto.phone").description("연락처"),
-								fieldWithPath("feedDto.memberDto.birthDate").description("생년월일"),
-								fieldWithPath("feedDto.memberDto.status").description("상태"),
-								fieldWithPath("feedDto.memberDto.role").description("권한"),
-								fieldWithPath("feedDto.memberDto.image").description("이미지"),
-								fieldWithPath(
-										"feedDto.memberDto.image.imageOriginalName").description(
-										"원본 이름"),
-								fieldWithPath("feedDto.memberDto.image.imageStoreName").description(
-										"저장 이름"),
-								fieldWithPath("feedDto.memberDto.image.imagePath").description(
-										"경로"),
-								fieldWithPath("feedDto.memberDto.loginType").description("로그인 타입"),
-								fieldWithPath("feedDto.memberDto.createdAt").description("가입 일자"),
-								fieldWithPath("feedDto.memberDto.modifiedAt").description("수정 일자"),
-								fieldWithPath("feedDto.memberDto.modifiedBy").description("수정자")
+								fieldWithPath("member.image.imageStoreName").description("저장 이름"),
+								fieldWithPath("member.image.imagePath").description("경로"),
+								fieldWithPath("member.loginType").description("로그인 타입"),
+								fieldWithPath("member.createdAt").description("가입 일자"),
+								fieldWithPath("member.modifiedAt").description("수정 일자"),
+								fieldWithPath("member.modifiedBy").description("수정자"),
+								fieldWithPath("feedImages.[].imageOriginalName").description(
+										"파일 원본 이름"),
+								fieldWithPath("feedImages.[].imageStoreName").description(
+										"파일 저장 이름"),
+								fieldWithPath("feedImages.[].imagePath").description("파일 경로")
 						)
 				));
 	}

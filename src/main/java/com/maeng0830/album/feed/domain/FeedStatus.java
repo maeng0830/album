@@ -24,7 +24,7 @@ public enum FeedStatus implements EnumType {
 	}
 
 	@JsonCreator
-	public static FeedStatus from(@JsonProperty("feedStatus") String val){
+	public static FeedStatus from(String val){
 		for(FeedStatus feedStatus : FeedStatus.values()){
 			if(feedStatus.name().equals(val)){
 				return feedStatus;

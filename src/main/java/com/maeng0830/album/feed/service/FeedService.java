@@ -3,6 +3,7 @@ package com.maeng0830.album.feed.service;
 import static com.maeng0830.album.feed.domain.FeedStatus.ACCUSE;
 import static com.maeng0830.album.feed.domain.FeedStatus.DELETE;
 import static com.maeng0830.album.feed.domain.FeedStatus.NORMAL;
+import static com.maeng0830.album.feed.exception.FeedExceptionCode.*;
 import static com.maeng0830.album.feed.exception.FeedExceptionCode.NOT_EXIST_FEED;
 import static com.maeng0830.album.member.domain.MemberRole.ROLE_ADMIN;
 import static com.maeng0830.album.member.exception.MemberExceptionCode.NOT_EXIST_MEMBER;
@@ -22,8 +23,10 @@ import com.maeng0830.album.feed.dto.FeedAccuseDto;
 import com.maeng0830.album.feed.dto.FeedDto;
 import com.maeng0830.album.feed.dto.FeedResponse;
 import com.maeng0830.album.feed.dto.request.FeedAccuseRequestForm;
+import com.maeng0830.album.feed.dto.request.FeedChangeStatusForm;
 import com.maeng0830.album.feed.dto.request.FeedModifiedForm;
 import com.maeng0830.album.feed.dto.request.FeedPostForm;
+import com.maeng0830.album.feed.exception.FeedExceptionCode;
 import com.maeng0830.album.feed.repository.FeedAccuseRepository;
 import com.maeng0830.album.feed.repository.FeedImageRepository;
 import com.maeng0830.album.feed.repository.FeedRepository;
@@ -41,6 +44,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -172,10 +178,15 @@ public class FeedService {
 	}
 
 	// 특정 피드 조회
+	@Cacheable(value = "feed", key = "#feedId")
 	@Transactional
 	public FeedResponse getFeed(Long feedId) {
 		Feed findFeed = feedRepository.findById(feedId)
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_FEED));
+
+		if (findFeed.getStatus().equals(DELETE)) {
+			throw new AlbumException(DELETED_FEED);
+		}
 
 		List<FeedImage> feedImages = feedImageRepository.findByFeed_Id(findFeed.getId());
 
@@ -214,6 +225,7 @@ public class FeedService {
 	}
 
 	// 피드 삭제
+	@CacheEvict(value = "feed", key = "#feedId")
 	@Transactional
 	public FeedDto deleteFeed(Long feedId, MemberDto memberDto) {
 
@@ -240,6 +252,7 @@ public class FeedService {
 	}
 
 	// 피드 수정
+	@CachePut(value = "feed", key = "#feedModifiedForm.id")
 	@Transactional
 	public FeedResponse modifiedFeed(FeedModifiedForm feedModifiedForm, List<MultipartFile> imageFiles,
 									 MemberDto memberDto) {
@@ -272,8 +285,9 @@ public class FeedService {
 	}
 
 	// 피드 신고
+	@CachePut(value = "feed", key = "#feedAccuseRequestForm.id")
 	@Transactional
-	public FeedAccuseDto accuseFeed(Long feedId, FeedAccuseRequestForm feedAccuseRequestForm, MemberDto memberDto) {
+	public FeedResponse accuseFeed(FeedAccuseRequestForm feedAccuseRequestForm, MemberDto memberDto) {
 
 		// 로그인 여부 확인
 		if (memberDto == null) {
@@ -281,7 +295,7 @@ public class FeedService {
 		}
 
 		// 신고 피드 조회 및 상태 변경
-		Feed findFeed = feedRepository.findById(feedId)
+		Feed findFeed = feedRepository.findById(feedAccuseRequestForm.getId())
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_FEED));
 
 		findFeed.changeStatus(ACCUSE);
@@ -299,16 +313,20 @@ public class FeedService {
 						.build()
 		);
 
-		return FeedAccuseDto.from(savedFeedAccuse);
+		// FeedResponse 생성을 위한 FeedImage 조회
+		List<FeedImage> feedImages = feedImageRepository.findByFeed_Id(findFeed.getId());
+
+		return FeedResponse.createFeedResponse(findFeed, feedImages);
 	}
 
 	// 피드 상태 변경
+	@CacheEvict(value = "feed", key = "#feedChangeStatusForm.getId()")
 	@Transactional
-	public FeedDto changeFeedStatus(Long feedId, FeedStatus feedStatus) {
-		Feed findFeed = feedRepository.findById(feedId)
+	public FeedDto changeFeedStatus(FeedChangeStatusForm feedChangeStatusForm) {
+		Feed findFeed = feedRepository.findById(feedChangeStatusForm.getId())
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_FEED));
 
-		findFeed.changeStatus(feedStatus);
+		findFeed.changeStatus(feedChangeStatusForm.getFeedStatus());
 
 		return FeedDto.from(findFeed);
 	}

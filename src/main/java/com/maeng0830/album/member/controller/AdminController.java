@@ -2,6 +2,7 @@ package com.maeng0830.album.member.controller;
 
 import com.maeng0830.album.comment.domain.CommentStatus;
 import com.maeng0830.album.comment.dto.CommentAccuseDto;
+import com.maeng0830.album.comment.dto.request.CommentChangeStatusForm;
 import com.maeng0830.album.comment.dto.response.BasicComment;
 import com.maeng0830.album.comment.service.CommentService;
 import com.maeng0830.album.common.util.AlbumUtil;
@@ -9,12 +10,15 @@ import com.maeng0830.album.feed.domain.FeedStatus;
 import com.maeng0830.album.feed.dto.FeedAccuseDto;
 import com.maeng0830.album.feed.dto.FeedDto;
 import com.maeng0830.album.feed.dto.FeedResponse;
+import com.maeng0830.album.feed.dto.request.FeedChangeStatusForm;
 import com.maeng0830.album.feed.service.FeedService;
 import com.maeng0830.album.member.domain.MemberStatus;
 import com.maeng0830.album.member.dto.MemberDto;
+import com.maeng0830.album.member.dto.request.MemberChangeStatusForm;
 import com.maeng0830.album.member.service.MemberService;
 import com.maeng0830.album.security.formlogin.PrincipalDetails;
 import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -49,9 +53,9 @@ public class AdminController {
 		return feedService.getFeedAccuses(albumUtil.checkLogin(principalDetails), feedId);
 	}
 
-	@PutMapping("/feeds/{feedId}/status")
-	public FeedDto changeFeedStatus(@PathVariable Long feedId, @RequestBody FeedStatus feedStatus) {
-		return feedService.changeFeedStatus(feedId, feedStatus);
+	@PutMapping("/feeds/status")
+	public FeedDto changeFeedStatus(@Valid @RequestBody FeedChangeStatusForm feedChangeStatusForm) {
+		return feedService.changeFeedStatus(feedChangeStatusForm);
 	}
 
 	// Member
@@ -61,9 +65,9 @@ public class AdminController {
 		return memberService.getMembersForAdmin(albumUtil.checkLogin(principalDetails), searchText, pageable);
 	}
 
-	@PutMapping("/members/{memberId}/status")
-	public MemberDto changeMemberStatus(@PathVariable Long memberId, @RequestBody MemberStatus memberStatus) {
-		return memberService.changeMemberStatus(memberId, memberStatus);
+	@PutMapping("/members/status")
+	public MemberDto changeMemberStatus(@Valid @RequestBody MemberChangeStatusForm memberChangeStatusForm) {
+		return memberService.changeMemberStatus(memberChangeStatusForm);
 	}
 
 	// Comment
@@ -79,9 +83,8 @@ public class AdminController {
 		return commentService.getCommentAccuses(albumUtil.checkLogin(principalDetails), commentId);
 	}
 
-	@PutMapping("/comments/{commentId}/status")
-	public BasicComment changeCommentStatus(@PathVariable Long commentId,
-											@RequestBody CommentStatus commentStatus) {
-		return commentService.changeCommentStatus(commentId, commentStatus);
+	@PutMapping("/comments/status")
+	public BasicComment changeCommentStatus(@Valid @RequestBody CommentChangeStatusForm commentChangeStatusForm) {
+		return commentService.changeCommentStatus(commentChangeStatusForm);
 	}
 }

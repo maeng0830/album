@@ -8,6 +8,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.maeng0830.album.comment.domain.CommentStatus;
+import com.maeng0830.album.comment.dto.request.CommentChangeStatusForm;
+import com.maeng0830.album.feed.domain.FeedStatus;
+import com.maeng0830.album.feed.dto.request.FeedChangeStatusForm;
+import com.maeng0830.album.member.domain.MemberStatus;
+import com.maeng0830.album.member.dto.request.MemberChangeStatusForm;
 import com.maeng0830.album.support.ControllerTestSupport;
 import java.util.HashMap;
 import java.util.Map;
@@ -53,17 +59,19 @@ class AdminControllerTest extends ControllerTestSupport {
 	@Test
 	void changeFeedStatus() throws Exception {
 		// given
-		Map<String, String> map = new HashMap<>();
-		map.put("feedStatus", "DELETE");
+		FeedChangeStatusForm feedChangeStatusForm = FeedChangeStatusForm.builder()
+				.id(1L)
+				.feedStatus(FeedStatus.ACCUSE)
+				.build();
 
 		// when
 
 		// then
 		mockMvc.perform(
-						put("/admin/feeds/1/status")
+						put("/admin/feeds/status")
 								.with(csrf())
 								.with(user(adminPrincipalDetails))
-								.content(objectMapper.writeValueAsString(map))
+								.content(objectMapper.writeValueAsString(feedChangeStatusForm))
 								.contentType(APPLICATION_JSON)
 				)
 				.andDo(print())
@@ -110,17 +118,20 @@ class AdminControllerTest extends ControllerTestSupport {
 	@Test
 	void changeCommentStatus() throws Exception {
 		// given
-		Map<String, String> map = new HashMap<>();
-		map.put("commentStatus", "DELETE");
+		CommentChangeStatusForm commentChangeStatusForm = CommentChangeStatusForm.builder()
+				.id(1L)
+				.feedId(1L)
+				.commentStatus(CommentStatus.DELETE)
+				.build();
 
 		// when
 
 		// then
 		mockMvc.perform(
-						put("/admin/comments/1/status")
+						put("/admin/comments/status")
 								.with(csrf())
 								.with(user(adminPrincipalDetails))
-								.content(objectMapper.writeValueAsString(map))
+								.content(objectMapper.writeValueAsString(commentChangeStatusForm))
 								.contentType(APPLICATION_JSON)
 				)
 				.andDo(print())
@@ -150,17 +161,19 @@ class AdminControllerTest extends ControllerTestSupport {
 	@Test
 	void changeMemberStatus() throws Exception {
 		// given
-		Map<String, String> map = new HashMap<>();
-		map.put("memberStatus", "LOCKED");
+		MemberChangeStatusForm memberChangeStatusForm = MemberChangeStatusForm.builder()
+				.id(1L)
+				.memberStatus(MemberStatus.LOCKED)
+				.build();
 
 		// when
 
 		// then
 		mockMvc.perform(
-						put("/admin/members/1/status")
+						put("/admin/members/status")
 								.with(csrf())
 								.with(user(adminPrincipalDetails))
-								.content(objectMapper.writeValueAsString(map))
+								.content(objectMapper.writeValueAsString(memberChangeStatusForm))
 								.contentType(APPLICATION_JSON)
 				)
 				.andDo(print())

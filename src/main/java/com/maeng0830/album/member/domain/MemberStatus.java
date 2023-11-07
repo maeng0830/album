@@ -26,7 +26,7 @@ public enum MemberStatus implements EnumType {
 	}
 
 	@JsonCreator
-	public static MemberStatus from(@JsonProperty("memberStatus") String val){
+	public static MemberStatus from(String val){
 		for(MemberStatus memberStatus : MemberStatus.values()){
 			if(memberStatus.name().equals(val)){
 				return memberStatus;

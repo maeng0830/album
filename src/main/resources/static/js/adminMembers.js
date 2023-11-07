@@ -134,9 +134,10 @@ function pageLink(currentPage, totalPage, searchText, funcName) {
 function changeStatus(memberId, status) {
   console.log('changeStatus 호출');
 
-  var url = `/admin/members/${memberId}/status`;
+  var url = `/admin/members/status`;
 
   var memberStatus = {
+    id: memberId,
     memberStatus: status
   }
 

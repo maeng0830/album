@@ -34,6 +34,7 @@ function getAdminComments(currentPage, searchText) {
           var commentContent = c.content;
           var commentCreatedAt = c.createdAt;
           var commentStatus = c.status;
+          var feedId = c.feedId;
 
           commentHtml += `<div class="row row-cols-11 justify-content-md-center text-center">
                             <div class="col-1">${commentId}</div>
@@ -52,17 +53,17 @@ function getAdminComments(currentPage, searchText) {
                               <div class="row">
                                 <button 
                                   class="changeStatusBtn btn btn-outline-primary btn-sm" 
-                                  onclick="changeStatus(${commentId}, '${statusNormal}')">Normal</button>
+                                  onclick="changeStatus(${commentId}, '${statusNormal}', ${feedId})">Normal</button>
                               </div>
                               <div class="row">
                                 <button 
                                   class="changeStatusBtn btn btn-outline-primary btn-sm" 
-                                  onclick="changeStatus(${commentId}, '${statusAccuse}')">Accuse</button>
+                                  onclick="changeStatus(${commentId}, '${statusAccuse}', ${feedId})">Accuse</button>
                               </div>
                               <div class="row">
                                 <button 
                                   class="changeStatusBtn btn btn-outline-primary btn-sm" 
-                                  onclick="changeStatus(${commentId}, '${statusDelete}')">Delete</button>
+                                  onclick="changeStatus(${commentId}, '${statusDelete}', ${feedId})">Delete</button>
                               </div>
                             </div>
                         </div>
@@ -137,13 +138,15 @@ function pageLink(currentPage, totalPage, searchText, funcName) {
 }
 
 // 상태 변경
-function changeStatus(commentId, status) {
+function changeStatus(commentId, status, feedId) {
   console.log('changeStatus 호출');
 
-  var url = `/admin/comments/${commentId}/status`;
+  var url = `/admin/comments/status`;
 
   var commentStatus = {
-    commentStatus: status
+    id: commentId,
+    commentStatus: status,
+    feedId: feedId
   }
 
   $.ajax({
