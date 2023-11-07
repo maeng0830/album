@@ -23,6 +23,7 @@ import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.domain.MemberStatus;
 import com.maeng0830.album.member.dto.MemberDto;
+import com.maeng0830.album.member.dto.request.MemberChangeStatusForm;
 import com.maeng0830.album.member.dto.request.MemberJoinForm;
 import com.maeng0830.album.member.dto.request.MemberModifiedForm;
 import com.maeng0830.album.member.dto.request.MemberPasswordModifiedForm;
@@ -245,11 +246,11 @@ public class MemberService {
 	}
 
 	@Transactional
-	public MemberDto changeMemberStatus(Long id, MemberStatus memberStatus) {
-		Member findMember = memberRepository.findById(id).orElseThrow(() -> new AlbumException(
+	public MemberDto changeMemberStatus(MemberChangeStatusForm memberChangeStatusForm) {
+		Member findMember = memberRepository.findById(memberChangeStatusForm.getId()).orElseThrow(() -> new AlbumException(
 				NOT_EXIST_MEMBER));
 
-		findMember.changeStatus(memberStatus);
+		findMember.changeStatus(memberChangeStatusForm.getMemberStatus());
 
 		return MemberDto.from(findMember);
 	}

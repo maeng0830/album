@@ -25,6 +25,7 @@ import com.maeng0830.album.common.model.image.Image;
 import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.domain.MemberStatus;
 import com.maeng0830.album.member.dto.MemberDto;
+import com.maeng0830.album.member.dto.request.MemberChangeStatusForm;
 import com.maeng0830.album.member.dto.request.MemberJoinForm;
 import com.maeng0830.album.member.dto.request.MemberModifiedForm;
 import com.maeng0830.album.member.dto.request.MemberPasswordModifiedForm;
@@ -613,8 +614,14 @@ class MemberServiceTest extends ServiceTestSupport {
 				.build();
 		memberRepository.save(member);
 
+		// MemberChangeStatusForm 세팅
+		MemberChangeStatusForm memberChangeStatusForm = MemberChangeStatusForm.builder()
+				.id(member.getId())
+				.memberStatus(status)
+				.build();
+
 		//when
-		MemberDto result = memberService.changeMemberStatus(member.getId(), status);
+		MemberDto result = memberService.changeMemberStatus(memberChangeStatusForm);
 
 		//then
 		assertThat(result.getId()).isEqualTo(member.getId());

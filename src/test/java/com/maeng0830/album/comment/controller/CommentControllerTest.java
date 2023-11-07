@@ -3,7 +3,6 @@ package com.maeng0830.album.comment.controller;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -17,6 +16,7 @@ import com.maeng0830.album.comment.dto.request.CommentPostForm;
 import com.maeng0830.album.support.ControllerTestSupport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 
 class CommentControllerTest extends ControllerTestSupport {
 
@@ -136,6 +136,7 @@ class CommentControllerTest extends ControllerTestSupport {
 		// given
 		CommentModifiedForm commentModifiedForm = CommentModifiedForm.builder()
 				.id(1L)
+				.feedId(1L)
 				.content("testContent")
 				.build();
 
@@ -158,6 +159,7 @@ class CommentControllerTest extends ControllerTestSupport {
 	void modifiedComment_nullId() throws Exception {
 		// given
 		CommentModifiedForm commentModifiedForm = CommentModifiedForm.builder()
+				.feedId(1L)
 				.content("testContent")
 				.build();
 
@@ -183,6 +185,7 @@ class CommentControllerTest extends ControllerTestSupport {
 		// given
 		CommentModifiedForm commentModifiedForm = CommentModifiedForm.builder()
 				.id(1L)
+				.feedId(1L)
 				.build();
 
 		// when
@@ -201,11 +204,12 @@ class CommentControllerTest extends ControllerTestSupport {
 				.andExpect(jsonPath("$[0].message").value("content, 값을 입력해주시기 바랍니다."));
 	}
 
-	@DisplayName("로그인한 경우, 댓글을 신고할 수 있다.")
+	@DisplayName("댓글 수정 시, 피드아이디는 필수다.")
 	@Test
-	void accuseComment() throws Exception {
+	void modifiedComment_nullFeedId() throws Exception {
 		// given
-		CommentAccuseForm commentAccuseForm = CommentAccuseForm.builder()
+		CommentModifiedForm commentModifiedForm = CommentModifiedForm.builder()
+				.id(1L)
 				.content("testContent")
 				.build();
 
@@ -213,7 +217,32 @@ class CommentControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						put("/comments/1/accuse")
+						put("/comments")
+								.with(csrf())
+								.with(user(memberPrincipalDetails))
+								.content(objectMapper.writeValueAsString(commentModifiedForm))
+								.contentType(APPLICATION_JSON)
+				)
+				.andDo(print())
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$[0].code").value("NotNull"))
+				.andExpect(jsonPath("$[0].message").value("feedId, 값을 입력해주시기 바랍니다."));
+	}
+
+	@DisplayName("로그인한 경우, 댓글을 신고할 수 있다.")
+	@Test
+	void accuseComment() throws Exception {
+		// given
+		CommentAccuseForm commentAccuseForm = CommentAccuseForm.builder()
+				.id(1L)
+				.content("testContent")
+				.build();
+
+		// when
+
+		// then
+		mockMvc.perform(
+						put("/comments/accuse")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 								.content(objectMapper.writeValueAsString(commentAccuseForm))
@@ -223,18 +252,43 @@ class CommentControllerTest extends ControllerTestSupport {
 				.andExpect(status().isOk());
 	}
 
-	@DisplayName("댓글 신고 시, 신고내용은 필수다.")
+	@DisplayName("댓글 신고 시, 댓글아이디는 필수다.")
 	@Test
-	void accuseComment_blankContent() throws Exception {
+	void accuseComment_nullId() throws Exception {
 		// given
 		CommentAccuseForm commentAccuseForm = CommentAccuseForm.builder()
+				.content("testContent")
 				.build();
 
 		// when
 
 		// then
 		mockMvc.perform(
-						put("/comments/1/accuse")
+						put("/comments/accuse")
+								.with(csrf())
+								.with(user(memberPrincipalDetails))
+								.content(objectMapper.writeValueAsString(commentAccuseForm))
+								.contentType(APPLICATION_JSON)
+				)
+				.andDo(print())
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$[0].code").value("NotNull"))
+				.andExpect(jsonPath("$[0].message").value("id, 값을 입력해주시기 바랍니다."));
+	}
+
+	@DisplayName("댓글 신고 시, 신고내용은 필수다.")
+	@Test
+	void accuseComment_blankContent() throws Exception {
+		// given
+		CommentAccuseForm commentAccuseForm = CommentAccuseForm.builder()
+				.id(1L)
+				.build();
+
+		// when
+
+		// then
+		mockMvc.perform(
+						put("/comments/accuse")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 								.content(objectMapper.writeValueAsString(commentAccuseForm))
@@ -256,11 +310,28 @@ class CommentControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						delete("/comments/1")
+						RestDocumentationRequestBuilders.delete("/comments/{commentId}", 1)
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 				)
 				.andDo(print())
 				.andExpect(status().isOk());
+	}
+
+	@DisplayName("댓글 삭제 시, 댓글아이디는 필수다.")
+	@Test
+	void deleteComment_nullId() throws Exception {
+		// given
+
+		// when
+
+		// then
+		mockMvc.perform(
+						RestDocumentationRequestBuilders.delete("/comments")
+								.with(csrf())
+								.with(user(memberPrincipalDetails))
+				)
+				.andDo(print())
+				.andExpect(status().isMethodNotAllowed());
 	}
 }

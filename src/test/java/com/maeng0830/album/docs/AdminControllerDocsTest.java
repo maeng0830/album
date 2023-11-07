@@ -14,29 +14,31 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.maeng0830.album.comment.domain.CommentStatus;
 import com.maeng0830.album.comment.dto.CommentAccuseDto;
 import com.maeng0830.album.comment.dto.CommentDto;
+import com.maeng0830.album.comment.dto.request.CommentChangeStatusForm;
 import com.maeng0830.album.comment.dto.response.BasicComment;
 import com.maeng0830.album.common.model.image.Image;
 import com.maeng0830.album.feed.domain.FeedStatus;
 import com.maeng0830.album.feed.dto.FeedAccuseDto;
 import com.maeng0830.album.feed.dto.FeedDto;
 import com.maeng0830.album.feed.dto.FeedResponse;
+import com.maeng0830.album.feed.dto.request.FeedChangeStatusForm;
 import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.domain.MemberStatus;
 import com.maeng0830.album.member.dto.MemberDto;
+import com.maeng0830.album.member.dto.request.MemberChangeStatusForm;
 import com.maeng0830.album.security.dto.LoginType;
 import com.maeng0830.album.support.DocsTestSupport;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
@@ -396,8 +398,10 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 	@Test
 	void changeFeedStatus() throws Exception {
 		// given
-		Map<String, String> map = new HashMap<>();
-		map.put("feedStatus", "DELETE");
+		FeedChangeStatusForm feedChangeStatusForm = FeedChangeStatusForm.builder()
+				.feedStatus(FeedStatus.DELETE)
+				.id(1L)
+				.build();
 
 		MemberDto feedWriter = MemberDto.builder()
 				.id(3L)
@@ -416,19 +420,19 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 				.build();
 
 		FeedDto feedDto = FeedDto.builder()
-				.id(1L)
+				.id(feedChangeStatusForm.getId())
 				.title("testTitle")
 				.content("content")
 				.hits(1)
 				.commentCount(1)
-				.status(FeedStatus.DELETE)
+				.status(feedChangeStatusForm.getFeedStatus())
 				.memberDto(feedWriter)
 				.createdAt(LocalDateTime.now())
 				.modifiedAt(LocalDateTime.now())
 				.modifiedBy(feedWriter.getUsername())
 				.build();
 
-		given(feedService.changeFeedStatus(any(Long.class), any(FeedStatus.class)))
+		given(feedService.changeFeedStatus(any(FeedChangeStatusForm.class)))
 				.willReturn(
 						feedDto
 				);
@@ -436,9 +440,9 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 
 		// then
 		mockMvc.perform(
-						RestDocumentationRequestBuilders.put("/admin/feeds/{feedId}/status", 1)
+						put("/admin/feeds/status")
 								.with(user(adminPrincipalDetails))
-								.content(objectMapper.writeValueAsString(map))
+								.content(objectMapper.writeValueAsString(feedChangeStatusForm))
 								.contentType(MediaType.APPLICATION_JSON)
 				)
 				.andDo(print())
@@ -446,10 +450,8 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 				.andDo(document("change-feed-status-for-admin",
 						preprocessRequest(prettyPrint()),
 						preprocessResponse(prettyPrint()),
-						pathParameters(
-								parameterWithName("feedId").description("피드 번호")
-						),
 						requestFields(
+								fieldWithPath("id").description("피드 번호"),
 								fieldWithPath("feedStatus").description("변경할 상태")
 						),
 						responseFields(
@@ -604,8 +606,10 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 	@Test
 	void changeMemberStatus() throws Exception {
 		// given
-		Map<String, String> map = new HashMap<>();
-		map.put("memberStatus", "LOCKED");
+		MemberChangeStatusForm memberChangeStatusForm = MemberChangeStatusForm.builder()
+				.id(3L)
+				.memberStatus(MemberStatus.LOCKED)
+				.build();
 
 		MemberDto memberDto = MemberDto.builder()
 				.id(3L)
@@ -623,7 +627,7 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 				.modifiedBy("member@naver.com")
 				.build();
 
-		given(memberService.changeMemberStatus(any(Long.class), any(MemberStatus.class)))
+		given(memberService.changeMemberStatus(any(MemberChangeStatusForm.class)))
 				.willReturn(
 						memberDto
 				);
@@ -631,9 +635,9 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 
 		// then
 		mockMvc.perform(
-						RestDocumentationRequestBuilders.put("/admin/members/{memberId}/status", 3)
+						put("/admin/members/status")
 								.with(user(adminPrincipalDetails))
-								.content(objectMapper.writeValueAsString(map))
+								.content(objectMapper.writeValueAsString(memberChangeStatusForm))
 								.contentType(MediaType.APPLICATION_JSON)
 				)
 				.andDo(print())
@@ -641,10 +645,8 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 				.andDo(document("change-member-status-for-admin",
 						preprocessRequest(prettyPrint()),
 						preprocessResponse(prettyPrint()),
-						pathParameters(
-								parameterWithName("memberId").description("회원 번호")
-						),
 						requestFields(
+								fieldWithPath("id").description("회원 번호"),
 								fieldWithPath("memberStatus").description("변경할 상태")
 						),
 						responseFields(
@@ -1073,8 +1075,11 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 	@Test
 	void changeCommentStatus() throws Exception {
 		// given
-		Map<String, String> map = new HashMap<>();
-		map.put("commentStatus", "DELETE");
+		CommentChangeStatusForm commentChangeStatusForm = CommentChangeStatusForm.builder()
+				.id(1L)
+				.feedId(1L)
+				.commentStatus(CommentStatus.DELETE)
+				.build();
 
 		MemberDto writer = MemberDto.builder()
 				.id(3L)
@@ -1100,34 +1105,32 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 				.parentMember(writer.getNickname())
 				.member(writer)
 				.content("testContent")
-				.status(CommentStatus.DELETE)
+				.status(commentChangeStatusForm.getCommentStatus())
 				.createdAt(LocalDateTime.now())
 				.modifiedAt(LocalDateTime.now())
 				.modifiedBy(writer.getUsername())
 				.build();
 
-		given(commentService.changeCommentStatus(any(Long.class), any(CommentStatus.class)))
+		given(commentService.changeCommentStatus(any(CommentChangeStatusForm.class)))
 				.willReturn(
 						basicComment
 				);
 		// when
 
 		// then
-		mockMvc.perform(
-						RestDocumentationRequestBuilders.put("/admin/comments/{commentId}/status", 1)
-								.with(user(adminPrincipalDetails))
-								.content(objectMapper.writeValueAsString(map))
-								.contentType(MediaType.APPLICATION_JSON)
+		mockMvc.perform(put("/admin/comments/status")
+						.with(user(adminPrincipalDetails))
+						.content(objectMapper.writeValueAsString(commentChangeStatusForm))
+						.contentType(MediaType.APPLICATION_JSON)
 				)
 				.andDo(print())
 				.andExpect(status().isOk())
 				.andDo(document("change-comment-status-for-admin",
 						preprocessRequest(prettyPrint()),
 						preprocessResponse(prettyPrint()),
-						pathParameters(
-								parameterWithName("commentId").description("댓글 번호")
-						),
 						requestFields(
+								fieldWithPath("id").description("댓글 번호"),
+								fieldWithPath("feedId").description("피드 번호"),
 								fieldWithPath("commentStatus").description("변경할 상태")
 						),
 						responseFields(

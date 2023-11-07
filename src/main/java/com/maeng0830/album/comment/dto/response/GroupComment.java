@@ -6,9 +6,11 @@ import com.maeng0830.album.common.model.entity.BaseEntity;
 import com.maeng0830.album.member.dto.MemberDto;
 import java.util.List;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+@NoArgsConstructor
 @SuperBuilder
 @Getter
 @Setter

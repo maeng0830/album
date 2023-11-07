@@ -326,6 +326,7 @@ class FeedControllerTest extends ControllerTestSupport {
 	void accuseFeed() throws Exception {
 		// given
 		FeedAccuseRequestForm feedAccuseRequestForm = FeedAccuseRequestForm.builder()
+				.id(1L)
 				.content("testContent")
 				.build();
 
@@ -333,7 +334,7 @@ class FeedControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						put("/feeds/1/accuse")
+						put("/feeds/accuse")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 								.content(objectMapper.writeValueAsString(feedAccuseRequestForm))
@@ -348,13 +349,14 @@ class FeedControllerTest extends ControllerTestSupport {
 	void accuseFeed_blankContent() throws Exception {
 		// given
 		FeedAccuseRequestForm feedAccuseRequestForm = FeedAccuseRequestForm.builder()
+				.id(1L)
 				.build();
 
 		// when
 
 		// then
 		mockMvc.perform(
-						put("/feeds/1/accuse")
+						put("/feeds/accuse")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 								.content(objectMapper.writeValueAsString(feedAccuseRequestForm))

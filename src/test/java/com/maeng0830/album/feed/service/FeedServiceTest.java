@@ -24,6 +24,7 @@ import com.maeng0830.album.feed.dto.FeedAccuseDto;
 import com.maeng0830.album.feed.dto.FeedDto;
 import com.maeng0830.album.feed.dto.FeedResponse;
 import com.maeng0830.album.feed.dto.request.FeedAccuseRequestForm;
+import com.maeng0830.album.feed.dto.request.FeedChangeStatusForm;
 import com.maeng0830.album.feed.dto.request.FeedModifiedForm;
 import com.maeng0830.album.feed.dto.request.FeedPostForm;
 import com.maeng0830.album.feed.repository.FeedAccuseRepository;
@@ -446,14 +447,17 @@ class FeedServiceTest extends ServiceTestSupport {
 		Feed feed1 = Feed.builder()
 				.member(member)
 				.title("feed1")
+				.status(NORMAL)
 				.build();
 		Feed feed2 = Feed.builder()
 				.member(member)
 				.title("feed1")
+				.status(NORMAL)
 				.build();
 		Feed feed3 = Feed.builder()
 				.member(member)
 				.title("feed1")
+				.status(NORMAL)
 				.build();
 		feedRepository.saveAll(List.of(feed1, feed2, feed3));
 
@@ -753,17 +757,18 @@ class FeedServiceTest extends ServiceTestSupport {
 
 		// feedAccuse 세팅
 		FeedAccuseRequestForm feedAccuseRequestForm = FeedAccuseRequestForm.builder()
+				.id(feed.getId())
 				.content("testContent")
 				.build();
 
 		// when
-		FeedAccuseDto result = feedService.accuseFeed(feed.getId(), feedAccuseRequestForm,
+		FeedResponse result = feedService.accuseFeed(feedAccuseRequestForm,
 				loginMemberDto);
 
 		// then
 		assertThat(result)
-				.extracting("content", "feedDto.status")
-				.containsExactlyInAnyOrder(feedAccuseRequestForm.getContent(), ACCUSE);
+				.extracting("id", "status")
+				.containsExactlyInAnyOrder(feed.getId(), ACCUSE);
 	}
 
 	@DisplayName("피드를 특정 상태로 변경할 수 있다.")
@@ -785,8 +790,14 @@ class FeedServiceTest extends ServiceTestSupport {
 				.build();
 		feedRepository.save(feed);
 
+		// FeedChangeStatusForm 세팅
+		FeedChangeStatusForm feedChangeStatusForm = FeedChangeStatusForm.builder()
+				.feedStatus(feedStatus)
+				.id(feed.getId())
+				.build();
+
 		// when
-		FeedDto feedDto = feedService.changeFeedStatus(feed.getId(), feedStatus);
+		FeedDto feedDto = feedService.changeFeedStatus(feedChangeStatusForm);
 
 		// then
 		assertThat(feedDto)

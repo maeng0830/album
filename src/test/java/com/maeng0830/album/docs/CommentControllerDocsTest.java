@@ -437,6 +437,7 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 
 		CommentModifiedForm commentModifiedForm = CommentModifiedForm.builder()
 				.id(1L)
+				.feedId(1L)
 				.content("modifiedContent")
 				.build();
 
@@ -474,6 +475,7 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 						preprocessResponse(prettyPrint()),
 						requestFields(
 								fieldWithPath("id").description("댓글 번호"),
+								fieldWithPath("feedId").description("피드 번호"),
 								fieldWithPath("content").description("수정 댓글 내용")
 						),
 						responseFields(
@@ -516,6 +518,7 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 	void accuseComment() throws Exception {
 		// given
 		CommentAccuseForm commentAccuseForm = CommentAccuseForm.builder()
+				.id(1L)
 				.content("accuseContent")
 				.build();
 
@@ -587,7 +590,7 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 				.modifiedBy(memberPrincipalDetails.getMemberDto().getUsername())
 				.build();
 
-		given(commentService.accuseComment(any(Long.class), any(CommentAccuseForm.class), any()))
+		given(commentService.accuseComment(any(CommentAccuseForm.class), any()))
 				.willReturn(
 						commentAccuseDto
 				);
@@ -595,7 +598,7 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 
 		// then
 		mockMvc.perform(
-						RestDocumentationRequestBuilders.put("/comments/{commentId}/accuse", 1)
+						RestDocumentationRequestBuilders.put("/comments/accuse")
 								.with(user(memberPrincipalDetails))
 								.content(objectMapper.writeValueAsString(commentAccuseForm))
 								.contentType(APPLICATION_JSON)
@@ -605,10 +608,8 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 				.andDo(document("accuse-comment",
 						preprocessRequest(prettyPrint()),
 						preprocessResponse(prettyPrint()),
-						pathParameters(
-								parameterWithName("commentId").description("댓글 번호")
-						),
 						requestFields(
+								fieldWithPath("id").description("댓글 번호"),
 								fieldWithPath("content").description("신고 내용")
 						),
 						responseFields(

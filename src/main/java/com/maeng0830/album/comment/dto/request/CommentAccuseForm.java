@@ -10,11 +10,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CommentAccuseForm {
 
+	@NotNull
+	private Long id;
 	@NotBlank
 	private String content;
 
 	@Builder
-	private CommentAccuseForm(String content) {
+	public CommentAccuseForm(Long id, String content) {
+		this.id = id;
 		this.content = content;
 	}
 }

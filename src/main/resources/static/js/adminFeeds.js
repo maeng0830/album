@@ -140,9 +140,10 @@ function pageLink(currentPage, totalPage, searchText, funcName) {
 function changeStatus(feedId, status) {
   console.log('changeStatus 호출');
 
-  var url = `/admin/feeds/${feedId}/status`;
+  var url = `/admin/feeds/status`;
 
   var feedStatus = {
+    id: feedId,
     feedStatus: status
   }
 

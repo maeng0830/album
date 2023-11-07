@@ -53,7 +53,7 @@ public class EmbeddedRedisConfig {
 			}
 		}
 
-		throw new IllegalArgumentException("Not Found Available port: 10000 ~ 65535");
+		throw new IllegalArgumentException("Not Found Available port: 16379 ~ 65535");
 	}
 
 	/**

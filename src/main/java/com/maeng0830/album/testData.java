@@ -89,11 +89,21 @@ public class testData {
 					.build());
 
 			// 피드 데이터 추가
-			Feed feed = feedRepository.save(Feed.builder()
-					.title("title" + i)
-					.member(member)
-					.status(FeedStatus.NORMAL)
-					.build());
+			Feed feed;
+			if (i == 0) {
+				feed = feedRepository.save(Feed.builder()
+						.title("title" + i)
+						.member(member)
+						.status(FeedStatus.NORMAL)
+						.commentCount(10)
+						.build());
+			} else {
+				feed = feedRepository.save(Feed.builder()
+						.title("title" + i)
+						.member(member)
+						.status(FeedStatus.NORMAL)
+						.build());
+			}
 
 			// 피드 이미지 데이터 추가
 			FeedImage feedImage = FeedImage.builder()

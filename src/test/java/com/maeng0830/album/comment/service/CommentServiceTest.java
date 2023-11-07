@@ -15,6 +15,7 @@ import com.maeng0830.album.comment.domain.CommentAccuse;
 import com.maeng0830.album.comment.domain.CommentStatus;
 import com.maeng0830.album.comment.dto.CommentAccuseDto;
 import com.maeng0830.album.comment.dto.request.CommentAccuseForm;
+import com.maeng0830.album.comment.dto.request.CommentChangeStatusForm;
 import com.maeng0830.album.comment.dto.request.CommentModifiedForm;
 import com.maeng0830.album.comment.dto.request.CommentPostForm;
 import com.maeng0830.album.comment.dto.response.BasicComment;
@@ -294,6 +295,7 @@ class CommentServiceTest extends ServiceTestSupport {
 		// BasicComment 세팅
 		CommentModifiedForm commentModifiedForm = CommentModifiedForm.builder()
 				.id(comment.getId())
+				.feedId(feed.getId())
 				.content("modifiedContent")
 				.build();
 
@@ -382,8 +384,9 @@ class CommentServiceTest extends ServiceTestSupport {
 		comment.saveParent(comment);
 		commentRepository.save(comment);
 
-		// CommentAccuseDto 세팅
+		// CommentAccuseForm 세팅
 		CommentAccuseForm commentAccuseForm = CommentAccuseForm.builder()
+				.id(comment.getId())
 				.content("testContent")
 				.build();
 
@@ -391,8 +394,7 @@ class CommentServiceTest extends ServiceTestSupport {
 		MemberDto memberDto = MemberDto.from(commentNoWriter);
 
 		// when
-		CommentAccuseDto result = commentService.accuseComment(comment.getId(), commentAccuseForm,
-				memberDto);
+		CommentAccuseDto result = commentService.accuseComment(commentAccuseForm, memberDto);
 
 		// then
 		assertThat(result).extracting("comment.id", "member.id", "content")
@@ -511,8 +513,15 @@ class CommentServiceTest extends ServiceTestSupport {
 		comment.saveParent(comment);
 		commentRepository.save(comment);
 
+		// CommentChangeStatusForm 세팅
+		CommentChangeStatusForm commentChangeStatusForm = CommentChangeStatusForm.builder()
+				.id(comment.getId())
+				.feedId(feed.getId())
+				.commentStatus(commentStatus)
+				.build();
+
 		// when
-		BasicComment result = commentService.changeCommentStatus(comment.getId(), commentStatus);
+		BasicComment result = commentService.changeCommentStatus(commentChangeStatusForm);
 
 		// then
 		assertThat(result).extracting("id", "status")
