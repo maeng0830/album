@@ -33,6 +33,7 @@ import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.domain.MemberStatus;
 import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.dto.request.MemberChangeStatusForm;
+import com.maeng0830.album.member.dto.response.MemberSimpleResponse;
 import com.maeng0830.album.security.dto.LoginType;
 import com.maeng0830.album.support.DocsTestSupport;
 import java.time.LocalDate;
@@ -56,52 +57,25 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 	@Test
 	void getFeedsForAdmin() throws Exception {
 		// given
-		MemberDto writer1 = MemberDto.builder()
+		MemberSimpleResponse writer1 = MemberSimpleResponse.builder()
 				.id(3L)
 				.username("writer1@naver.com")
 				.nickname("writer1")
-				.password(passwordEncoder.encode("123"))
-				.phone("010-2222-2222")
-				.birthDate(LocalDate.now())
-				.status(MemberStatus.NORMAL)
-				.role(MemberRole.ROLE_MEMBER)
-				.loginType(LoginType.FORM)
 				.image(Image.createDefaultImage(fileDir, defaultImage.getMemberImage()))
-				.createdAt(LocalDateTime.now())
-				.modifiedAt(LocalDateTime.now())
-				.modifiedBy("writer1@naver.com")
 				.build();
 
-		MemberDto writer2 = MemberDto.builder()
+		MemberSimpleResponse writer2 = MemberSimpleResponse.builder()
 				.id(4L)
 				.username("writer2@naver.com")
 				.nickname("writer2")
-				.password(passwordEncoder.encode("123"))
-				.phone("010-3333-3333")
-				.birthDate(LocalDate.now())
-				.status(MemberStatus.NORMAL)
-				.role(MemberRole.ROLE_MEMBER)
-				.loginType(LoginType.FORM)
 				.image(Image.createDefaultImage(fileDir, defaultImage.getMemberImage()))
-				.createdAt(LocalDateTime.now())
-				.modifiedAt(LocalDateTime.now())
-				.modifiedBy("writer2@naver.com")
 				.build();
 
-		MemberDto writer3 = MemberDto.builder()
+		MemberSimpleResponse writer3 = MemberSimpleResponse.builder()
 				.id(5L)
 				.username("writer3@naver.com")
 				.nickname("writer3")
-				.password(passwordEncoder.encode("123"))
-				.phone("010-4444-4444")
-				.birthDate(LocalDate.now())
-				.status(MemberStatus.NORMAL)
-				.role(MemberRole.ROLE_MEMBER)
-				.loginType(LoginType.FORM)
 				.image(Image.createDefaultImage(fileDir, defaultImage.getMemberImage()))
-				.createdAt(LocalDateTime.now())
-				.modifiedAt(LocalDateTime.now())
-				.modifiedBy("writer3@naver.com")
 				.build();
 
 		FeedResponse feedResponse1 = FeedResponse.builder()
@@ -189,35 +163,24 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 								fieldWithPath("content.[].modifiedAt").description("수정 일자"),
 								fieldWithPath("content.[].modifiedBy").description("수정자"),
 								//// content.member
+								fieldWithPath("content.[].member").description("피드 작성자"),
 								fieldWithPath("content.[].member.id").description("회원 번호"),
 								fieldWithPath("content.[].member.username").description("아이디"),
 								fieldWithPath("content.[].member.nickname").description("닉네임"),
-								fieldWithPath("content.[].member.password").description("암호화 비밀번호"),
-								fieldWithPath("content.[].member.phone").description("연락처"),
-								fieldWithPath("content.[].member.birthDate").description("생년월일"),
-								fieldWithPath("content.[].member.status").description("상태"),
-								fieldWithPath("content.[].member.role").description("권한"),
 								fieldWithPath("content.[].member.image").description("이미지"),
-								fieldWithPath(
-										"content.[].member.image.imageOriginalName").description(
-										"원본 이름"),
-								fieldWithPath("content.[].member.image.imageStoreName").description(
-										"저장 이름"),
-								fieldWithPath("content.[].member.image.imagePath").description(
-										"경로"),
-								fieldWithPath("content.[].member.loginType").description("로그인 타입"),
-								fieldWithPath("content.[].member.createdAt").description("가입 일자"),
-								fieldWithPath("content.[].member.modifiedAt").description("수정 일자"),
-								fieldWithPath("content.[].member.modifiedBy").description("수정자"),
+								fieldWithPath("content.[].member.image.imageOriginalName")
+										.description("원본 이름"),
+								fieldWithPath("content.[].member.image.imageStoreName")
+										.description("저장 이름"),
+								fieldWithPath("content.[].member.image.imagePath")
+										.description("경로"),
 								//// content.feedImages
-								fieldWithPath(
-										"content.[].feedImages.[].imageOriginalName").description(
-										"파일 원본 이름"),
-								fieldWithPath(
-										"content.[].feedImages.[].imageStoreName").description(
-										"파일 저장 이름"),
-								fieldWithPath("content.[].feedImages.[].imagePath").description(
-										"파일 경로"),
+								fieldWithPath("content.[].feedImages.[].imageOriginalName")
+										.description("파일 원본 이름"),
+								fieldWithPath("content.[].feedImages.[].imageStoreName")
+										.description("파일 저장 이름"),
+								fieldWithPath("content.[].feedImages.[].imagePath")
+										.description("파일 경로"),
 								// pageable
 								fieldWithPath("pageable.sort.sorted").description("정렬"),
 								fieldWithPath("pageable.sort.empty").description("데이터 비어있는지 여부"),
@@ -233,8 +196,8 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 								fieldWithPath("totalPages").description("전체 페이지 개수"),
 								fieldWithPath("totalElements").description("전체 데이터 개수"),
 								fieldWithPath("first").description("첫번째 페이지 여부"),
-								fieldWithPath("numberOfElements").description(
-										"현재 페이지에서 조회된 데이터 개수"),
+								fieldWithPath("numberOfElements")
+										.description("현재 페이지에서 조회된 데이터 개수"),
 								fieldWithPath("number").description("현재 페이지 번호"),
 								fieldWithPath("size").description("페이지 당 데이터 개수"),
 
