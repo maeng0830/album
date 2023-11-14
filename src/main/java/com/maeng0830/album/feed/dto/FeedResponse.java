@@ -6,6 +6,7 @@ import com.maeng0830.album.feed.domain.Feed;
 import com.maeng0830.album.feed.domain.FeedImage;
 import com.maeng0830.album.feed.domain.FeedStatus;
 import com.maeng0830.album.member.dto.MemberDto;
+import com.maeng0830.album.member.dto.response.MemberSimpleResponse;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
@@ -25,7 +26,7 @@ public class FeedResponse extends BaseEntity {
 	private int hits;
 	private int commentCount;
 	private FeedStatus status;
-	private MemberDto member;
+	private MemberSimpleResponse member;
 	private List<Image> feedImages = new ArrayList<>();
 
 	public static FeedResponse createFeedResponse(Feed feed, List<FeedImage> feedImages) {
@@ -36,7 +37,7 @@ public class FeedResponse extends BaseEntity {
 				.hits(feed.getHits())
 				.commentCount(feed.getCommentCount())
 				.status(feed.getStatus())
-				.member(MemberDto.from(feed.getMember()))
+				.member(MemberSimpleResponse.from(feed.getMember()))
 				.feedImages(new ArrayList<>())
 				.createdAt(feed.getCreatedAt())
 				.modifiedAt(feed.getModifiedAt())
