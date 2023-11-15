@@ -22,7 +22,8 @@ import com.maeng0830.album.feed.domain.FeedImage;
 import com.maeng0830.album.feed.domain.FeedStatus;
 import com.maeng0830.album.feed.dto.FeedAccuseDto;
 import com.maeng0830.album.feed.dto.FeedDto;
-import com.maeng0830.album.feed.dto.FeedResponse;
+import com.maeng0830.album.feed.dto.response.FeedAccuseResponse;
+import com.maeng0830.album.feed.dto.response.FeedResponse;
 import com.maeng0830.album.feed.dto.request.FeedAccuseRequestForm;
 import com.maeng0830.album.feed.dto.request.FeedChangeStatusForm;
 import com.maeng0830.album.feed.dto.request.FeedModifiedForm;
@@ -857,17 +858,17 @@ class FeedServiceTest extends ServiceTestSupport {
 		feedAccuseRepository.saveAll(feedAccuses);
 
 		// when
-		List<FeedAccuseDto> result1 = feedService.getFeedAccuses(adminDto, feed1.getId());
-		List<FeedAccuseDto> result2 = feedService.getFeedAccuses(adminDto, feed2.getId());
+		List<FeedAccuseResponse> result1 = feedService.getFeedAccuses(adminDto, feed1.getId());
+		List<FeedAccuseResponse> result2 = feedService.getFeedAccuses(adminDto, feed2.getId());
 
 		// then
 		assertThat(result1).hasSize(5)
-				.extracting("feedDto.id")
+				.extracting("feedId")
 				.containsExactlyInAnyOrder(
 						feed1.getId(), feed1.getId(), feed1.getId(), feed1.getId(), feed1.getId()
 				);
 		assertThat(result2).hasSize(5)
-				.extracting("feedDto.id")
+				.extracting("feedId")
 				.containsExactlyInAnyOrder(
 						feed2.getId(), feed2.getId(), feed2.getId(), feed2.getId(), feed2.getId()
 				);

@@ -27,7 +27,8 @@ import com.maeng0830.album.common.model.image.Image;
 import com.maeng0830.album.feed.domain.FeedStatus;
 import com.maeng0830.album.feed.dto.FeedAccuseDto;
 import com.maeng0830.album.feed.dto.FeedDto;
-import com.maeng0830.album.feed.dto.FeedResponse;
+import com.maeng0830.album.feed.dto.response.FeedAccuseResponse;
+import com.maeng0830.album.feed.dto.response.FeedResponse;
 import com.maeng0830.album.feed.dto.request.FeedChangeStatusForm;
 import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.domain.MemberStatus;
@@ -241,21 +242,18 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 				.modifiedBy(feedWriter.getUsername())
 				.build();
 
-		FeedAccuseDto feedAccuseDto = FeedAccuseDto.builder()
-				.id(1L)
-				.content("testContent")
-				.feedDto(feedDto)
-				.member(feedAccuseWriter)
-				.createdAt(LocalDateTime.now())
-				.modifiedAt(LocalDateTime.now())
-				.modifiedBy(feedAccuseWriter.getUsername())
+		FeedAccuseResponse feedAccuseResponse = FeedAccuseResponse.builder()
+				.feedId(feedDto.getId())
+				.username(feedAccuseWriter.getUsername())
+				.nickname(feedAccuseWriter.getNickname())
+				.content("feedAccuseContent")
 				.build();
 
-		List<FeedAccuseDto> feedAccuseDtos = List.of(feedAccuseDto);
+		List<FeedAccuseResponse> feedAccuseResponses = List.of(feedAccuseResponse);
 
 		given(feedService.getFeedAccuses(any(), any(Long.class)))
 				.willReturn(
-						feedAccuseDtos
+						feedAccuseResponses
 				);
 		// when
 
@@ -273,45 +271,10 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 								parameterWithName("feedId").description("피드 번호")
 						),
 						responseFields(
-								fieldWithPath("[].id").description("피드 신고 번호"),
-								fieldWithPath("[].content").description("신고 내용"),
-								fieldWithPath("[].createdAt").description("신고 일자"),
-								fieldWithPath("[].modifiedAt").description("수정 일자"),
-								fieldWithPath("[].modifiedBy").description("수정자"),
-
-								// MemberSimpleResponse
-								fieldWithPath("[].member").description("신고자"),
-								fieldWithPath("[].member.id").description("회원 번호"),
-								fieldWithPath("[].member.username").description("아이디"),
-								fieldWithPath("[].member.nickname").description("닉네임"),
-								fieldWithPath("[].member.image").description("이미지"),
-								fieldWithPath("[].member.image.imageOriginalName").description(
-										"원본 이름"),
-								fieldWithPath("[].member.image.imageStoreName").description(
-										"저장 이름"),
-								fieldWithPath("[].member.image.imagePath").description("경로"),
-
-								// FeedDto
-								fieldWithPath("[].feedDto.id").description("피드 번호"),
-								fieldWithPath("[].feedDto.title").description("피드 제목"),
-								fieldWithPath("[].feedDto.content").description("피드 내용"),
-								fieldWithPath("[].feedDto.hits").description("조회수"),
-								fieldWithPath("[].feedDto.commentCount").description("댓글 개수"),
-								fieldWithPath("[].feedDto.status").description("피드 상태"),
-								fieldWithPath("[].feedDto.createdAt").description("작성 일자"),
-								fieldWithPath("[].feedDto.modifiedAt").description("수정 일자"),
-								fieldWithPath("[].feedDto.modifiedBy").description("수정자"),
-								fieldWithPath("[].feedDto.member").description("피드 작성자"),
-								fieldWithPath("[].feedDto.member.id").description("회원 번호"),
-								fieldWithPath("[].feedDto.member.username").description("아이디"),
-								fieldWithPath("[].feedDto.member.nickname").description("닉네임"),
-								fieldWithPath("[].feedDto.member.image").description("이미지"),
-								fieldWithPath("[].feedDto.member.image.imageOriginalName")
-										.description("원본 이름"),
-								fieldWithPath("[].feedDto.member.image.imageStoreName")
-										.description("저장 이름"),
-								fieldWithPath("[].feedDto.member.image.imagePath")
-										.description("경로")
+								fieldWithPath("[].feedId").description("신고 피드 번호"),
+								fieldWithPath("[].username").description("신고자 아이디"),
+								fieldWithPath("[].nickname").description("신고자 닉네임"),
+								fieldWithPath("[].content").description("신고 내용")
 						)
 				));
 	}

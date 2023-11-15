@@ -1,20 +1,17 @@
 package com.maeng0830.album.view.controller;
 
-import com.maeng0830.album.feed.dto.FeedResponse;
+import com.maeng0830.album.feed.dto.response.FeedResponse;
 import com.maeng0830.album.feed.service.FeedService;
 import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.service.MemberService;
 import com.maeng0830.album.security.formlogin.PrincipalDetails;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
