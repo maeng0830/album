@@ -34,6 +34,7 @@ import com.maeng0830.album.feed.dto.FeedDto;
 import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.domain.MemberStatus;
 import com.maeng0830.album.member.dto.MemberDto;
+import com.maeng0830.album.member.dto.response.MemberSimpleResponse;
 import com.maeng0830.album.security.dto.LoginType;
 import com.maeng0830.album.support.DocsTestSupport;
 import java.time.LocalDate;
@@ -522,20 +523,11 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 				.content("accuseContent")
 				.build();
 
-		MemberDto feedWriter = MemberDto.builder()
+		MemberSimpleResponse feedWriter = MemberSimpleResponse.builder()
 				.id(3L)
 				.username("feedWriter@naver.com")
 				.nickname("feedWriter")
-				.password(passwordEncoder.encode("123"))
-				.phone("010-1111-1111")
-				.birthDate(LocalDate.now())
-				.status(MemberStatus.NORMAL)
-				.role(MemberRole.ROLE_MEMBER)
-				.loginType(LoginType.FORM)
 				.image(Image.createDefaultImage(fileDir, defaultImage.getMemberImage()))
-				.createdAt(LocalDateTime.now())
-				.modifiedAt(LocalDateTime.now())
-				.modifiedBy("feedWriter@naver.com")
 				.build();
 
 		MemberDto commentWriter = MemberDto.builder()
@@ -561,7 +553,7 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 				.hits(1)
 				.commentCount(1)
 				.status(FeedStatus.NORMAL)
-				.memberDto(feedWriter)
+				.member(feedWriter)
 				.createdAt(LocalDateTime.now())
 				.modifiedAt(LocalDateTime.now())
 				.modifiedBy(feedWriter.getUsername())
@@ -681,34 +673,17 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 								fieldWithPath("comment.feed.commentCount").description("댓글 개수"),
 								fieldWithPath("comment.feed.status").description("상태"),
 								////// comment.feed.memberDto
-								fieldWithPath("comment.feed.memberDto").description("피드 작성자"),
-								fieldWithPath("comment.feed.memberDto.createdAt").description(
-										"생성 일자"),
-								fieldWithPath("comment.feed.memberDto.modifiedAt").description(
-										"수정 일자"),
-								fieldWithPath("comment.feed.memberDto.modifiedBy").description(
-										"수정자"),
-								fieldWithPath("comment.feed.memberDto.id").description("회원 번호"),
-								fieldWithPath("comment.feed.memberDto.username").description("아이디"),
-								fieldWithPath("comment.feed.memberDto.nickname").description("닉네임"),
-								fieldWithPath("comment.feed.memberDto.password").description(
-										"암호화 비밀번호"),
-								fieldWithPath("comment.feed.memberDto.phone").description("연락처"),
-								fieldWithPath("comment.feed.memberDto.birthDate").description(
-										"생년월일"),
-								fieldWithPath("comment.feed.memberDto.status").description("상태"),
-								fieldWithPath("comment.feed.memberDto.role").description("권한"),
-								fieldWithPath("comment.feed.memberDto.image").description("회원 이미지"),
-								fieldWithPath(
-										"comment.feed.memberDto.image.imageOriginalName").description(
-										"원본 파일 이름"),
-								fieldWithPath(
-										"comment.feed.memberDto.image.imageStoreName").description(
-										"저장 파일 이름"),
-								fieldWithPath("comment.feed.memberDto.image.imagePath").description(
-										"파일 경로"),
-								fieldWithPath("comment.feed.memberDto.loginType").description(
-										"로그인 타입")
+								fieldWithPath("comment.feed.member").description("피드 작성자"),
+								fieldWithPath("comment.feed.member.id").description("회원 번호"),
+								fieldWithPath("comment.feed.member.username").description("아이디"),
+								fieldWithPath("comment.feed.member.nickname").description("닉네임"),
+								fieldWithPath("comment.feed.member.image").description("회원 이미지"),
+								fieldWithPath("comment.feed.member.image.imageOriginalName")
+										.description("원본 파일 이름"),
+								fieldWithPath("comment.feed.member.image.imageStoreName")
+										.description("저장 파일 이름"),
+								fieldWithPath("comment.feed.member.image.imagePath")
+										.description("파일 경로")
 						)
 				));
 	}

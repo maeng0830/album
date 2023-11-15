@@ -3,7 +3,7 @@ package com.maeng0830.album.feed.dto;
 import com.maeng0830.album.common.model.entity.BaseEntity;
 import com.maeng0830.album.feed.domain.Feed;
 import com.maeng0830.album.feed.domain.FeedStatus;
-import com.maeng0830.album.member.dto.MemberDto;
+import com.maeng0830.album.member.dto.response.MemberSimpleResponse;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,7 +20,7 @@ public class FeedDto extends BaseEntity {
 	private int hits;
 	private int commentCount;
 	private FeedStatus status;
-	private MemberDto memberDto;
+	private MemberSimpleResponse member;
 
 	public static FeedDto from(Feed feed) {
 		return FeedDto.builder()
@@ -33,7 +33,7 @@ public class FeedDto extends BaseEntity {
 				.createdAt(feed.getCreatedAt())
 				.modifiedAt(feed.getModifiedAt())
 				.modifiedBy(feed.getModifiedBy())
-				.memberDto(MemberDto.from(feed.getMember()))
+				.member(MemberSimpleResponse.from(feed.getMember()))
 				.build();
 	}
 }
