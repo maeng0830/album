@@ -450,6 +450,14 @@ public class FeedControllerDocsTest extends DocsTestSupport {
 	@Test
 	void deleteFeed() throws Exception {
 		// given
+		MemberDto memberDto = memberPrincipalDetails.getMemberDto();
+		MemberSimpleResponse feedWriter = MemberSimpleResponse.builder()
+				.id(memberDto.getId())
+				.username(memberDto.getUsername())
+				.nickname(memberDto.getNickname())
+				.image(memberDto.getImage())
+				.build();
+
 		FeedDto feedDto = FeedDto.builder()
 				.id(1L)
 				.title("testTitle")
@@ -457,7 +465,7 @@ public class FeedControllerDocsTest extends DocsTestSupport {
 				.hits(1)
 				.commentCount(1)
 				.status(FeedStatus.DELETE)
-				.memberDto(memberPrincipalDetails.getMemberDto())
+				.member(feedWriter)
 				.build();
 
 		given(feedService.deleteFeed(any(Long.class), any()))
@@ -490,24 +498,13 @@ public class FeedControllerDocsTest extends DocsTestSupport {
 								fieldWithPath("createdAt").description("작성 일자"),
 								fieldWithPath("modifiedAt").description("수정 일자"),
 								fieldWithPath("modifiedBy").description("수정자"),
-								fieldWithPath("memberDto.id").description("회원 번호"),
-								fieldWithPath("memberDto.username").description("아이디"),
-								fieldWithPath("memberDto.nickname").description("닉네임"),
-								fieldWithPath("memberDto.password").description("암호화 비밀번호"),
-								fieldWithPath("memberDto.phone").description("연락처"),
-								fieldWithPath("memberDto.birthDate").description("생년월일"),
-								fieldWithPath("memberDto.status").description("상태"),
-								fieldWithPath("memberDto.role").description("권한"),
-								fieldWithPath("memberDto.image").description("이미지"),
-								fieldWithPath("memberDto.image.imageOriginalName").description(
-										"원본 이름"),
-								fieldWithPath("memberDto.image.imageStoreName").description(
-										"저장 이름"),
-								fieldWithPath("memberDto.image.imagePath").description("경로"),
-								fieldWithPath("memberDto.loginType").description("로그인 타입"),
-								fieldWithPath("memberDto.createdAt").description("가입 일자"),
-								fieldWithPath("memberDto.modifiedAt").description("수정 일자"),
-								fieldWithPath("memberDto.modifiedBy").description("수정자")
+								fieldWithPath("member.id").description("회원 번호"),
+								fieldWithPath("member.username").description("아이디"),
+								fieldWithPath("member.nickname").description("닉네임"),
+								fieldWithPath("member.image").description("이미지"),
+								fieldWithPath("member.image.imageOriginalName").description("원본 이름"),
+								fieldWithPath("member.image.imageStoreName").description("저장 이름"),
+								fieldWithPath("member.image.imagePath").description("경로")
 						)
 				));
 	}
