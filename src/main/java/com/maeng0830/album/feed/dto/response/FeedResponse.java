@@ -1,11 +1,10 @@
-package com.maeng0830.album.feed.dto;
+package com.maeng0830.album.feed.dto.response;
 
 import com.maeng0830.album.common.model.entity.BaseEntity;
 import com.maeng0830.album.common.model.image.Image;
 import com.maeng0830.album.feed.domain.Feed;
 import com.maeng0830.album.feed.domain.FeedImage;
 import com.maeng0830.album.feed.domain.FeedStatus;
-import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.dto.response.MemberSimpleResponse;
 import java.util.ArrayList;
 import java.util.List;

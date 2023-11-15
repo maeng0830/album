@@ -1,9 +1,8 @@
 package com.maeng0830.album.feed.controller;
 
 import com.maeng0830.album.common.util.AlbumUtil;
-import com.maeng0830.album.feed.dto.FeedAccuseDto;
 import com.maeng0830.album.feed.dto.FeedDto;
-import com.maeng0830.album.feed.dto.FeedResponse;
+import com.maeng0830.album.feed.dto.response.FeedResponse;
 import com.maeng0830.album.feed.dto.request.FeedAccuseRequestForm;
 import com.maeng0830.album.feed.dto.request.FeedModifiedForm;
 import com.maeng0830.album.feed.dto.request.FeedPostForm;
@@ -14,7 +13,6 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;

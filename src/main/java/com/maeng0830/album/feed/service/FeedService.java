@@ -21,12 +21,12 @@ import com.maeng0830.album.feed.domain.FeedImage;
 import com.maeng0830.album.feed.domain.FeedStatus;
 import com.maeng0830.album.feed.dto.FeedAccuseDto;
 import com.maeng0830.album.feed.dto.FeedDto;
-import com.maeng0830.album.feed.dto.FeedResponse;
+import com.maeng0830.album.feed.dto.response.FeedAccuseResponse;
+import com.maeng0830.album.feed.dto.response.FeedResponse;
 import com.maeng0830.album.feed.dto.request.FeedAccuseRequestForm;
 import com.maeng0830.album.feed.dto.request.FeedChangeStatusForm;
 import com.maeng0830.album.feed.dto.request.FeedModifiedForm;
 import com.maeng0830.album.feed.dto.request.FeedPostForm;
-import com.maeng0830.album.feed.exception.FeedExceptionCode;
 import com.maeng0830.album.feed.repository.FeedAccuseRepository;
 import com.maeng0830.album.feed.repository.FeedImageRepository;
 import com.maeng0830.album.feed.repository.FeedRepository;
@@ -36,8 +36,6 @@ import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.repository.MemberRepository;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -331,7 +329,7 @@ public class FeedService {
 		return FeedDto.from(findFeed);
 	}
 
-	public List<FeedAccuseDto> getFeedAccuses(MemberDto memberDto, Long feedId) {
+	public List<FeedAccuseResponse> getFeedAccuses(MemberDto memberDto, Long feedId) {
 		// 로그인 및 권한 확인
 		if (memberDto != null) {
 			if (memberDto.getRole() != ROLE_ADMIN) {
@@ -345,7 +343,7 @@ public class FeedService {
 		List<FeedAccuse> feedAccuses = feedAccuseRepository.findFeedAccuseByFeed_Id(feedId);
 
 		// 데이터 변환 및 반환
-		return feedAccuses.stream().map(FeedAccuseDto::from).collect(Collectors.toList());
+		return feedAccuses.stream().map(FeedAccuseResponse::from).collect(Collectors.toList());
 	}
 
 	public Page<FeedResponse> getMyFeeds(Long memberId, MemberDto memberDto, Pageable pageable) {
