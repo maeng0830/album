@@ -3,6 +3,7 @@ package com.maeng0830.album.member.controller;
 import com.maeng0830.album.comment.dto.CommentAccuseDto;
 import com.maeng0830.album.comment.dto.request.CommentChangeStatusForm;
 import com.maeng0830.album.comment.dto.response.BasicComment;
+import com.maeng0830.album.comment.dto.response.CommentAccuseResponse;
 import com.maeng0830.album.comment.service.CommentService;
 import com.maeng0830.album.common.util.AlbumUtil;
 import com.maeng0830.album.feed.dto.FeedAccuseDto;
@@ -76,8 +77,8 @@ public class AdminController {
 	}
 
 	@GetMapping("/comments/{commentId}/accuses")
-	public List<CommentAccuseDto> getCommentAccuses(@AuthenticationPrincipal PrincipalDetails principalDetails,
-													@PathVariable Long commentId) {
+	public List<CommentAccuseResponse> getCommentAccuses(@AuthenticationPrincipal PrincipalDetails principalDetails,
+														 @PathVariable Long commentId) {
 		return commentService.getCommentAccuses(albumUtil.checkLogin(principalDetails), commentId);
 	}
 

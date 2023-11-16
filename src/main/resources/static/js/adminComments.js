@@ -186,10 +186,10 @@ function showAccuses(commentId) {
         var accusesHtml = ``;
 
         response.forEach(a => {
-          var accusedCommentId = a.comment.id;
+          var accusedCommentId = a.commentId;
           var content = a.content;
-          var memberUsername = a.member.username;
-          var memberNickname = a.member.nickname;
+          var memberUsername = a.username;
+          var memberNickname = a.nickname;
 
           accusesHtml += `<div class="row row-cols-9 justify-content-md-center text-center">
                           <div class="col-1">${accusedCommentId}</div>

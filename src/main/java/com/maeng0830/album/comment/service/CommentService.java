@@ -16,6 +16,7 @@ import com.maeng0830.album.comment.dto.request.CommentChangeStatusForm;
 import com.maeng0830.album.comment.dto.request.CommentModifiedForm;
 import com.maeng0830.album.comment.dto.request.CommentPostForm;
 import com.maeng0830.album.comment.dto.response.BasicComment;
+import com.maeng0830.album.comment.dto.response.CommentAccuseResponse;
 import com.maeng0830.album.comment.dto.response.GroupComment;
 import com.maeng0830.album.comment.repository.CommentAccuseRepository;
 import com.maeng0830.album.comment.repository.CommentRepository;
@@ -155,7 +156,7 @@ public class CommentService {
 	}
 
 	@Transactional
-	public CommentAccuseDto accuseComment(CommentAccuseForm commentAccuseForm, MemberDto memberDto) {
+	public BasicComment accuseComment(CommentAccuseForm commentAccuseForm, MemberDto memberDto) {
 
 		// 로그인 여부 확인
 		if (memberDto == null) {
@@ -178,7 +179,7 @@ public class CommentService {
 
 		commentAccuseRepository.save(commentAccuse);
 
-		return CommentAccuseDto.from(commentAccuse);
+		return BasicComment.from(findComment);
 	}
 
 	@Transactional
@@ -233,7 +234,7 @@ public class CommentService {
 		return comments.map(BasicComment::from);
 	}
 
-	public List<CommentAccuseDto> getCommentAccuses(MemberDto memberDto, Long commentId) {
+	public List<CommentAccuseResponse> getCommentAccuses(MemberDto memberDto, Long commentId) {
 		// 로그인 및 권한 확인
 		if (memberDto != null) {
 			if (memberDto.getRole() != ROLE_ADMIN) {
@@ -247,7 +248,7 @@ public class CommentService {
 		List<CommentAccuse> commentAccuses = commentAccuseRepository.findCommentAccuseByComment_Id(commentId);
 
 		// 데이터 변환 및 반환
-		return commentAccuses.stream().map(CommentAccuseDto::from).collect(Collectors.toList());
+		return commentAccuses.stream().map(CommentAccuseResponse::from).collect(Collectors.toList());
 	}
 
 	public Long getCommentFeedId(Long commentId) {
