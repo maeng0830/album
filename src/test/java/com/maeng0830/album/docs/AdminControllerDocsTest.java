@@ -19,18 +19,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.maeng0830.album.comment.domain.CommentStatus;
-import com.maeng0830.album.comment.dto.CommentAccuseDto;
-import com.maeng0830.album.comment.dto.CommentDto;
 import com.maeng0830.album.comment.dto.request.CommentChangeStatusForm;
 import com.maeng0830.album.comment.dto.response.BasicComment;
 import com.maeng0830.album.comment.dto.response.CommentAccuseResponse;
 import com.maeng0830.album.common.model.image.Image;
 import com.maeng0830.album.feed.domain.FeedStatus;
-import com.maeng0830.album.feed.dto.FeedAccuseDto;
 import com.maeng0830.album.feed.dto.FeedDto;
+import com.maeng0830.album.feed.dto.request.FeedChangeStatusForm;
 import com.maeng0830.album.feed.dto.response.FeedAccuseResponse;
 import com.maeng0830.album.feed.dto.response.FeedResponse;
-import com.maeng0830.album.feed.dto.request.FeedChangeStatusForm;
 import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.domain.MemberStatus;
 import com.maeng0830.album.member.dto.MemberDto;
