@@ -13,7 +13,6 @@ import static org.assertj.core.api.Assertions.tuple;
 import com.maeng0830.album.comment.domain.Comment;
 import com.maeng0830.album.comment.domain.CommentAccuse;
 import com.maeng0830.album.comment.domain.CommentStatus;
-import com.maeng0830.album.comment.dto.CommentAccuseDto;
 import com.maeng0830.album.comment.dto.request.CommentAccuseForm;
 import com.maeng0830.album.comment.dto.request.CommentChangeStatusForm;
 import com.maeng0830.album.comment.dto.request.CommentModifiedForm;

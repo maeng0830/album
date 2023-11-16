@@ -1,6 +1,5 @@
 package com.maeng0830.album.comment.controller;
 
-import com.maeng0830.album.comment.dto.CommentAccuseDto;
 import com.maeng0830.album.comment.dto.request.CommentAccuseForm;
 import com.maeng0830.album.comment.dto.request.CommentModifiedForm;
 import com.maeng0830.album.comment.dto.request.CommentPostForm;
