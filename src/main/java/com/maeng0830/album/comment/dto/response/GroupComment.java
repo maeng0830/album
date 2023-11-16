@@ -4,6 +4,7 @@ import com.maeng0830.album.comment.domain.Comment;
 import com.maeng0830.album.comment.domain.CommentStatus;
 import com.maeng0830.album.common.model.entity.BaseEntity;
 import com.maeng0830.album.member.dto.MemberDto;
+import com.maeng0830.album.member.dto.response.MemberSimpleResponse;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +21,7 @@ public class GroupComment extends BaseEntity {
 	private Long feedId;
 	private Long groupId;
 	private Long parentId;
-	private MemberDto member;
+	private MemberSimpleResponse member;
 	private String content;
 	private CommentStatus status;
 	private List<BasicComment> basicComments;
@@ -31,7 +32,7 @@ public class GroupComment extends BaseEntity {
 				.feedId(comment.getFeed().getId())
 				.groupId(comment.getGroup().getId())
 				.parentId(comment.getParent().getId())
-				.member(MemberDto.from(comment.getMember()))
+				.member(MemberSimpleResponse.from(comment.getMember()))
 				.content(comment.getContent())
 				.status(comment.getStatus())
 				.createdAt(comment.getCreatedAt())

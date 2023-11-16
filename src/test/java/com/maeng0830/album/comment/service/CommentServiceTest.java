@@ -19,6 +19,7 @@ import com.maeng0830.album.comment.dto.request.CommentChangeStatusForm;
 import com.maeng0830.album.comment.dto.request.CommentModifiedForm;
 import com.maeng0830.album.comment.dto.request.CommentPostForm;
 import com.maeng0830.album.comment.dto.response.BasicComment;
+import com.maeng0830.album.comment.dto.response.CommentAccuseResponse;
 import com.maeng0830.album.comment.dto.response.GroupComment;
 import com.maeng0830.album.comment.repository.CommentAccuseRepository;
 import com.maeng0830.album.comment.repository.CommentRepository;
@@ -394,12 +395,11 @@ class CommentServiceTest extends ServiceTestSupport {
 		MemberDto memberDto = MemberDto.from(commentNoWriter);
 
 		// when
-		CommentAccuseDto result = commentService.accuseComment(commentAccuseForm, memberDto);
+		BasicComment result = commentService.accuseComment(commentAccuseForm, memberDto);
 
 		// then
-		assertThat(result).extracting("comment.id", "member.id", "content")
-				.containsExactlyInAnyOrder(comment.getId(), commentNoWriter.getId(),
-						commentAccuseForm.getContent());
+		assertThat(result).extracting("id", "status")
+				.containsExactlyInAnyOrder(comment.getId(), ACCUSE);
 	}
 
 	@DisplayName("작성자인 경우, 댓글을 삭제할 수 있다.")
@@ -742,20 +742,20 @@ class CommentServiceTest extends ServiceTestSupport {
 		commentAccuseRepository.saveAll(commentAccuses);
 
 		// when
-		List<CommentAccuseDto> result1 = commentService.getCommentAccuses(
+		List<CommentAccuseResponse> result1 = commentService.getCommentAccuses(
 				MemberDto.from(admin), comment1.getId());
-		List<CommentAccuseDto> result2 = commentService.getCommentAccuses(
+		List<CommentAccuseResponse> result2 = commentService.getCommentAccuses(
 				MemberDto.from(admin), comment2.getId());
 
 		// then
 		assertThat(result1).hasSize(5)
-				.extracting("comment.id")
+				.extracting("commentId")
 				.containsExactlyInAnyOrder(
 						comment1.getId(), comment1.getId(), comment1.getId(), comment1.getId(),
 						comment1.getId()
 				);
 		assertThat(result2).hasSize(5)
-				.extracting("comment.id")
+				.extracting("commentId")
 				.containsExactlyInAnyOrder(
 						comment2.getId(), comment2.getId(), comment2.getId(), comment2.getId(),
 						comment2.getId()

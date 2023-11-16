@@ -54,7 +54,7 @@ public class CommentController {
 	}
 
 	@PutMapping("/accuse")
-	public CommentAccuseDto accuseComment(@Valid @RequestBody CommentAccuseForm commentAccuseForm,
+	public BasicComment accuseComment(@Valid @RequestBody CommentAccuseForm commentAccuseForm,
 										  @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		return commentService.accuseComment(commentAccuseForm, albumUtil.checkLogin(principalDetails));
 	}

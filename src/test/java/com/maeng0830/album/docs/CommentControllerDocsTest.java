@@ -53,36 +53,18 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 	void getFeedComments() throws Exception {
 		// given
 		// 댓글 작성자 세팅
-		MemberDto writer1 = MemberDto.builder()
-				.id(1L)
+		MemberSimpleResponse writer1 = MemberSimpleResponse.builder()
+				.id(3L)
 				.username("writer1@naver.com")
 				.nickname("writer1")
-				.password(passwordEncoder.encode("123"))
-				.phone("010-1111-1111")
-				.birthDate(LocalDate.now())
-				.status(MemberStatus.NORMAL)
-				.role(MemberRole.ROLE_MEMBER)
-				.loginType(LoginType.FORM)
 				.image(Image.createDefaultImage(fileDir, defaultImage.getMemberImage()))
-				.createdAt(LocalDateTime.now())
-				.modifiedAt(LocalDateTime.now())
-				.modifiedBy("writer1@naver.com")
 				.build();
 
-		MemberDto writer2 = MemberDto.builder()
-				.id(1L)
+		MemberSimpleResponse writer2 = MemberSimpleResponse.builder()
+				.id(4L)
 				.username("writer2@naver.com")
 				.nickname("writer2")
-				.password(passwordEncoder.encode("1234"))
-				.phone("010-2222-2222")
-				.birthDate(LocalDate.now())
-				.status(MemberStatus.NORMAL)
-				.role(MemberRole.ROLE_MEMBER)
-				.loginType(LoginType.FORM)
 				.image(Image.createDefaultImage(fileDir, defaultImage.getMemberImage()))
-				.createdAt(LocalDateTime.now())
-				.modifiedAt(LocalDateTime.now())
-				.modifiedBy("writer2@naver.com")
 				.build();
 
 		// group 댓글 세팅
@@ -184,75 +166,43 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 								fieldWithPath("[].status").description("댓글 상태"),
 								// member
 								fieldWithPath("[].member").description("댓글 작성자"),
-								fieldWithPath("[].member.createdAt").description("생성 일자"),
-								fieldWithPath("[].member.modifiedAt").description("수정 일자"),
-								fieldWithPath("[].member.modifiedBy").description("수정자"),
 								fieldWithPath("[].member.id").description("회원 번호"),
 								fieldWithPath("[].member.username").description("아이디"),
 								fieldWithPath("[].member.nickname").description("닉네임"),
-								fieldWithPath("[].member.password").description("암호화 비밀번호"),
-								fieldWithPath("[].member.phone").description("연락처"),
-								fieldWithPath("[].member.birthDate").description("생년월일"),
-								fieldWithPath("[].member.status").description("상태"),
-								fieldWithPath("[].member.role").description("권한"),
 								fieldWithPath("[].member.image").description("회원 이미지"),
-								fieldWithPath("[].member.image.imageOriginalName").description(
-										"원본 파일 이름"),
-								fieldWithPath("[].member.image.imageStoreName").description(
-										"저장 파일 이름"),
+								fieldWithPath("[].member.image.imageOriginalName")
+										.description("원본 파일 이름"),
+								fieldWithPath("[].member.image.imageStoreName")
+										.description("저장 파일 이름"),
 								fieldWithPath("[].member.image.imagePath").description("파일 경로"),
-								fieldWithPath("[].member.loginType").description("로그인 타입"),
 								// basicComments
 								fieldWithPath("[].basicComments").description("자식 댓글 목록"),
 								fieldWithPath("[].basicComments.[].createdAt").description("작성 일자"),
-								fieldWithPath("[].basicComments.[].modifiedAt").description(
-										"수정 일자"),
+								fieldWithPath("[].basicComments.[].modifiedAt")
+										.description("수정 일자"),
 								fieldWithPath("[].basicComments.[].modifiedBy").description("수정자"),
 								fieldWithPath("[].basicComments.[].createdAt").description("작성 일자"),
 								fieldWithPath("[].basicComments.[].id").description("댓글 번호"),
 								fieldWithPath("[].basicComments.[].feedId").description("피드 번호"),
-								fieldWithPath("[].basicComments.[].groupId").description(
-										"그룹 댓글 번호"),
-								fieldWithPath("[].basicComments.[].parentId").description(
-										"부모 댓글 번호"),
-								fieldWithPath("[].basicComments.[].parentMember").description(
-										"부모 댓글 작성자 닉네임"),
+								fieldWithPath("[].basicComments.[].groupId")
+										.description("그룹 댓글 번호"),
+								fieldWithPath("[].basicComments.[].parentId")
+										.description("부모 댓글 번호"),
+								fieldWithPath("[].basicComments.[].parentMember")
+										.description("부모 댓글 작성자 닉네임"),
 								fieldWithPath("[].basicComments.[].content").description("댓글 내용"),
 								fieldWithPath("[].basicComments.[].status").description("댓글 상태"),
 								fieldWithPath("[].basicComments.[].member").description("댓글 작성자"),
-								fieldWithPath("[].basicComments.[].member.createdAt").description(
-										"생성 일자"),
-								fieldWithPath("[].basicComments.[].member.modifiedAt").description(
-										"수정 일자"),
-								fieldWithPath("[].basicComments.[].member.modifiedBy").description(
-										"수정자"),
 								fieldWithPath("[].basicComments.[].member.id").description("회원 번호"),
-								fieldWithPath("[].basicComments.[].member.username").description(
-										"아이디"),
-								fieldWithPath("[].basicComments.[].member.nickname").description(
-										"닉네임"),
-								fieldWithPath("[].basicComments.[].member.password").description(
-										"암호화 비밀번호"),
-								fieldWithPath("[].basicComments.[].member.phone").description(
-										"연락처"),
-								fieldWithPath("[].basicComments.[].member.birthDate").description(
-										"생년월일"),
-								fieldWithPath("[].basicComments.[].member.status").description(
-										"상태"),
-								fieldWithPath("[].basicComments.[].member.role").description("권한"),
-								fieldWithPath("[].basicComments.[].member.image").description(
-										"회원 이미지"),
-								fieldWithPath(
-										"[].basicComments.[].member.image.imageOriginalName").description(
-										"원본 파일 이름"),
-								fieldWithPath(
-										"[].basicComments.[].member.image.imageStoreName").description(
-										"저장 파일 이름"),
-								fieldWithPath(
-										"[].basicComments.[].member.image.imagePath").description(
-										"파일 경로"),
-								fieldWithPath("[].basicComments.[].member.loginType").description(
-										"로그인 타입")
+								fieldWithPath("[].basicComments.[].member.username").description("아이디"),
+								fieldWithPath("[].basicComments.[].member.nickname").description("닉네임"),
+								fieldWithPath("[].basicComments.[].member.image").description("회원 이미지"),
+								fieldWithPath("[].basicComments.[].member.image.imageOriginalName")
+										.description("원본 파일 이름"),
+								fieldWithPath("[].basicComments.[].member.image.imageStoreName")
+										.description("저장 파일 이름"),
+								fieldWithPath("[].basicComments.[].member.image.imagePath")
+										.description("파일 경로")
 						)
 				));
 	}
@@ -261,20 +211,11 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 	@Test
 	void getComment() throws Exception {
 		// given
-		MemberDto writer = MemberDto.builder()
-				.id(1L)
+		MemberSimpleResponse writer = MemberSimpleResponse.builder()
+				.id(3L)
 				.username("writer@naver.com")
 				.nickname("writer")
-				.password(passwordEncoder.encode("123"))
-				.phone("010-1111-1111")
-				.birthDate(LocalDate.now())
-				.status(MemberStatus.NORMAL)
-				.role(MemberRole.ROLE_MEMBER)
-				.loginType(LoginType.FORM)
 				.image(Image.createDefaultImage(fileDir, defaultImage.getMemberImage()))
-				.createdAt(LocalDateTime.now())
-				.modifiedAt(LocalDateTime.now())
-				.modifiedBy("writer@naver.com")
 				.build();
 
 		BasicComment basicComment = BasicComment.builder()
@@ -310,36 +251,26 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 								parameterWithName("commentId").description("댓글 번호")
 						),
 						responseFields(
-								fieldWithPath("createdAt").description("작성 일자"),
-								fieldWithPath("modifiedAt").description("수정 일자"),
-								fieldWithPath("modifiedBy").description("수정자"),
-								fieldWithPath("createdAt").description("작성 일자"),
 								fieldWithPath("id").description("댓글 번호"),
 								fieldWithPath("feedId").description("피드 번호"),
 								fieldWithPath("groupId").description("그룹 댓글 번호"),
 								fieldWithPath("parentId").description("부모 댓글 번호"),
 								fieldWithPath("parentMember").description("부모 댓글 작성자 닉네임"),
-								fieldWithPath("content").description("댓글 내용"),
-								fieldWithPath("status").description("댓글 상태"),
 								fieldWithPath("member").description("댓글 작성자"),
-								fieldWithPath("member.createdAt").description("생성 일자"),
-								fieldWithPath("member.modifiedAt").description("수정 일자"),
-								fieldWithPath("member.modifiedBy").description("수정자"),
 								fieldWithPath("member.id").description("회원 번호"),
 								fieldWithPath("member.username").description("아이디"),
 								fieldWithPath("member.nickname").description("닉네임"),
-								fieldWithPath("member.password").description("암호화 비밀번호"),
-								fieldWithPath("member.phone").description("연락처"),
-								fieldWithPath("member.birthDate").description("생년월일"),
-								fieldWithPath("member.status").description("상태"),
-								fieldWithPath("member.role").description("권한"),
 								fieldWithPath("member.image").description("회원 이미지"),
-								fieldWithPath("member.image.imageOriginalName").description(
-										"원본 파일 이름"),
-								fieldWithPath("member.image.imageStoreName").description(
-										"저장 파일 이름"),
+								fieldWithPath("member.image.imageOriginalName")
+										.description("원본 파일 이름"),
+								fieldWithPath("member.image.imageStoreName")
+										.description("저장 파일 이름"),
 								fieldWithPath("member.image.imagePath").description("파일 경로"),
-								fieldWithPath("member.loginType").description("로그인 타입")
+								fieldWithPath("content").description("댓글 내용"),
+								fieldWithPath("status").description("댓글 상태"),
+								fieldWithPath("createdAt").description("작성 일자"),
+								fieldWithPath("modifiedAt").description("수정 일자"),
+								fieldWithPath("modifiedBy").description("수정자")
 						)
 				));
 	}
@@ -349,6 +280,7 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 	void comment() throws Exception {
 		// given
 		MemberDto memberDto = memberPrincipalDetails.getMemberDto();
+		MemberSimpleResponse memberSimpleResponse = createMemberSimpleResponse(memberDto);
 
 		CommentPostForm commentPostForm = CommentPostForm.builder()
 				.feedId(1L)
@@ -363,7 +295,7 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 				.groupId(commentPostForm.getGroupId())
 				.parentId(commentPostForm.getParentId())
 				.parentMember("parentCommentWriter")
-				.member(memberDto)
+				.member(memberSimpleResponse)
 				.content(commentPostForm.getContent())
 				.status(CommentStatus.NORMAL)
 				.createdAt(LocalDateTime.now())
@@ -396,36 +328,26 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 								fieldWithPath("content").description("댓글 내용")
 						),
 						responseFields(
-								fieldWithPath("createdAt").description("작성 일자"),
-								fieldWithPath("modifiedAt").description("수정 일자"),
-								fieldWithPath("modifiedBy").description("수정자"),
-								fieldWithPath("createdAt").description("작성 일자"),
 								fieldWithPath("id").description("댓글 번호"),
 								fieldWithPath("feedId").description("피드 번호"),
 								fieldWithPath("groupId").description("그룹 댓글 번호"),
 								fieldWithPath("parentId").description("부모 댓글 번호"),
 								fieldWithPath("parentMember").description("부모 댓글 작성자 닉네임"),
-								fieldWithPath("content").description("댓글 내용"),
-								fieldWithPath("status").description("댓글 상태"),
 								fieldWithPath("member").description("댓글 작성자"),
-								fieldWithPath("member.createdAt").description("생성 일자"),
-								fieldWithPath("member.modifiedAt").description("수정 일자"),
-								fieldWithPath("member.modifiedBy").description("수정자"),
 								fieldWithPath("member.id").description("회원 번호"),
 								fieldWithPath("member.username").description("아이디"),
 								fieldWithPath("member.nickname").description("닉네임"),
-								fieldWithPath("member.password").description("암호화 비밀번호"),
-								fieldWithPath("member.phone").description("연락처"),
-								fieldWithPath("member.birthDate").description("생년월일"),
-								fieldWithPath("member.status").description("상태"),
-								fieldWithPath("member.role").description("권한"),
 								fieldWithPath("member.image").description("회원 이미지"),
-								fieldWithPath("member.image.imageOriginalName").description(
-										"원본 파일 이름"),
-								fieldWithPath("member.image.imageStoreName").description(
-										"저장 파일 이름"),
+								fieldWithPath("member.image.imageOriginalName")
+										.description("원본 파일 이름"),
+								fieldWithPath("member.image.imageStoreName")
+										.description("저장 파일 이름"),
 								fieldWithPath("member.image.imagePath").description("파일 경로"),
-								fieldWithPath("member.loginType").description("로그인 타입")
+								fieldWithPath("content").description("댓글 내용"),
+								fieldWithPath("status").description("댓글 상태"),
+								fieldWithPath("createdAt").description("작성 일자"),
+								fieldWithPath("modifiedAt").description("수정 일자"),
+								fieldWithPath("modifiedBy").description("수정자")
 						)
 				));
 	}
@@ -434,7 +356,8 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 	@Test
 	void modifiedComment() throws Exception {
 		// given
-		MemberDto memberDto = memberPrincipalDetails.getMemberDto();
+		MemberSimpleResponse memberSimpleResponse = createMemberSimpleResponse(
+				memberPrincipalDetails.getMemberDto());
 
 		CommentModifiedForm commentModifiedForm = CommentModifiedForm.builder()
 				.id(1L)
@@ -448,12 +371,12 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 				.groupId(1L)
 				.parentId(1L)
 				.parentMember("parentCommentWriter")
-				.member(memberDto)
+				.member(memberSimpleResponse)
 				.content(commentModifiedForm.getContent())
 				.status(CommentStatus.NORMAL)
 				.createdAt(LocalDateTime.now())
 				.modifiedAt(LocalDateTime.now())
-				.modifiedBy(memberDto.getUsername())
+				.modifiedBy(memberSimpleResponse.getUsername())
 				.build();
 
 		given(commentService.modifiedComment(any(CommentModifiedForm.class), any()))
@@ -480,36 +403,26 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 								fieldWithPath("content").description("수정 댓글 내용")
 						),
 						responseFields(
-								fieldWithPath("createdAt").description("작성 일자"),
-								fieldWithPath("modifiedAt").description("수정 일자"),
-								fieldWithPath("modifiedBy").description("수정자"),
-								fieldWithPath("createdAt").description("작성 일자"),
 								fieldWithPath("id").description("댓글 번호"),
 								fieldWithPath("feedId").description("피드 번호"),
 								fieldWithPath("groupId").description("그룹 댓글 번호"),
 								fieldWithPath("parentId").description("부모 댓글 번호"),
 								fieldWithPath("parentMember").description("부모 댓글 작성자 닉네임"),
-								fieldWithPath("content").description("댓글 내용"),
-								fieldWithPath("status").description("댓글 상태"),
 								fieldWithPath("member").description("댓글 작성자"),
-								fieldWithPath("member.createdAt").description("생성 일자"),
-								fieldWithPath("member.modifiedAt").description("수정 일자"),
-								fieldWithPath("member.modifiedBy").description("수정자"),
 								fieldWithPath("member.id").description("회원 번호"),
 								fieldWithPath("member.username").description("아이디"),
 								fieldWithPath("member.nickname").description("닉네임"),
-								fieldWithPath("member.password").description("암호화 비밀번호"),
-								fieldWithPath("member.phone").description("연락처"),
-								fieldWithPath("member.birthDate").description("생년월일"),
-								fieldWithPath("member.status").description("상태"),
-								fieldWithPath("member.role").description("권한"),
 								fieldWithPath("member.image").description("회원 이미지"),
-								fieldWithPath("member.image.imageOriginalName").description(
-										"원본 파일 이름"),
-								fieldWithPath("member.image.imageStoreName").description(
-										"저장 파일 이름"),
+								fieldWithPath("member.image.imageOriginalName")
+										.description("원본 파일 이름"),
+								fieldWithPath("member.image.imageStoreName")
+										.description("저장 파일 이름"),
 								fieldWithPath("member.image.imagePath").description("파일 경로"),
-								fieldWithPath("member.loginType").description("로그인 타입")
+								fieldWithPath("content").description("댓글 내용"),
+								fieldWithPath("status").description("댓글 상태"),
+								fieldWithPath("createdAt").description("작성 일자"),
+								fieldWithPath("modifiedAt").description("수정 일자"),
+								fieldWithPath("modifiedBy").description("수정자")
 						)
 				));
 	}
@@ -523,68 +436,30 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 				.content("accuseContent")
 				.build();
 
-		MemberSimpleResponse feedWriter = MemberSimpleResponse.builder()
+		MemberSimpleResponse commentWriter = MemberSimpleResponse.builder()
 				.id(3L)
-				.username("feedWriter@naver.com")
-				.nickname("feedWriter")
-				.image(Image.createDefaultImage(fileDir, defaultImage.getMemberImage()))
-				.build();
-
-		MemberDto commentWriter = MemberDto.builder()
-				.id(4L)
 				.username("commentWriter@naver.com")
 				.nickname("commentWriter")
-				.password(passwordEncoder.encode("1234"))
-				.phone("010-2222-2222")
-				.birthDate(LocalDate.now())
-				.status(MemberStatus.NORMAL)
-				.role(MemberRole.ROLE_MEMBER)
-				.loginType(LoginType.FORM)
 				.image(Image.createDefaultImage(fileDir, defaultImage.getMemberImage()))
-				.createdAt(LocalDateTime.now())
-				.modifiedAt(LocalDateTime.now())
-				.modifiedBy("commentWriter@naver.com")
 				.build();
 
-		FeedDto feedDto = FeedDto.builder()
+		BasicComment basicComment = BasicComment.builder()
 				.id(1L)
-				.title("testTitle")
-				.content("testContent")
-				.hits(1)
-				.commentCount(1)
-				.status(FeedStatus.NORMAL)
-				.member(feedWriter)
-				.createdAt(LocalDateTime.now())
-				.modifiedAt(LocalDateTime.now())
-				.modifiedBy(feedWriter.getUsername())
-				.build();
-
-		CommentDto commentDto = CommentDto.builder()
-				.id(1L)
-				.member(commentWriter)
-				.feed(feedDto)
+				.feedId(1L)
 				.groupId(1L)
 				.parentId(1L)
 				.content("testContent")
+				.member(commentWriter)
+				.parentMember("commentWriter")
+				.createdAt(LocalDateTime.now())
+				.modifiedAt(LocalDateTime.now())
+				.modifiedBy("commentWriter")
 				.status(CommentStatus.ACCUSE)
-				.createdAt(LocalDateTime.now())
-				.modifiedAt(LocalDateTime.now())
-				.modifiedBy(commentWriter.getUsername())
-				.build();
-
-		CommentAccuseDto commentAccuseDto = CommentAccuseDto.builder()
-				.id(1L)
-				.comment(commentDto)
-				.member(memberPrincipalDetails.getMemberDto())
-				.content(commentAccuseForm.getContent())
-				.createdAt(LocalDateTime.now())
-				.modifiedAt(LocalDateTime.now())
-				.modifiedBy(memberPrincipalDetails.getMemberDto().getUsername())
 				.build();
 
 		given(commentService.accuseComment(any(CommentAccuseForm.class), any()))
 				.willReturn(
-						commentAccuseDto
+						basicComment
 				);
 		// when
 
@@ -605,85 +480,26 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 								fieldWithPath("content").description("신고 내용")
 						),
 						responseFields(
-								fieldWithPath("id").description("댓글 신고 번호"),
-								fieldWithPath("content").description("신고 내용"),
-								fieldWithPath("createdAt").description("생성 일자"),
-								fieldWithPath("modifiedAt").description("수정 일자"),
-								fieldWithPath("modifiedBy").description("수정자"),
-								// member
-								fieldWithPath("member").description("댓글 신고자"),
-								fieldWithPath("member.createdAt").description("생성 일자"),
-								fieldWithPath("member.modifiedAt").description("수정 일자"),
-								fieldWithPath("member.modifiedBy").description("수정자"),
+								fieldWithPath("id").description("댓글 번호"),
+								fieldWithPath("feedId").description("피드 번호"),
+								fieldWithPath("groupId").description("그룹 댓글 번호"),
+								fieldWithPath("parentId").description("부모 댓글 번호"),
+								fieldWithPath("parentMember").description("부모 댓글 작성자 닉네임"),
+								fieldWithPath("member").description("댓글 작성자"),
 								fieldWithPath("member.id").description("회원 번호"),
 								fieldWithPath("member.username").description("아이디"),
 								fieldWithPath("member.nickname").description("닉네임"),
-								fieldWithPath("member.password").description("암호화 비밀번호"),
-								fieldWithPath("member.phone").description("연락처"),
-								fieldWithPath("member.birthDate").description("생년월일"),
-								fieldWithPath("member.status").description("상태"),
-								fieldWithPath("member.role").description("권한"),
 								fieldWithPath("member.image").description("회원 이미지"),
-								fieldWithPath("member.image.imageOriginalName").description(
-										"원본 파일 이름"),
-								fieldWithPath("member.image.imageStoreName").description(
-										"저장 파일 이름"),
-								fieldWithPath("member.image.imagePath").description("파일 경로"),
-								fieldWithPath("member.loginType").description("로그인 타입"),
-								// comment
-								fieldWithPath("comment").description("신고 댓글"),
-								fieldWithPath("comment.id").description("댓글 번호"),
-								fieldWithPath("comment.groupId").description("그룹 댓글 번호"),
-								fieldWithPath("comment.parentId").description("부모 댓글 번호"),
-								fieldWithPath("comment.content").description("댓글 내용"),
-								fieldWithPath("comment.status").description("상태"),
-								fieldWithPath("comment.createdAt").description("생성 일자"),
-								fieldWithPath("comment.modifiedAt").description("수정 일자"),
-								fieldWithPath("comment.modifiedBy").description("수정자"),
-								//// comment.member
-								fieldWithPath("comment.member").description("댓글 작성자"),
-								fieldWithPath("comment.member.createdAt").description("생성 일자"),
-								fieldWithPath("comment.member.modifiedAt").description("수정 일자"),
-								fieldWithPath("comment.member.modifiedBy").description("수정자"),
-								fieldWithPath("comment.member.id").description("회원 번호"),
-								fieldWithPath("comment.member.username").description("아이디"),
-								fieldWithPath("comment.member.nickname").description("닉네임"),
-								fieldWithPath("comment.member.password").description("암호화 비밀번호"),
-								fieldWithPath("comment.member.phone").description("연락처"),
-								fieldWithPath("comment.member.birthDate").description("생년월일"),
-								fieldWithPath("comment.member.status").description("상태"),
-								fieldWithPath("comment.member.role").description("권한"),
-								fieldWithPath("comment.member.image").description("회원 이미지"),
-								fieldWithPath("comment.member.image.imageOriginalName").description(
-										"원본 파일 이름"),
-								fieldWithPath("comment.member.image.imageStoreName").description(
-										"저장 파일 이름"),
-								fieldWithPath("comment.member.image.imagePath").description(
-										"파일 경로"),
-								fieldWithPath("comment.member.loginType").description("로그인 타입"),
-								//// comment.feed
-								fieldWithPath("comment.feed").description("댓글 관련 피드"),
-								fieldWithPath("comment.feed.createdAt").description("생성 일자"),
-								fieldWithPath("comment.feed.modifiedAt").description("수정 일자"),
-								fieldWithPath("comment.feed.modifiedBy").description("수정자"),
-								fieldWithPath("comment.feed.id").description("피드 번호"),
-								fieldWithPath("comment.feed.title").description("피드 제목"),
-								fieldWithPath("comment.feed.content").description("피드 내용"),
-								fieldWithPath("comment.feed.hits").description("조회수"),
-								fieldWithPath("comment.feed.commentCount").description("댓글 개수"),
-								fieldWithPath("comment.feed.status").description("상태"),
-								////// comment.feed.memberDto
-								fieldWithPath("comment.feed.member").description("피드 작성자"),
-								fieldWithPath("comment.feed.member.id").description("회원 번호"),
-								fieldWithPath("comment.feed.member.username").description("아이디"),
-								fieldWithPath("comment.feed.member.nickname").description("닉네임"),
-								fieldWithPath("comment.feed.member.image").description("회원 이미지"),
-								fieldWithPath("comment.feed.member.image.imageOriginalName")
+								fieldWithPath("member.image.imageOriginalName")
 										.description("원본 파일 이름"),
-								fieldWithPath("comment.feed.member.image.imageStoreName")
+								fieldWithPath("member.image.imageStoreName")
 										.description("저장 파일 이름"),
-								fieldWithPath("comment.feed.member.image.imagePath")
-										.description("파일 경로")
+								fieldWithPath("member.image.imagePath").description("파일 경로"),
+								fieldWithPath("content").description("댓글 내용"),
+								fieldWithPath("status").description("댓글 상태"),
+								fieldWithPath("createdAt").description("작성 일자"),
+								fieldWithPath("modifiedAt").description("수정 일자"),
+								fieldWithPath("modifiedBy").description("수정자")
 						)
 				));
 	}
@@ -692,7 +508,8 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 	@Test
 	void deleteComment() throws Exception {
 		// given
-		MemberDto memberDto = memberPrincipalDetails.getMemberDto();
+		MemberSimpleResponse memberSimpleResponse = createMemberSimpleResponse(
+				memberPrincipalDetails.getMemberDto());
 
 		BasicComment basicComment = BasicComment.builder()
 				.id(1L)
@@ -700,12 +517,12 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 				.groupId(1L)
 				.parentId(1L)
 				.parentMember("parentCommentWriter")
-				.member(memberDto)
+				.member(memberSimpleResponse)
 				.content("testContent")
 				.status(CommentStatus.DELETE)
 				.createdAt(LocalDateTime.now())
 				.modifiedAt(LocalDateTime.now())
-				.modifiedBy(memberDto.getUsername())
+				.modifiedBy(memberSimpleResponse.getUsername())
 				.build();
 
 		given(commentService.deleteComment(any(Long.class), any()))
@@ -728,37 +545,36 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 								parameterWithName("commentId").description("댓글 번호")
 						),
 						responseFields(
-								fieldWithPath("createdAt").description("작성 일자"),
-								fieldWithPath("modifiedAt").description("수정 일자"),
-								fieldWithPath("modifiedBy").description("수정자"),
-								fieldWithPath("createdAt").description("작성 일자"),
 								fieldWithPath("id").description("댓글 번호"),
 								fieldWithPath("feedId").description("피드 번호"),
 								fieldWithPath("groupId").description("그룹 댓글 번호"),
 								fieldWithPath("parentId").description("부모 댓글 번호"),
 								fieldWithPath("parentMember").description("부모 댓글 작성자 닉네임"),
-								fieldWithPath("content").description("댓글 내용"),
-								fieldWithPath("status").description("댓글 상태"),
 								fieldWithPath("member").description("댓글 작성자"),
-								fieldWithPath("member.createdAt").description("생성 일자"),
-								fieldWithPath("member.modifiedAt").description("수정 일자"),
-								fieldWithPath("member.modifiedBy").description("수정자"),
 								fieldWithPath("member.id").description("회원 번호"),
 								fieldWithPath("member.username").description("아이디"),
 								fieldWithPath("member.nickname").description("닉네임"),
-								fieldWithPath("member.password").description("암호화 비밀번호"),
-								fieldWithPath("member.phone").description("연락처"),
-								fieldWithPath("member.birthDate").description("생년월일"),
-								fieldWithPath("member.status").description("상태"),
-								fieldWithPath("member.role").description("권한"),
 								fieldWithPath("member.image").description("회원 이미지"),
-								fieldWithPath("member.image.imageOriginalName").description(
-										"원본 파일 이름"),
-								fieldWithPath("member.image.imageStoreName").description(
-										"저장 파일 이름"),
+								fieldWithPath("member.image.imageOriginalName")
+										.description("원본 파일 이름"),
+								fieldWithPath("member.image.imageStoreName")
+										.description("저장 파일 이름"),
 								fieldWithPath("member.image.imagePath").description("파일 경로"),
-								fieldWithPath("member.loginType").description("로그인 타입")
+								fieldWithPath("content").description("댓글 내용"),
+								fieldWithPath("status").description("댓글 상태"),
+								fieldWithPath("createdAt").description("작성 일자"),
+								fieldWithPath("modifiedAt").description("수정 일자"),
+								fieldWithPath("modifiedBy").description("수정자")
 						)
 				));
+	}
+
+	private static MemberSimpleResponse createMemberSimpleResponse(MemberDto memberDto) {
+		return MemberSimpleResponse.builder()
+				.id(memberDto.getId())
+				.username(memberDto.getUsername())
+				.nickname(memberDto.getNickname())
+				.image(memberDto.getImage())
+				.build();
 	}
 }
