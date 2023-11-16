@@ -39,7 +39,6 @@ include::{snippets}/modified-feed/response-fields.adoc[]
 === 피드 신고
 ==== HTTP Request
 include::{snippets}/accuse-feed/http-request.adoc[]
-include::{snippets}/accuse-feed/path-parameters.adoc[]
 include::{snippets}/accuse-feed/request-fields.adoc[]
 ==== HTTP Response
 include::{snippets}/accuse-feed/http-response.adoc[]

@@ -20,7 +20,6 @@ include::{snippets}/get-feeds-accuses-for-admin/response-fields.adoc[]
 === 관리자용 피드 상태 변경
 ==== HTTP Request
 include::{snippets}/change-feed-status-for-admin/http-request.adoc[]
-include::{snippets}/change-feed-status-for-admin/path-parameters.adoc[]
 include::{snippets}/change-feed-status-for-admin/request-fields.adoc[]
 ==== HTTP Response
 include::{snippets}/change-feed-status-for-admin/http-response.adoc[]
@@ -39,7 +38,6 @@ include::{snippets}/get-members-for-admin/response-fields.adoc[]
 === 관리자용 회원 상태 변경
 ==== HTTP Request
 include::{snippets}/change-member-status-for-admin/http-request.adoc[]
-include::{snippets}/change-member-status-for-admin/path-parameters.adoc[]
 include::{snippets}/change-member-status-for-admin/request-fields.adoc[]
 ==== HTTP Response
 include::{snippets}/change-member-status-for-admin/http-response.adoc[]
@@ -67,7 +65,6 @@ include::{snippets}/get-comment-accuses-for-admin/response-fields.adoc[]
 === 관리자용 댓글 상태 변경
 ==== HTTP Request
 include::{snippets}/change-comment-status-for-admin/http-request.adoc[]
-include::{snippets}/change-comment-status-for-admin/path-parameters.adoc[]
 include::{snippets}/change-comment-status-for-admin/request-fields.adoc[]
 ==== HTTP Response
 include::{snippets}/change-comment-status-for-admin/http-response.adoc[]

@@ -38,7 +38,6 @@ include::{snippets}/modified-comment/response-fields.adoc[]
 === 댓글 신고
 ==== HTTP Request
 include::{snippets}/accuse-comment/http-request.adoc[]
-include::{snippets}/accuse-comment/path-parameters.adoc[]
 include::{snippets}/accuse-comment/request-fields.adoc[]
 ==== HTTP Response
 include::{snippets}/accuse-comment/http-response.adoc[]
