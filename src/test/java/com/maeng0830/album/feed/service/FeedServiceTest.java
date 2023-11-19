@@ -33,6 +33,8 @@ import com.maeng0830.album.feed.repository.FeedRepository;
 import com.maeng0830.album.follow.domain.Follow;
 import com.maeng0830.album.follow.repository.FollowRepository;
 import com.maeng0830.album.member.domain.Member;
+import com.maeng0830.album.member.domain.MemberRole;
+import com.maeng0830.album.member.domain.MemberStatus;
 import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.repository.MemberRepository;
 import com.maeng0830.album.support.ServiceTestSupport;
@@ -771,12 +773,16 @@ class FeedServiceTest extends ServiceTestSupport {
 				.containsExactlyInAnyOrder(feed.getId(), ACCUSE);
 	}
 
-	@DisplayName("피드를 특정 상태로 변경할 수 있다.")
+	@DisplayName("관리자는 피드를 특정 상태로 변경할 수 있다.")
 	@CsvSource({"NORMAL", "ACCUSE", "DELETE"})
 	@ParameterizedTest
 	void changeFeedStatus(FeedStatus feedStatus) {
 		// given
 		// member 세팅
+		MemberDto memberDto = MemberDto.builder()
+				.role(ROLE_ADMIN)
+				.build();
+
 		Member writer = Member.builder()
 				.username("writer")
 				.build();
@@ -797,7 +803,7 @@ class FeedServiceTest extends ServiceTestSupport {
 				.build();
 
 		// when
-		FeedDto feedDto = feedService.changeFeedStatus(feedChangeStatusForm);
+		FeedDto feedDto = feedService.changeFeedStatus(memberDto, feedChangeStatusForm);
 
 		// then
 		assertThat(feedDto)

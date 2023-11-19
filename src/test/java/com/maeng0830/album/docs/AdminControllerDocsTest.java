@@ -34,6 +34,7 @@ import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.dto.request.MemberChangeStatusForm;
 import com.maeng0830.album.member.dto.response.MemberSimpleResponse;
 import com.maeng0830.album.security.dto.LoginType;
+import com.maeng0830.album.security.formlogin.PrincipalDetails;
 import com.maeng0830.album.support.DocsTestSupport;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -306,7 +307,7 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 				.modifiedBy(feedWriter.getUsername())
 				.build();
 
-		given(feedService.changeFeedStatus(any(FeedChangeStatusForm.class)))
+		given(feedService.changeFeedStatus(any(), any(FeedChangeStatusForm.class)))
 				.willReturn(
 						feedDto
 				);
@@ -492,7 +493,7 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 				.modifiedBy("member@naver.com")
 				.build();
 
-		given(memberService.changeMemberStatus(any(MemberChangeStatusForm.class)))
+		given(memberService.changeMemberStatus(any(), any(MemberChangeStatusForm.class)))
 				.willReturn(
 						memberDto
 				);
@@ -754,7 +755,7 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 				.modifiedBy(writer.getUsername())
 				.build();
 
-		given(commentService.changeCommentStatus(any(CommentChangeStatusForm.class)))
+		given(commentService.changeCommentStatus(any(), any(CommentChangeStatusForm.class)))
 				.willReturn(
 						basicComment
 				);
