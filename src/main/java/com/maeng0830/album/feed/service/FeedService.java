@@ -34,6 +34,7 @@ import com.maeng0830.album.follow.repository.FollowRepository;
 import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.dto.MemberDto;
+import com.maeng0830.album.member.exception.MemberExceptionCode;
 import com.maeng0830.album.member.repository.MemberRepository;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -319,7 +320,15 @@ public class FeedService {
 	// 피드 상태 변경
 	@CacheEvict(value = "feed", key = "#feedChangeStatusForm.getId()")
 	@Transactional
-	public FeedDto changeFeedStatus(FeedChangeStatusForm feedChangeStatusForm) {
+	public FeedDto changeFeedStatus(MemberDto memberDto, FeedChangeStatusForm feedChangeStatusForm) {
+		if (memberDto == null) {
+			throw new AlbumException(REQUIRED_LOGIN);
+		} else {
+			if (memberDto.getRole() != ROLE_ADMIN) {
+				throw new AlbumException(NO_AUTHORITY);
+			}
+		}
+
 		Feed findFeed = feedRepository.findById(feedChangeStatusForm.getId())
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_FEED));
 

@@ -23,6 +23,7 @@ import com.maeng0830.album.common.filedir.FileDir;
 import com.maeng0830.album.common.image.DefaultImage;
 import com.maeng0830.album.common.model.image.Image;
 import com.maeng0830.album.member.domain.Member;
+import com.maeng0830.album.member.domain.MemberRole;
 import com.maeng0830.album.member.domain.MemberStatus;
 import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.dto.request.MemberChangeStatusForm;
@@ -605,11 +606,15 @@ class MemberServiceTest extends ServiceTestSupport {
 		// then
 	}
 
-	@DisplayName("회원 상태를 수정할 수 있다.")
+	@DisplayName("관리자는 회원 상태를 수정할 수 있다.")
 	@CsvSource({"FIRST", "NORMAL", "LOCKED", "WITHDRAW"})
 	@ParameterizedTest
 	public void changeMemberStatus(MemberStatus status) {
 		//given
+		MemberDto memberDto = MemberDto.builder()
+				.role(ROLE_ADMIN)
+				.build();
+
 		Member member = Member.builder()
 				.build();
 		memberRepository.save(member);
@@ -621,7 +626,7 @@ class MemberServiceTest extends ServiceTestSupport {
 				.build();
 
 		//when
-		MemberDto result = memberService.changeMemberStatus(memberChangeStatusForm);
+		MemberDto result = memberService.changeMemberStatus(memberDto, memberChangeStatusForm);
 
 		//then
 		assertThat(result.getId()).isEqualTo(member.getId());

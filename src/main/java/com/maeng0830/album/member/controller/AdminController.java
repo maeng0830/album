@@ -39,49 +39,63 @@ public class AdminController {
 
 	// Feed
 	@GetMapping("/feeds")
-	public Page<FeedResponse> getFeedsForAdmin(@AuthenticationPrincipal PrincipalDetails principalDetails,
-											   String searchText, Pageable pageable) {
-		return feedService.getFeedsForAdmin(albumUtil.checkLogin(principalDetails), searchText, pageable);
+	public Page<FeedResponse> getFeedsForAdmin(
+			@AuthenticationPrincipal PrincipalDetails principalDetails,
+			String searchText, Pageable pageable) {
+		return feedService.getFeedsForAdmin(albumUtil.checkLogin(principalDetails), searchText,
+				pageable);
 	}
 
 	@GetMapping("/feeds/{feedId}/accuses")
-	public List<FeedAccuseResponse> getFeedAccuses(@AuthenticationPrincipal PrincipalDetails principalDetails,
-												   @PathVariable Long feedId) {
+	public List<FeedAccuseResponse> getFeedAccuses(
+			@AuthenticationPrincipal PrincipalDetails principalDetails,
+			@PathVariable Long feedId) {
 		return feedService.getFeedAccuses(albumUtil.checkLogin(principalDetails), feedId);
 	}
 
 	@PutMapping("/feeds/status")
-	public FeedDto changeFeedStatus(@Valid @RequestBody FeedChangeStatusForm feedChangeStatusForm) {
-		return feedService.changeFeedStatus(feedChangeStatusForm);
+	public FeedDto changeFeedStatus(@AuthenticationPrincipal PrincipalDetails principalDetails,
+									@Valid @RequestBody FeedChangeStatusForm feedChangeStatusForm) {
+		return feedService.changeFeedStatus(albumUtil.checkLogin(principalDetails),
+				feedChangeStatusForm);
 	}
 
 	// Member
 	@GetMapping("/members")
-	public Page<MemberDto> getMembersForAdmin(@AuthenticationPrincipal PrincipalDetails principalDetails,
-											  String searchText, Pageable pageable) {
-		return memberService.getMembersForAdmin(albumUtil.checkLogin(principalDetails), searchText, pageable);
+	public Page<MemberDto> getMembersForAdmin(
+			@AuthenticationPrincipal PrincipalDetails principalDetails,
+			String searchText, Pageable pageable) {
+		return memberService.getMembersForAdmin(albumUtil.checkLogin(principalDetails), searchText,
+				pageable);
 	}
 
 	@PutMapping("/members/status")
-	public MemberDto changeMemberStatus(@Valid @RequestBody MemberChangeStatusForm memberChangeStatusForm) {
-		return memberService.changeMemberStatus(memberChangeStatusForm);
+	public MemberDto changeMemberStatus(
+			@AuthenticationPrincipal PrincipalDetails principalDetails,
+			@Valid @RequestBody MemberChangeStatusForm memberChangeStatusForm) {
+		return memberService.changeMemberStatus(albumUtil.checkLogin(principalDetails), memberChangeStatusForm);
 	}
 
 	// Comment
 	@GetMapping("/comments")
-	public Page<BasicComment> getCommentsForAdmin(@AuthenticationPrincipal PrincipalDetails principalDetails,
-												  String searchText, Pageable pageable) {
-		return commentService.getCommentsForAdmin(albumUtil.checkLogin(principalDetails), searchText, pageable);
+	public Page<BasicComment> getCommentsForAdmin(
+			@AuthenticationPrincipal PrincipalDetails principalDetails,
+			String searchText, Pageable pageable) {
+		return commentService.getCommentsForAdmin(albumUtil.checkLogin(principalDetails),
+				searchText, pageable);
 	}
 
 	@GetMapping("/comments/{commentId}/accuses")
-	public List<CommentAccuseResponse> getCommentAccuses(@AuthenticationPrincipal PrincipalDetails principalDetails,
-														 @PathVariable Long commentId) {
+	public List<CommentAccuseResponse> getCommentAccuses(
+			@AuthenticationPrincipal PrincipalDetails principalDetails,
+			@PathVariable Long commentId) {
 		return commentService.getCommentAccuses(albumUtil.checkLogin(principalDetails), commentId);
 	}
 
 	@PutMapping("/comments/status")
-	public BasicComment changeCommentStatus(@Valid @RequestBody CommentChangeStatusForm commentChangeStatusForm) {
-		return commentService.changeCommentStatus(commentChangeStatusForm);
+	public BasicComment changeCommentStatus(
+			@AuthenticationPrincipal PrincipalDetails principalDetails,
+			@Valid @RequestBody CommentChangeStatusForm commentChangeStatusForm) {
+		return commentService.changeCommentStatus(albumUtil.checkLogin(principalDetails), commentChangeStatusForm);
 	}
 }

@@ -1,5 +1,6 @@
 package com.maeng0830.album.member.service;
 
+import static com.maeng0830.album.member.domain.MemberRole.*;
 import static com.maeng0830.album.member.domain.MemberStatus.*;
 import static com.maeng0830.album.member.domain.MemberStatus.FIRST;
 import static com.maeng0830.album.member.domain.MemberStatus.LOCKED;
@@ -82,7 +83,7 @@ public class MemberService {
 				.password(passwordEncoder.encode(memberJoinForm.getPassword()))
 				.phone(memberJoinForm.getPhone())
 				.status(FIRST)
-				.role(MemberRole.ROLE_MEMBER)
+				.role(ROLE_MEMBER)
 				.loginType(LoginType.FORM)
 				.image(Image.createDefaultImage(fileDir, defaultImage.getMemberImage()))
 				.build();
@@ -134,7 +135,7 @@ public class MemberService {
 											  Pageable pageable) {
 		// 로그인 상태 및 권한 확인
 		if (memberDto != null) {
-			if (memberDto.getRole() != MemberRole.ROLE_ADMIN) {
+			if (memberDto.getRole() != ROLE_ADMIN) {
 				throw new AlbumException(NO_AUTHORITY);
 			}
 		} else {
@@ -246,7 +247,15 @@ public class MemberService {
 	}
 
 	@Transactional
-	public MemberDto changeMemberStatus(MemberChangeStatusForm memberChangeStatusForm) {
+	public MemberDto changeMemberStatus(MemberDto memberDto, MemberChangeStatusForm memberChangeStatusForm) {
+		if (memberDto == null) {
+			throw new AlbumException(REQUIRED_LOGIN);
+		} else {
+			if (memberDto.getRole() != ROLE_ADMIN) {
+				throw new AlbumException(NO_AUTHORITY);
+			}
+		}
+
 		Member findMember = memberRepository.findById(memberChangeStatusForm.getId()).orElseThrow(() -> new AlbumException(
 				NOT_EXIST_MEMBER));
 

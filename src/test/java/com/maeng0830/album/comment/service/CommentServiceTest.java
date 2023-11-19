@@ -486,11 +486,15 @@ class CommentServiceTest extends ServiceTestSupport {
 				.hasMessage(NO_AUTHORITY.getMessage());
 	}
 
-	@DisplayName("댓글을 특정 상태로 변경할 수 있다.")
+	@DisplayName("관리자는 댓글을 특정 상태로 변경할 수 있다.")
 	@CsvSource({"NORMAL", "ACCUSE", "DELETE"})
 	@ParameterizedTest
 	void changeCommentStatus(CommentStatus commentStatus) {
 		// given
+		MemberDto memberDto = MemberDto.builder()
+				.role(ROLE_ADMIN)
+				.build();
+
 		// Member 세팅
 		Member writer = Member.builder()
 				.username("writer")
@@ -520,7 +524,7 @@ class CommentServiceTest extends ServiceTestSupport {
 				.build();
 
 		// when
-		BasicComment result = commentService.changeCommentStatus(commentChangeStatusForm);
+		BasicComment result = commentService.changeCommentStatus(memberDto, commentChangeStatusForm);
 
 		// then
 		assertThat(result).extracting("id", "status")

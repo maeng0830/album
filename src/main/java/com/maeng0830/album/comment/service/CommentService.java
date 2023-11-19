@@ -201,7 +201,15 @@ public class CommentService {
 	}
 
 	@Transactional
-	public BasicComment changeCommentStatus(CommentChangeStatusForm commentChangeStatusForm) {
+	public BasicComment changeCommentStatus(MemberDto memberDto, CommentChangeStatusForm commentChangeStatusForm) {
+		if (memberDto == null) {
+			throw new AlbumException(REQUIRED_LOGIN);
+		} else {
+			if (memberDto.getRole() != ROLE_ADMIN) {
+				throw new AlbumException(NO_AUTHORITY);
+			}
+		}
+
 		Comment findComment = commentRepository.findById(commentChangeStatusForm.getId())
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_COMMENT));
 
