@@ -15,4 +15,10 @@ public class Pointcuts {
 
 	@Pointcut("allRepository() || allService() || allController()")
 	public void allMatch() {}
+
+	@Pointcut("@annotation(com.maeng0830.album.common.aop.annotation.MemberCheck)")
+	public void checkMember() {};
+
+	@Pointcut("@target(com.maeng0830.album.common.aop.annotation.AdminCheck)")
+	public void checkAdmin() {};
 }
