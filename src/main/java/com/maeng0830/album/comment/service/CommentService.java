@@ -201,15 +201,7 @@ public class CommentService {
 	}
 
 	@Transactional
-	public BasicComment changeCommentStatus(MemberDto memberDto, CommentChangeStatusForm commentChangeStatusForm) {
-		if (memberDto == null) {
-			throw new AlbumException(REQUIRED_LOGIN);
-		} else {
-			if (memberDto.getRole() != ROLE_ADMIN) {
-				throw new AlbumException(NO_AUTHORITY);
-			}
-		}
-
+	public BasicComment changeCommentStatus(CommentChangeStatusForm commentChangeStatusForm) {
 		Comment findComment = commentRepository.findById(commentChangeStatusForm.getId())
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_COMMENT));
 
@@ -218,17 +210,7 @@ public class CommentService {
 		return BasicComment.from(findComment);
 	}
 
-	public Page<BasicComment> getCommentsForAdmin(MemberDto memberDto, String searchText,
-												  Pageable pageable) {
-		// 로그인 및 권한 확인
-		if (memberDto != null) {
-			if (memberDto.getRole() != ROLE_ADMIN) {
-				throw new AlbumException(NO_AUTHORITY);
-			}
-		} else {
-			throw new AlbumException(REQUIRED_LOGIN);
-		}
-
+	public Page<BasicComment> getCommentsForAdmin(String searchText, Pageable pageable) {
 		// 데이터 조회 조건 생성
 		PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
 				Sort.by(Order.asc("status"), Order.desc("createdAt")));
@@ -240,16 +222,7 @@ public class CommentService {
 		return comments.map(BasicComment::from);
 	}
 
-	public List<CommentAccuseResponse> getCommentAccuses(MemberDto memberDto, Long commentId) {
-		// 로그인 및 권한 확인
-		if (memberDto != null) {
-			if (memberDto.getRole() != ROLE_ADMIN) {
-				throw new AlbumException(NO_AUTHORITY);
-			}
-		} else {
-			throw new AlbumException(REQUIRED_LOGIN);
-		}
-
+	public List<CommentAccuseResponse> getCommentAccuses(Long commentId) {
 		// 데이터 조회
 		List<CommentAccuse> commentAccuses = commentAccuseRepository.findCommentAccuseByComment_Id(commentId);
 

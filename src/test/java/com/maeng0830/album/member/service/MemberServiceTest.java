@@ -227,7 +227,7 @@ class MemberServiceTest extends ServiceTestSupport {
 		assertThat(result.getContent().size()).isEqualTo(size);
 	}
 
-	@DisplayName("관리자는 FIRST, NORMAL, LOCKED, WITHDRAW 상태인 회원 목록을 조회할 수 있다. "
+	@DisplayName("FIRST, NORMAL, LOCKED, WITHDRAW 상태인 회원 목록을 조회할 수 있다. "
 			+ "searchText가 null이면 전체 회원 목록을, "
 			+ "null이 아니면 searchText와 username 또는 nickname이 전방 일치하는 회원 목록을 조회한다.")
 	@CsvSource(value = {", 15, 15, 15, 15", "searchUsername, 5, 5, 5, 5",
@@ -308,13 +308,8 @@ class MemberServiceTest extends ServiceTestSupport {
 
 		memberRepository.saveAll(members);
 
-		// 관리자 MemberDto
-		MemberDto adminDto = MemberDto.builder()
-				.role(ROLE_ADMIN)
-				.build();
-
 		//when
-		Page<MemberDto> findMembers = memberService.getMembersForAdmin(adminDto, searchText,
+		Page<MemberDto> findMembers = memberService.getMembersForAdmin(searchText,
 				PageRequest.of(0, 60));
 		List<MemberDto> firstMembers = findMembers.getContent().stream()
 				.filter(m -> m.getStatus().equals(FIRST))
@@ -331,9 +326,9 @@ class MemberServiceTest extends ServiceTestSupport {
 
 		//then
 		assertThat(firstMembers).hasSize(firstSize);
-		assertThat(firstMembers).hasSize(normalSize);
-		assertThat(firstMembers).hasSize(lockedSize);
-		assertThat(firstMembers).hasSize(withdrawSize);
+		assertThat(normalMembers).hasSize(normalSize);
+		assertThat(lockedMembers).hasSize(lockedSize);
+		assertThat(withdrawMembers).hasSize(withdrawSize);
 
 	}
 
@@ -606,15 +601,11 @@ class MemberServiceTest extends ServiceTestSupport {
 		// then
 	}
 
-	@DisplayName("관리자는 회원 상태를 수정할 수 있다.")
+	@DisplayName("회원 상태를 수정할 수 있다.")
 	@CsvSource({"FIRST", "NORMAL", "LOCKED", "WITHDRAW"})
 	@ParameterizedTest
 	public void changeMemberStatus(MemberStatus status) {
 		//given
-		MemberDto memberDto = MemberDto.builder()
-				.role(ROLE_ADMIN)
-				.build();
-
 		Member member = Member.builder()
 				.build();
 		memberRepository.save(member);
@@ -626,7 +617,7 @@ class MemberServiceTest extends ServiceTestSupport {
 				.build();
 
 		//when
-		MemberDto result = memberService.changeMemberStatus(memberDto, memberChangeStatusForm);
+		MemberDto result = memberService.changeMemberStatus(memberChangeStatusForm);
 
 		//then
 		assertThat(result.getId()).isEqualTo(member.getId());

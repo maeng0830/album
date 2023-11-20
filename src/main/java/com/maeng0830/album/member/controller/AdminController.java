@@ -4,6 +4,7 @@ import com.maeng0830.album.comment.dto.request.CommentChangeStatusForm;
 import com.maeng0830.album.comment.dto.response.BasicComment;
 import com.maeng0830.album.comment.dto.response.CommentAccuseResponse;
 import com.maeng0830.album.comment.service.CommentService;
+import com.maeng0830.album.common.aop.annotation.AdminCheck;
 import com.maeng0830.album.common.util.AlbumUtil;
 import com.maeng0830.album.feed.dto.FeedDto;
 import com.maeng0830.album.feed.dto.request.FeedChangeStatusForm;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@AdminCheck
 @RestController
 @RequestMapping("/admin")
 @RequiredArgsConstructor
@@ -35,29 +37,26 @@ public class AdminController {
 	private final MemberService memberService;
 	private final FeedService feedService;
 	private final CommentService commentService;
-	private final AlbumUtil albumUtil;
 
 	// Feed
 	@GetMapping("/feeds")
 	public Page<FeedResponse> getFeedsForAdmin(
 			@AuthenticationPrincipal PrincipalDetails principalDetails,
 			String searchText, Pageable pageable) {
-		return feedService.getFeedsForAdmin(albumUtil.checkLogin(principalDetails), searchText,
-				pageable);
+		return feedService.getFeedsForAdmin(searchText, pageable);
 	}
 
 	@GetMapping("/feeds/{feedId}/accuses")
 	public List<FeedAccuseResponse> getFeedAccuses(
 			@AuthenticationPrincipal PrincipalDetails principalDetails,
 			@PathVariable Long feedId) {
-		return feedService.getFeedAccuses(albumUtil.checkLogin(principalDetails), feedId);
+		return feedService.getFeedAccuses(feedId);
 	}
 
 	@PutMapping("/feeds/status")
 	public FeedDto changeFeedStatus(@AuthenticationPrincipal PrincipalDetails principalDetails,
 									@Valid @RequestBody FeedChangeStatusForm feedChangeStatusForm) {
-		return feedService.changeFeedStatus(albumUtil.checkLogin(principalDetails),
-				feedChangeStatusForm);
+		return feedService.changeFeedStatus(feedChangeStatusForm);
 	}
 
 	// Member
@@ -65,15 +64,14 @@ public class AdminController {
 	public Page<MemberDto> getMembersForAdmin(
 			@AuthenticationPrincipal PrincipalDetails principalDetails,
 			String searchText, Pageable pageable) {
-		return memberService.getMembersForAdmin(albumUtil.checkLogin(principalDetails), searchText,
-				pageable);
+		return memberService.getMembersForAdmin(searchText, pageable);
 	}
 
 	@PutMapping("/members/status")
 	public MemberDto changeMemberStatus(
 			@AuthenticationPrincipal PrincipalDetails principalDetails,
 			@Valid @RequestBody MemberChangeStatusForm memberChangeStatusForm) {
-		return memberService.changeMemberStatus(albumUtil.checkLogin(principalDetails), memberChangeStatusForm);
+		return memberService.changeMemberStatus(memberChangeStatusForm);
 	}
 
 	// Comment
@@ -81,21 +79,20 @@ public class AdminController {
 	public Page<BasicComment> getCommentsForAdmin(
 			@AuthenticationPrincipal PrincipalDetails principalDetails,
 			String searchText, Pageable pageable) {
-		return commentService.getCommentsForAdmin(albumUtil.checkLogin(principalDetails),
-				searchText, pageable);
+		return commentService.getCommentsForAdmin(searchText, pageable);
 	}
 
 	@GetMapping("/comments/{commentId}/accuses")
 	public List<CommentAccuseResponse> getCommentAccuses(
 			@AuthenticationPrincipal PrincipalDetails principalDetails,
 			@PathVariable Long commentId) {
-		return commentService.getCommentAccuses(albumUtil.checkLogin(principalDetails), commentId);
+		return commentService.getCommentAccuses(commentId);
 	}
 
 	@PutMapping("/comments/status")
 	public BasicComment changeCommentStatus(
 			@AuthenticationPrincipal PrincipalDetails principalDetails,
 			@Valid @RequestBody CommentChangeStatusForm commentChangeStatusForm) {
-		return commentService.changeCommentStatus(albumUtil.checkLogin(principalDetails), commentChangeStatusForm);
+		return commentService.changeCommentStatus(commentChangeStatusForm);
 	}
 }

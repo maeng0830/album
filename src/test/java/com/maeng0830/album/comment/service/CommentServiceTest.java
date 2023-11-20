@@ -486,15 +486,11 @@ class CommentServiceTest extends ServiceTestSupport {
 				.hasMessage(NO_AUTHORITY.getMessage());
 	}
 
-	@DisplayName("관리자는 댓글을 특정 상태로 변경할 수 있다.")
+	@DisplayName("댓글을 특정 상태로 변경할 수 있다.")
 	@CsvSource({"NORMAL", "ACCUSE", "DELETE"})
 	@ParameterizedTest
 	void changeCommentStatus(CommentStatus commentStatus) {
 		// given
-		MemberDto memberDto = MemberDto.builder()
-				.role(ROLE_ADMIN)
-				.build();
-
 		// Member 세팅
 		Member writer = Member.builder()
 				.username("writer")
@@ -524,24 +520,20 @@ class CommentServiceTest extends ServiceTestSupport {
 				.build();
 
 		// when
-		BasicComment result = commentService.changeCommentStatus(memberDto, commentChangeStatusForm);
+		BasicComment result = commentService.changeCommentStatus(commentChangeStatusForm);
 
 		// then
 		assertThat(result).extracting("id", "status")
 				.containsExactlyInAnyOrder(comment.getId(), commentStatus);
 	}
 
-	@DisplayName("관리자인 경우, searchText가 작성자의 username 또는 nickname과 전방 일치하는 댓글을 조회할 수 있다."
+	@DisplayName("searchText가 작성자의 username 또는 nickname과 전방 일치하는 댓글을 조회할 수 있다."
 			+ "searchText가 null인 경우, 모든 댓글이 조회된다."
 			+ "댓글 상태 기준 신고-정상-삭제 순으로 정렬된다.")
 	@CsvSource(value = {",", "username1", "nickname1", "username2", "nickname2"})
 	@ParameterizedTest
 	void getCommentsForAdmin(String searchText) {
 		// given
-		// 관리자 세팅
-		Member admin = Member.builder()
-				.role(ROLE_ADMIN)
-				.build();
 		// 작성자 세팅
 		Member writer1 = Member.builder()
 				.username("username11")
@@ -552,7 +544,7 @@ class CommentServiceTest extends ServiceTestSupport {
 				.nickname("nickname22")
 				.build();
 
-		memberRepository.saveAll(List.of(admin, writer1, writer2));
+		memberRepository.saveAll(List.of(writer1, writer2));
 
 		// 피드 세팅
 		Feed feed = Feed.builder()
@@ -631,8 +623,7 @@ class CommentServiceTest extends ServiceTestSupport {
 		PageRequest pageRequest = PageRequest.of(0, 20);
 
 		// when
-		Page<BasicComment> result = commentService.getCommentsForAdmin(
-				MemberDto.from(admin), searchText, pageRequest);
+		Page<BasicComment> result = commentService.getCommentsForAdmin(searchText, pageRequest);
 
 		// then
 		if (searchText == null) {
@@ -662,32 +653,10 @@ class CommentServiceTest extends ServiceTestSupport {
 		}
 	}
 
-	@DisplayName("관리자가 아닌 경우, searchText가 작성자의 username 또는 nickname과 전방 일치하는 댓글을 조회할 때"
-			+ "예외가 발생한다.")
-	@Test
-	void getCommentsForAdmin_noAdmin() {
-		// given
-		Member noAdmin = Member.builder()
-				.role(ROLE_MEMBER)
-				.build();
-		MemberDto noAdminDto = MemberDto.from(noAdmin);
-
-		// when
-		assertThatThrownBy(() -> commentService.getCommentsForAdmin(noAdminDto, null, null))
-				.isInstanceOf(AlbumException.class)
-				.hasMessage(NO_AUTHORITY.getMessage());
-
-		// then
-	}
-
-	@DisplayName("관리자인 경우, 주어진 댓글아이디에 해당하는 댓글신고 목록을 조회할 수 있다.")
+	@DisplayName("주어진 댓글아이디에 해당하는 댓글신고 목록을 조회할 수 있다.")
 	@Test
 	void getCommentAccuses() {
 		// given
-		// 관리자 세팅
-		Member admin = Member.builder()
-				.role(ROLE_ADMIN)
-				.build();
 		// 작성자 세팅
 		Member feedWriter = Member.builder()
 				.build();
@@ -695,7 +664,7 @@ class CommentServiceTest extends ServiceTestSupport {
 				.build();
 		Member commentAccuseWriter = Member.builder()
 				.build();
-		memberRepository.saveAll(List.of(admin, feedWriter, commentWriter, commentAccuseWriter));
+		memberRepository.saveAll(List.of(feedWriter, commentWriter, commentAccuseWriter));
 
 		// 피드 세팅
 		Feed feed = Feed.builder()
@@ -745,10 +714,8 @@ class CommentServiceTest extends ServiceTestSupport {
 		commentAccuseRepository.saveAll(commentAccuses);
 
 		// when
-		List<CommentAccuseResponse> result1 = commentService.getCommentAccuses(
-				MemberDto.from(admin), comment1.getId());
-		List<CommentAccuseResponse> result2 = commentService.getCommentAccuses(
-				MemberDto.from(admin), comment2.getId());
+		List<CommentAccuseResponse> result1 = commentService.getCommentAccuses(comment1.getId());
+		List<CommentAccuseResponse> result2 = commentService.getCommentAccuses(comment2.getId());
 
 		// then
 		assertThat(result1).hasSize(5)
@@ -763,21 +730,5 @@ class CommentServiceTest extends ServiceTestSupport {
 						comment2.getId(), comment2.getId(), comment2.getId(), comment2.getId(),
 						comment2.getId()
 				);
-	}
-
-	@DisplayName("관리자가 아닌 경우, 주어진 댓글아이디에 해당하는 댓글신고 목록을 조회할 때 예외가 발생한다.")
-	@Test
-	void getCommentAccuses_noAdmin() {
-		// given
-		Member noAdmin = Member.builder()
-				.role(ROLE_MEMBER)
-				.build();
-
-		// when
-		assertThatThrownBy(() -> commentService.getCommentAccuses(MemberDto.from(noAdmin), null))
-				.isInstanceOf(AlbumException.class)
-				.hasMessage(NO_AUTHORITY.getMessage());
-
-		// then
 	}
 }
