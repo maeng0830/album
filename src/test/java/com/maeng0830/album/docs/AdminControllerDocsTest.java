@@ -127,7 +127,7 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 
 		Page<FeedResponse> feedResponsePage = new PageImpl<>(feedResponses, pageRequest, 3);
 
-		given(feedService.getFeedsForAdmin(any(), any(String.class), any(Pageable.class)))
+		given(feedService.getFeedsForAdmin(any(String.class), any(Pageable.class)))
 				.willReturn(
 						feedResponsePage
 				);
@@ -250,7 +250,7 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 
 		List<FeedAccuseResponse> feedAccuseResponses = List.of(feedAccuseResponse);
 
-		given(feedService.getFeedAccuses(any(), any(Long.class)))
+		given(feedService.getFeedAccuses(any(Long.class)))
 				.willReturn(
 						feedAccuseResponses
 				);
@@ -307,7 +307,7 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 				.modifiedBy(feedWriter.getUsername())
 				.build();
 
-		given(feedService.changeFeedStatus(any(), any(FeedChangeStatusForm.class)))
+		given(feedService.changeFeedStatus(any(FeedChangeStatusForm.class)))
 				.willReturn(
 						feedDto
 				);
@@ -396,7 +396,7 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 
 		Page<MemberDto> memberDtoPage = new PageImpl<>(memberDtos, pageRequest, 4);
 
-		given(memberService.getMembersForAdmin(any(), any(String.class), any(Pageable.class)))
+		given(memberService.getMembersForAdmin(any(String.class), any(Pageable.class)))
 				.willReturn(
 						memberDtoPage
 				);
@@ -493,7 +493,7 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 				.modifiedBy("member@naver.com")
 				.build();
 
-		given(memberService.changeMemberStatus(any(), any(MemberChangeStatusForm.class)))
+		given(memberService.changeMemberStatus(any(MemberChangeStatusForm.class)))
 				.willReturn(
 						memberDto
 				);
@@ -606,7 +606,7 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 
 		Page<BasicComment> basicCommentPage = new PageImpl<>(basicComments, pageRequest, 3);
 
-		given(commentService.getCommentsForAdmin(any(), any(String.class), any(Pageable.class)))
+		given(commentService.getCommentsForAdmin(any(String.class), any(Pageable.class)))
 				.willReturn(
 						basicCommentPage
 				);
@@ -696,7 +696,7 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 
 		List<CommentAccuseResponse> commentAccuseResponses = List.of(commentAccuseResponse);
 
-		given(commentService.getCommentAccuses(any(), any(Long.class)))
+		given(commentService.getCommentAccuses(any(Long.class)))
 				.willReturn(
 						commentAccuseResponses
 				);
@@ -755,7 +755,7 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 				.modifiedBy(writer.getUsername())
 				.build();
 
-		given(commentService.changeCommentStatus(any(), any(CommentChangeStatusForm.class)))
+		given(commentService.changeCommentStatus(any(CommentChangeStatusForm.class)))
 				.willReturn(
 						basicComment
 				);

@@ -301,7 +301,7 @@ class FeedServiceTest extends ServiceTestSupport {
 		}
 	}
 
-	@DisplayName("관리자인 경우, searchText와 작성자 username 또는 nickname이 전방 일치하는 피드를 조회할 수 있다."
+	@DisplayName("searchText와 작성자 username 또는 nickname이 전방 일치하는 피드를 조회할 수 있다."
 			+ "searchText가 null인 경우, 모든 피드를 조회한다."
 			+ "피드 상태 기준, 신고-정상-신고 순으로 정렬된다.")
 	@CsvSource(value = {",", "username1", "nickname1", "username2", "nickname2", "username3",
@@ -309,11 +309,6 @@ class FeedServiceTest extends ServiceTestSupport {
 	@ParameterizedTest
 	void getFeedsForAdmin(String searchText) {
 		// given
-		// 로그인 멤버 세팅
-		Member admin = Member.builder()
-				.role(ROLE_ADMIN)
-				.build();
-
 		// 피드 작성자 세팅
 		Member member1 = Member.builder()
 				.username("username11")
@@ -327,7 +322,7 @@ class FeedServiceTest extends ServiceTestSupport {
 				.username("username33")
 				.nickname("nickname33")
 				.build();
-		memberRepository.saveAll(List.of(admin, member1, member2, member3));
+		memberRepository.saveAll(List.of(member1, member2, member3));
 
 		// 피드 세팅
 		List<Feed> feeds = new ArrayList<>();
@@ -360,8 +355,7 @@ class FeedServiceTest extends ServiceTestSupport {
 		PageRequest pageRequest = PageRequest.of(0, 20);
 
 		// when
-		Page<FeedResponse> result = feedService.getFeedsForAdmin(MemberDto.from(admin),
-				searchText, pageRequest);
+		Page<FeedResponse> result = feedService.getFeedsForAdmin(searchText, pageRequest);
 
 		// then
 		if (searchText == null) {
@@ -415,27 +409,6 @@ class FeedServiceTest extends ServiceTestSupport {
 							tuple(member3.getUsername(), member3.getNickname(), DELETE)
 					);
 		}
-	}
-
-	@DisplayName("관리자가 아닌 경우, "
-			+ "searchText와 작성자 username 또는 nickname이 전방 일치하는 피드를 조회하고자 시도할 때"
-			+ "예외가 발생한다.")
-	@Test
-	void getFeedsForAdmin_noAdmin() {
-		// given
-		Member noAdmin = Member.builder()
-				.role(ROLE_MEMBER)
-				.build();
-		MemberDto noAdminDto = MemberDto.from(noAdmin);
-
-		PageRequest pageRequest = PageRequest.of(0, 20);
-
-		// when
-		assertThatThrownBy(() -> feedService.getFeedsForAdmin(noAdminDto, null, pageRequest))
-				.isInstanceOf(AlbumException.class)
-				.hasMessage(NO_AUTHORITY.getMessage());
-
-		// then
 	}
 
 	@DisplayName("피드 아이디를 통해 해당하는 피드를 조회할 수 있다")
@@ -773,16 +746,12 @@ class FeedServiceTest extends ServiceTestSupport {
 				.containsExactlyInAnyOrder(feed.getId(), ACCUSE);
 	}
 
-	@DisplayName("관리자는 피드를 특정 상태로 변경할 수 있다.")
+	@DisplayName("피드를 특정 상태로 변경할 수 있다.")
 	@CsvSource({"NORMAL", "ACCUSE", "DELETE"})
 	@ParameterizedTest
 	void changeFeedStatus(FeedStatus feedStatus) {
 		// given
 		// member 세팅
-		MemberDto memberDto = MemberDto.builder()
-				.role(ROLE_ADMIN)
-				.build();
-
 		Member writer = Member.builder()
 				.username("writer")
 				.build();
@@ -803,7 +772,7 @@ class FeedServiceTest extends ServiceTestSupport {
 				.build();
 
 		// when
-		FeedDto feedDto = feedService.changeFeedStatus(memberDto, feedChangeStatusForm);
+		FeedDto feedDto = feedService.changeFeedStatus(feedChangeStatusForm);
 
 		// then
 		assertThat(feedDto)
@@ -812,23 +781,17 @@ class FeedServiceTest extends ServiceTestSupport {
 	}
 
 
-	@DisplayName("관리자인 경우, 특정 피드의 신고 내역을 조회할 수 있다.")
+	@DisplayName("특정 피드의 신고 내역을 조회할 수 있다.")
 	@Test
 	void getFeedAccuses() {
 		// given
-		// 관리자 세팅
-		Member admin = Member.builder()
-				.role(ROLE_ADMIN)
-				.build();
-
 		// 작성자 및 신고자 세팅
 		Member writer = Member.builder()
 				.build();
 		Member accuser = Member.builder()
 				.build();
 
-		memberRepository.saveAll(List.of(admin, writer, accuser));
-		MemberDto adminDto = MemberDto.from(admin);
+		memberRepository.saveAll(List.of(writer, accuser));
 
 		// 피드 세팅
 		Feed feed1 = Feed.builder()
@@ -863,8 +826,8 @@ class FeedServiceTest extends ServiceTestSupport {
 		feedAccuseRepository.saveAll(feedAccuses);
 
 		// when
-		List<FeedAccuseResponse> result1 = feedService.getFeedAccuses(adminDto, feed1.getId());
-		List<FeedAccuseResponse> result2 = feedService.getFeedAccuses(adminDto, feed2.getId());
+		List<FeedAccuseResponse> result1 = feedService.getFeedAccuses(feed1.getId());
+		List<FeedAccuseResponse> result2 = feedService.getFeedAccuses(feed2.getId());
 
 		// then
 		assertThat(result1).hasSize(5)
@@ -877,23 +840,6 @@ class FeedServiceTest extends ServiceTestSupport {
 				.containsExactlyInAnyOrder(
 						feed2.getId(), feed2.getId(), feed2.getId(), feed2.getId(), feed2.getId()
 				);
-	}
-
-	@DisplayName("관리자가 아닌 경우, 특정 피드의 신고내역을 조회할 때 예외가 발생한다.")
-	@Test
-	void getFeedAccuses_noAdmin() {
-		// given
-		Member noAdmin = Member.builder()
-				.role(ROLE_MEMBER)
-				.build();
-		MemberDto noAdminDto = MemberDto.from(noAdmin);
-
-		// when
-		assertThatThrownBy(() -> feedService.getFeedAccuses(noAdminDto, 1L))
-				.isInstanceOf(AlbumException.class)
-				.hasMessage(NO_AUTHORITY.getMessage());
-
-		// then
 	}
 
 	@DisplayName("로그인한 경우, 본인이 작성한 정상 및 신고 상태의 피드 목록을 조회할 수 있다.")

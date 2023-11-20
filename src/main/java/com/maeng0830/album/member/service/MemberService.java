@@ -131,17 +131,7 @@ public class MemberService {
 	}
 
 	// 관리자용 회원 목록 조회
-	public Page<MemberDto> getMembersForAdmin(MemberDto memberDto, String searchText,
-											  Pageable pageable) {
-		// 로그인 상태 및 권한 확인
-		if (memberDto != null) {
-			if (memberDto.getRole() != ROLE_ADMIN) {
-				throw new AlbumException(NO_AUTHORITY);
-			}
-		} else {
-			throw new AlbumException(REQUIRED_LOGIN);
-		}
-
+	public Page<MemberDto> getMembersForAdmin(String searchText, Pageable pageable) {
 		// 데이터 조회 조건 설정
 		List<MemberStatus> statuses = List.of(FIRST, NORMAL, LOCKED, WITHDRAW);
 
@@ -247,15 +237,7 @@ public class MemberService {
 	}
 
 	@Transactional
-	public MemberDto changeMemberStatus(MemberDto memberDto, MemberChangeStatusForm memberChangeStatusForm) {
-		if (memberDto == null) {
-			throw new AlbumException(REQUIRED_LOGIN);
-		} else {
-			if (memberDto.getRole() != ROLE_ADMIN) {
-				throw new AlbumException(NO_AUTHORITY);
-			}
-		}
-
+	public MemberDto changeMemberStatus(MemberChangeStatusForm memberChangeStatusForm) {
 		Member findMember = memberRepository.findById(memberChangeStatusForm.getId()).orElseThrow(() -> new AlbumException(
 				NOT_EXIST_MEMBER));
 
