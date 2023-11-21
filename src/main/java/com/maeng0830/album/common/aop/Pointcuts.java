@@ -13,12 +13,15 @@ public class Pointcuts {
 	@Pointcut("execution(public * com.maeng0830.album..*Controller*.*(..))")
 	public void allController() {}
 
-	@Pointcut("allRepository() || allService() || allController()")
+	@Pointcut("execution(* com.maeng0830.album.security..*(..))")
+	public void security() {}
+
+	@Pointcut("(allRepository() || allService() || allController()) && !security()")
 	public void allMatch() {}
 
-	@Pointcut("@annotation(com.maeng0830.album.common.aop.annotation.MemberCheck)")
-	public void checkMember() {};
+	@Pointcut("@annotation(com.maeng0830.album.common.aop.annotation.MemberCheck) && allController() && !security()")
+	public void memberCheck() {};
 
-	@Pointcut("@target(com.maeng0830.album.common.aop.annotation.AdminCheck)")
-	public void checkAdmin() {};
+	@Pointcut("@target(com.maeng0830.album.common.aop.annotation.AdminCheck) && allController() && !security()")
+	public void adminCheck() {};
 }

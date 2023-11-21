@@ -97,11 +97,6 @@ public class MemberService {
 	// 회원 탈퇴
 	@Transactional
 	public MemberDto withdraw(MemberDto memberDto, MemberWithdrawForm memberWithdrawForm) {
-
-		if (memberDto == null) {
-			throw new AlbumException(REQUIRED_LOGIN);
-		}
-
 		Member findMember = memberRepository.findById(memberDto.getId())
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_MEMBER));
 
@@ -153,13 +148,8 @@ public class MemberService {
 	}
 
 	@Transactional
-	public MemberDto modifiedMember(MemberDto loginMemberDto,
-									MemberModifiedForm memberModifiedForm,
+	public MemberDto modifiedMember(MemberDto loginMemberDto, MemberModifiedForm memberModifiedForm,
 									MultipartFile imageFile) {
-		if (loginMemberDto == null) {
-			throw new AlbumException(REQUIRED_LOGIN);
-		}
-
 		Member findMember = memberRepository.findById(loginMemberDto.getId())
 				.orElseThrow(() -> new AlbumException(
 						NOT_EXIST_MEMBER));
@@ -186,10 +176,6 @@ public class MemberService {
 	@Transactional
 	public MemberDto modifiedMemberPassword(MemberDto loginMemberDto,
 											MemberPasswordModifiedForm memberPasswordModifiedForm) {
-		if (loginMemberDto == null) {
-			throw new AlbumException(REQUIRED_LOGIN);
-		}
-
 		Member findMember = memberRepository.findById(loginMemberDto.getId())
 				.orElseThrow(() -> new AlbumException(
 						NOT_EXIST_MEMBER));
@@ -211,11 +197,6 @@ public class MemberService {
 
 	@Transactional
 	public MemberDto setOauth2Password(MemberDto loginMemberDto, Oauth2PasswordForm oauth2PasswordForm) {
-		// 로그인 확인
-		if (loginMemberDto == null) {
-			throw new AlbumException(REQUIRED_LOGIN);
-		}
-
 		// 소셜 로그인 여부, 필수 비밀번호 세팅 완료 여부 확인
 		if (loginMemberDto.getLoginType() == LoginType.FORM) {
 			throw new AlbumException(NOT_OAUTH2_LOGIN_MEMBER);

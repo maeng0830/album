@@ -1,5 +1,6 @@
 package com.maeng0830.album.member.controller;
 
+import com.maeng0830.album.common.aop.annotation.MemberCheck;
 import com.maeng0830.album.common.util.AlbumUtil;
 import com.maeng0830.album.member.dto.MemberDto;
 import com.maeng0830.album.member.dto.request.MemberJoinForm;
@@ -9,6 +10,7 @@ import com.maeng0830.album.member.dto.request.MemberWithdrawForm;
 import com.maeng0830.album.member.dto.request.Oauth2PasswordForm;
 import com.maeng0830.album.member.service.MemberService;
 import com.maeng0830.album.security.formlogin.PrincipalDetails;
+import javax.annotation.security.PermitAll;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,8 +32,6 @@ public class MemberController {
 
 	private final MemberService memberService;
 
-	private final AlbumUtil albumUtil;
-
 	// 회원 가입
 	@PostMapping("/form-signup")
 	public MemberDto join(@Valid @RequestBody MemberJoinForm memberJoinForm) {
@@ -39,10 +39,11 @@ public class MemberController {
 	}
 
 	// 회원 탈퇴
+	@MemberCheck
 	@DeleteMapping("/members")
 	public MemberDto withdrawMember(@AuthenticationPrincipal PrincipalDetails principalDetails,
 									@Valid @RequestBody MemberWithdrawForm memberWithdrawForm) {
-		return memberService.withdraw(albumUtil.checkLogin(principalDetails), memberWithdrawForm);
+		return memberService.withdraw(principalDetails.getMemberDto(), memberWithdrawForm);
 	}
 
 	// 전체 회원 조회
@@ -58,23 +59,26 @@ public class MemberController {
 	}
 
 	// 회원 정보 수정(본인)-nickname, phone, image
+	@MemberCheck
 	@PutMapping("/members")
 	public MemberDto modifiedMember(@AuthenticationPrincipal PrincipalDetails principalDetails,
 									@Valid @RequestPart(value = "memberModifiedForm") MemberModifiedForm memberModifiedForm,
 									@RequestPart(value = "imageFile", required = false) MultipartFile imageFile) {
-		return memberService.modifiedMember(albumUtil.checkLogin(principalDetails), memberModifiedForm, imageFile);
+		return memberService.modifiedMember(principalDetails.getMemberDto(), memberModifiedForm, imageFile);
 	}
 
 	// 회원 비밀번호 수정(본인)
+	@MemberCheck
 	@PutMapping("/members/password")
 	public MemberDto modifiedMemberPassword(@AuthenticationPrincipal PrincipalDetails principalDetails,
 											@Valid @RequestBody MemberPasswordModifiedForm memberPasswordModifiedForm) {
-		return memberService.modifiedMemberPassword(albumUtil.checkLogin(principalDetails), memberPasswordModifiedForm);
+		return memberService.modifiedMemberPassword(principalDetails.getMemberDto(), memberPasswordModifiedForm);
 	}
 
+	@MemberCheck
 	@PutMapping("/members/oauth2-password")
 	public MemberDto setOauth2Password(@AuthenticationPrincipal PrincipalDetails principalDetails,
 									   @Valid @RequestBody Oauth2PasswordForm oauth2PasswordForm) {
-		return memberService.setOauth2Password(albumUtil.checkLogin(principalDetails), oauth2PasswordForm);
+		return memberService.setOauth2Password(principalDetails.getMemberDto(), oauth2PasswordForm);
 	}
 }
