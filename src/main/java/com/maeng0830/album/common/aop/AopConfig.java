@@ -1,6 +1,7 @@
 package com.maeng0830.album.common.aop;
 
 import com.maeng0830.album.common.aop.aspect.LoggingAspect;
+import com.maeng0830.album.common.aop.aspect.LoginCheckAspect;
 import com.maeng0830.album.common.logging.LogTrace;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,5 +17,10 @@ public class AopConfig {
 	@Bean
 	public LoggingAspect loggingAspect() {
 		return new LoggingAspect(logTrace());
+	}
+
+	@Bean
+	public LoginCheckAspect loginCheckAspect() {
+		return new LoginCheckAspect();
 	}
 }

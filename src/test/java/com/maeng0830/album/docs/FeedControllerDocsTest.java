@@ -16,6 +16,7 @@ import static org.springframework.restdocs.request.RequestDocumentation.partWith
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -167,10 +168,11 @@ public class FeedControllerDocsTest extends DocsTestSupport {
 
 		// then
 		mockMvc.perform(
-						get("/feeds")
+						RestDocumentationRequestBuilders.get("/feeds")
 								.queryParam("searchText", "nickname")
 								.queryParam("page", "0")
 								.queryParam("size", "20")
+								.with(csrf().asHeader())
 				)
 				.andDo(print())
 				.andExpect(status().isOk())
@@ -295,6 +297,7 @@ public class FeedControllerDocsTest extends DocsTestSupport {
 		// then
 		mockMvc.perform(
 						RestDocumentationRequestBuilders.get("/feeds/{feedId}", 1)
+								.with(csrf())
 				)
 				.andDo(print())
 				.andExpect(status().isOk())
@@ -403,6 +406,7 @@ public class FeedControllerDocsTest extends DocsTestSupport {
 								.file(imageFiles.get(1))
 								.file(json)
 								.with(user(memberPrincipalDetails))
+								.with(csrf())
 				)
 				.andDo(print())
 				.andExpect(status().isOk())
@@ -478,6 +482,7 @@ public class FeedControllerDocsTest extends DocsTestSupport {
 		mockMvc.perform(
 						RestDocumentationRequestBuilders.delete("/feeds/{feedId}", 1)
 								.with(user(memberPrincipalDetails))
+								.with(csrf())
 				)
 				.andDo(print())
 				.andExpect(status().isOk())
@@ -580,6 +585,7 @@ public class FeedControllerDocsTest extends DocsTestSupport {
 								.file(imageFiles.get(1))
 								.file(json)
 								.with(user(memberPrincipalDetails))
+								.with(csrf())
 				)
 				.andDo(print())
 				.andExpect(status().isOk())
@@ -687,6 +693,7 @@ public class FeedControllerDocsTest extends DocsTestSupport {
 		mockMvc.perform(
 						RestDocumentationRequestBuilders.put("/feeds/accuse")
 								.with(user(memberPrincipalDetails))
+								.with(csrf())
 								.content(objectMapper.writeValueAsString(feedAccuseRequestForm))
 								.contentType(APPLICATION_JSON)
 				)

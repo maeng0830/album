@@ -26,6 +26,8 @@ import static org.springframework.restdocs.request.RequestDocumentation.partWith
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -65,6 +67,8 @@ import org.springframework.data.domain.Sort.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 
 public class MemberControllerDocsTest extends DocsTestSupport {
 
@@ -105,6 +109,7 @@ public class MemberControllerDocsTest extends DocsTestSupport {
 						post("/form-signup")
 								.content(objectMapper.writeValueAsString(memberJoinForm))
 								.contentType(APPLICATION_JSON)
+								.with(csrf())
 				)
 				.andDo(print())
 				.andExpect(status().isOk())
@@ -196,6 +201,7 @@ public class MemberControllerDocsTest extends DocsTestSupport {
 		mockMvc.perform(
 						delete("/members")
 								.with(user(memberPrincipalDetails))
+								.with(csrf())
 								.content(objectMapper.writeValueAsString(memberWithdrawForm))
 								.contentType(APPLICATION_JSON)
 				)
@@ -288,6 +294,7 @@ public class MemberControllerDocsTest extends DocsTestSupport {
 								.queryParam("searchText", "nickname")
 								.queryParam("page", "0")
 								.queryParam("size", "20")
+								.with(csrf().asHeader())
 				)
 				.andDo(print())
 				.andExpect(status().isOk())
@@ -371,6 +378,7 @@ public class MemberControllerDocsTest extends DocsTestSupport {
 				));
 	}
 
+
 	@DisplayName("특정 회원 조회 API")
 	@Test
 	void getMember() throws Exception {
@@ -387,6 +395,7 @@ public class MemberControllerDocsTest extends DocsTestSupport {
 		// then
 		mockMvc.perform(
 						RestDocumentationRequestBuilders.get("/members/{id}", 1)
+								.with(csrf().asHeader())
 				)
 				.andDo(print())
 				.andExpect(status().isOk())
@@ -469,6 +478,7 @@ public class MemberControllerDocsTest extends DocsTestSupport {
 								.file(json)
 								.contentType("multipart/form-data")
 								.with(user(memberPrincipalDetails))
+								.with(csrf())
 				)
 				.andDo(print())
 				.andExpect(status().isOk())
@@ -546,6 +556,7 @@ public class MemberControllerDocsTest extends DocsTestSupport {
 		mockMvc.perform(
 						put("/members/password")
 								.with(user(memberPrincipalDetails))
+								.with(csrf())
 								.content(objectMapper.writeValueAsString(memberPasswordModifiedForm))
 								.contentType(APPLICATION_JSON)
 				)
@@ -620,6 +631,7 @@ public class MemberControllerDocsTest extends DocsTestSupport {
 		mockMvc.perform(
 						put("/members/oauth2-password")
 								.with(user(memberPrincipalDetails))
+								.with(csrf())
 								.content(objectMapper.writeValueAsString(oauth2PasswordForm))
 								.contentType(APPLICATION_JSON)
 				)

@@ -12,6 +12,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -317,6 +318,7 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 		mockMvc.perform(
 						put("/admin/feeds/status")
 								.with(user(adminPrincipalDetails))
+								.with(csrf())
 								.content(objectMapper.writeValueAsString(feedChangeStatusForm))
 								.contentType(MediaType.APPLICATION_JSON)
 				)
@@ -503,6 +505,7 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 		mockMvc.perform(
 						put("/admin/members/status")
 								.with(user(adminPrincipalDetails))
+								.with(csrf())
 								.content(objectMapper.writeValueAsString(memberChangeStatusForm))
 								.contentType(MediaType.APPLICATION_JSON)
 				)
@@ -764,6 +767,7 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 		// then
 		mockMvc.perform(put("/admin/comments/status")
 						.with(user(adminPrincipalDetails))
+						.with(csrf())
 						.content(objectMapper.writeValueAsString(commentChangeStatusForm))
 						.contentType(MediaType.APPLICATION_JSON)
 				)

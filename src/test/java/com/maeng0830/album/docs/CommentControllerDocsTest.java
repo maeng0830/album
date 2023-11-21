@@ -13,6 +13,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -131,7 +132,8 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 
 		// then
 		mockMvc.perform(
-						get("/comments")
+						RestDocumentationRequestBuilders.get("/comments")
+								.with(csrf().asHeader())
 								.queryParam("feedId", "1")
 								.queryParam("page", "0")
 								.queryParam("size", "20")
@@ -233,6 +235,7 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 		// then
 		mockMvc.perform(
 						RestDocumentationRequestBuilders.get("/comments/{commentId}", 1)
+								.with(csrf())
 				)
 				.andDo(print())
 				.andExpect(status().isOk())
@@ -305,6 +308,7 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 		mockMvc.perform(
 						post("/comments")
 								.with(user(memberPrincipalDetails))
+								.with(csrf())
 								.content(objectMapper.writeValueAsString(commentPostForm))
 								.contentType(APPLICATION_JSON)
 				)
@@ -381,6 +385,7 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 		mockMvc.perform(
 						put("/comments")
 								.with(user(memberPrincipalDetails))
+								.with(csrf())
 								.content(objectMapper.writeValueAsString(commentModifiedForm))
 								.contentType(APPLICATION_JSON)
 				)
@@ -459,6 +464,7 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 		mockMvc.perform(
 						RestDocumentationRequestBuilders.put("/comments/accuse")
 								.with(user(memberPrincipalDetails))
+								.with(csrf())
 								.content(objectMapper.writeValueAsString(commentAccuseForm))
 								.contentType(APPLICATION_JSON)
 				)
@@ -527,6 +533,7 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 		mockMvc.perform(
 						RestDocumentationRequestBuilders.delete("/comments/{commentId}", 1)
 								.with(user(memberPrincipalDetails))
+								.with(csrf())
 				)
 				.andDo(print())
 				.andExpect(status().isOk())

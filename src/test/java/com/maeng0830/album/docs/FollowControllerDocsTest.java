@@ -15,6 +15,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.response
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -83,6 +84,7 @@ public class FollowControllerDocsTest extends DocsTestSupport {
 		mockMvc.perform(
 						RestDocumentationRequestBuilders.post("/follows/{followingId}", 2)
 								.with(user(memberPrincipalDetails))
+								.with(csrf())
 				)
 				.andDo(print())
 				.andExpect(status().isOk())
@@ -205,6 +207,7 @@ public class FollowControllerDocsTest extends DocsTestSupport {
 		mockMvc.perform(
 						RestDocumentationRequestBuilders.delete("/follows/{followingId}", 2)
 								.with(user(memberPrincipalDetails))
+								.with(csrf())
 				)
 				.andDo(print())
 				.andExpect(status().isOk())

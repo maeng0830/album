@@ -52,7 +52,7 @@ public class LoginCheckAspect {
 
 		// PrincipalDetails 타입의 인수 조회
 		for (Object arg : args) {
-			if (arg != null && arg.getClass().isInstance(PrincipalDetails.class)) {
+			if (arg != null && arg.getClass() == PrincipalDetails.class) {
 				principalDetails = (PrincipalDetails) arg;
 			}
 		}
