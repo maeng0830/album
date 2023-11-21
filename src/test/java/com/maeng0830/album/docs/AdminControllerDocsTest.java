@@ -136,7 +136,7 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 
 		// then
 		mockMvc.perform(
-						get("/admin/feeds")
+						get("/api/admin/feeds")
 								.with(user(adminPrincipalDetails))
 								.queryParam("searchText", "writer")
 								.queryParam("page", "0")
@@ -259,7 +259,7 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 
 		// then
 		mockMvc.perform(
-						RestDocumentationRequestBuilders.get("/admin/feeds/{feedId}/accuses", 1)
+						RestDocumentationRequestBuilders.get("/api/admin/feeds/{feedId}/accuses", 1)
 								.with(user(adminPrincipalDetails))
 				)
 				.andDo(print())
@@ -316,7 +316,7 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 
 		// then
 		mockMvc.perform(
-						put("/admin/feeds/status")
+						put("/api/admin/feeds/status")
 								.with(user(adminPrincipalDetails))
 								.with(csrf())
 								.content(objectMapper.writeValueAsString(feedChangeStatusForm))
@@ -406,7 +406,7 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 
 		// then
 		mockMvc.perform(
-						get("/admin/members")
+						get("/api/admin/members")
 								.with(user(adminPrincipalDetails))
 								.queryParam("searchText", "member")
 								.queryParam("page", "0")
@@ -503,7 +503,7 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 
 		// then
 		mockMvc.perform(
-						put("/admin/members/status")
+						put("/api/admin/members/status")
 								.with(user(adminPrincipalDetails))
 								.with(csrf())
 								.content(objectMapper.writeValueAsString(memberChangeStatusForm))
@@ -617,7 +617,7 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 
 		// then
 		mockMvc.perform(
-						get("/admin/comments")
+						get("/api/admin/comments")
 								.with(user(adminPrincipalDetails))
 								.queryParam("searchText", "writer")
 								.queryParam("page", "0")
@@ -707,7 +707,7 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 
 		// then
 		mockMvc.perform(
-						RestDocumentationRequestBuilders.get("/admin/comments/{commentId}/accuses", 1)
+						RestDocumentationRequestBuilders.get("/api/admin/comments/{commentId}/accuses", 1)
 								.with(user(adminPrincipalDetails))
 				)
 				.andDo(print())
@@ -765,7 +765,7 @@ public class AdminControllerDocsTest extends DocsTestSupport {
 		// when
 
 		// then
-		mockMvc.perform(put("/admin/comments/status")
+		mockMvc.perform(put("/api/admin/comments/status")
 						.with(user(adminPrincipalDetails))
 						.with(csrf())
 						.content(objectMapper.writeValueAsString(commentChangeStatusForm))

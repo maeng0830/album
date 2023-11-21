@@ -168,7 +168,7 @@ public class FeedControllerDocsTest extends DocsTestSupport {
 
 		// then
 		mockMvc.perform(
-						RestDocumentationRequestBuilders.get("/feeds")
+						RestDocumentationRequestBuilders.get("/api/feeds")
 								.queryParam("searchText", "nickname")
 								.queryParam("page", "0")
 								.queryParam("size", "20")
@@ -296,7 +296,7 @@ public class FeedControllerDocsTest extends DocsTestSupport {
 
 		// then
 		mockMvc.perform(
-						RestDocumentationRequestBuilders.get("/feeds/{feedId}", 1)
+						RestDocumentationRequestBuilders.get("/api/feeds/{feedId}", 1)
 								.with(csrf())
 				)
 				.andDo(print())
@@ -401,7 +401,7 @@ public class FeedControllerDocsTest extends DocsTestSupport {
 
 		// then
 		mockMvc.perform(
-						multipart(HttpMethod.POST, "/feeds")
+						multipart(HttpMethod.POST, "/api/feeds")
 								.file(imageFiles.get(0))
 								.file(imageFiles.get(1))
 								.file(json)
@@ -480,7 +480,7 @@ public class FeedControllerDocsTest extends DocsTestSupport {
 
 		// then
 		mockMvc.perform(
-						RestDocumentationRequestBuilders.delete("/feeds/{feedId}", 1)
+						RestDocumentationRequestBuilders.delete("/api/feeds/{feedId}", 1)
 								.with(user(memberPrincipalDetails))
 								.with(csrf())
 				)
@@ -580,7 +580,7 @@ public class FeedControllerDocsTest extends DocsTestSupport {
 
 		// then
 		mockMvc.perform(
-						multipart(HttpMethod.PUT, "/feeds")
+						multipart(HttpMethod.PUT, "/api/feeds")
 								.file(imageFiles.get(0))
 								.file(imageFiles.get(1))
 								.file(json)
@@ -691,7 +691,7 @@ public class FeedControllerDocsTest extends DocsTestSupport {
 
 		// then
 		mockMvc.perform(
-						RestDocumentationRequestBuilders.put("/feeds/accuse")
+						RestDocumentationRequestBuilders.put("/api/feeds/accuse")
 								.with(user(memberPrincipalDetails))
 								.with(csrf())
 								.content(objectMapper.writeValueAsString(feedAccuseRequestForm))
@@ -790,7 +790,7 @@ public class FeedControllerDocsTest extends DocsTestSupport {
 
 		// then
 		mockMvc.perform(
-						RestDocumentationRequestBuilders.get("/feeds/members/{memberId}", 1)
+						RestDocumentationRequestBuilders.get("/api/feeds/members/{memberId}", 1)
 								.with(user(memberPrincipalDetails))
 								.queryParam("page", "0")
 								.queryParam("size", "20")

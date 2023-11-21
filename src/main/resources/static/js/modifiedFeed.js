@@ -7,7 +7,7 @@ $(document).ready(function() {
 })
 
 function modifiedFeed(feedId, title, content, files) {
-  var url = `/feeds`;
+  var url = `/api/feeds`;
 
   var formData = new FormData();
 

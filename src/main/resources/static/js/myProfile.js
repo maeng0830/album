@@ -17,7 +17,7 @@ $('#basicInfo-form').submit(function (event) {
 
   $.ajax({
     type: 'PUT',
-    url: '/members',
+    url: '/api/members',
     data: formData,
     contentType: false,
     processData: false,
@@ -49,7 +49,7 @@ $('#modPassword-form').submit(function (event) {
 
   $.ajax({
     type: 'PUT',
-    url: '/members/password',
+    url: '/api/members/password',
     data: JSON.stringify(memberPasswordModifiedForm),
     contentType: 'application/json',
     success: function (response) {

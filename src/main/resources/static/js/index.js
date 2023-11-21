@@ -1,5 +1,5 @@
 function getFeeds(searchText, currentPage) {
-  let url = `/feeds?`;
+  let url = `/api/feeds?`;
 
   if (searchText !== null && searchText.length) {
     let searchTextParam = `searchText=${searchText}&`;
@@ -75,7 +75,7 @@ function getFeeds(searchText, currentPage) {
 function follow(followingId) {
   console.log('follow 호출');
 
-  let url = `/follows/${followingId}`;
+  let url = `/api/follows/${followingId}`;
 
   $.ajax({
     type: 'POST',

@@ -28,7 +28,7 @@ $('#feed-form').submit(function (event) {
 
   $.ajax({
     type: 'POST',
-    url: '/feeds',
+    url: '/api/feeds',
     data: formData,
     contentType: false,
     processData: false,

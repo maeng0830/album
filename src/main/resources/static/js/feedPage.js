@@ -4,7 +4,7 @@ function getFeed(feedId, loginId) {
   $.ajax({
 
     type: 'GET',
-    url: '/feeds/' + feedId,
+    url: '/api/feeds/' + feedId,
     success: function (feed) {
       var feedHtml = '';
       var feedImageHtml = '';
@@ -121,7 +121,7 @@ function getComments(feedId, currentPage, loginId) {
 
   $.ajax({
     type: 'GET',
-    url: '/comments' + param,
+    url: '/api/comments' + param,
     success: function (comments) {
       if (!comments.length) {
         alert('댓글이 없습니다.');
@@ -271,7 +271,7 @@ function postComment(feedId, content) {
 
   $.ajax({
     type: 'POST',
-    url: '/comments',
+    url: '/api/comments',
     data: JSON.stringify(commentPostForm),
     contentType: 'application/json',
     success: function (response) {
@@ -316,7 +316,7 @@ function commentReply(feedId, groupId, parentId) {
 
 // 답글 등록
 function postCommentReply(feedId, groupId, parentId, content) {
-  var url = `/comments`;
+  var url = `/api/comments`;
 
   var jsonData = {
     feedId: feedId,
@@ -379,7 +379,7 @@ function putModifiedComment(id, content, feedId) {
 
   $.ajax({
     type: 'PUT',
-    url: '/comments',
+    url: '/api/comments',
     data: JSON.stringify(commentModifiedForm),
     contentType: 'application/json',
     success: function (response) {
@@ -403,7 +403,7 @@ function deleteFeedOrComment(domain, id) {
   if (confirm("정말 삭제하시겠습니까?")) {
     $.ajax({
       type: 'DELETE',
-      url: `/${domain}/${id}`,
+      url: `/api/${domain}/${id}`,
       success: function (response) {
         // 응답 데이터가 AlbumException 타입인지 확인
         if (response.code && response.message) {
@@ -452,7 +452,7 @@ function accuseTemplate(domain, id) {
 
 // 피드 및 댓글 신고 등록
 function postAccuse(domain, id, content) {
-  var url = `/${domain}/accuse`;
+  var url = `/api/${domain}/accuse`;
 
   var jsonData = {
     id: id,
@@ -483,7 +483,7 @@ function postAccuse(domain, id, content) {
 function follow(followingId) {
   console.log('follow 호출');
 
-  let url = `/follows/${followingId}`;
+  let url = `/api/follows/${followingId}`;
 
   $.ajax({
     type: 'POST',

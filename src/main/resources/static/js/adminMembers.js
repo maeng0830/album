@@ -5,7 +5,7 @@ let searchTextForChangeStatus = null; // 상태 변경 후, 페이지 리로드�
 // 목록 가져오기
 function getAdminMembers(currentPage, searchText) {
   console.log('getAdminMembers 호출');
-  let url = '/admin/members' + '?page=' + currentPage + '&size=' + pageSize;
+  let url = '/api/admin/members' + '?page=' + currentPage + '&size=' + pageSize;
 
   if (searchText != null) {
     console.log("searchText Not Null. add searchText Param.");
@@ -134,7 +134,7 @@ function pageLink(currentPage, totalPage, searchText, funcName) {
 function changeStatus(memberId, status) {
   console.log('changeStatus 호출');
 
-  var url = `/admin/members/status`;
+  var url = `/api/admin/members/status`;
 
   var memberStatus = {
     id: memberId,

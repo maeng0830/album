@@ -8,7 +8,7 @@ $('#oauth2Password-form').submit(function (event) {
 
   $.ajax({
     type: 'PUT',
-    url: '/members/oauth2-password',
+    url: '/api/members/oauth2-password',
     data: JSON.stringify(oauth2PasswordForm),
     contentType: 'application/json',
     success: function (response) {

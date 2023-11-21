@@ -49,7 +49,7 @@ class MemberControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						post("/form-signup")
+						post("/api/members")
 								.with(csrf())
 								.content(objectMapper.writeValueAsString(memberJoinForm))
 								.contentType(APPLICATION_JSON)
@@ -75,7 +75,7 @@ class MemberControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						post("/form-signup")
+						post("/api/members")
 								.with(csrf())
 								.content(objectMapper.writeValueAsString(memberJoinForm))
 								.contentType(APPLICATION_JSON)
@@ -103,7 +103,7 @@ class MemberControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						post("/form-signup")
+						post("/api/members")
 								.with(csrf())
 								.content(objectMapper.writeValueAsString(memberJoinForm))
 								.contentType(APPLICATION_JSON)
@@ -131,7 +131,7 @@ class MemberControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						post("/form-signup")
+						post("/api/members")
 								.with(csrf())
 								.content(objectMapper.writeValueAsString(memberJoinForm))
 								.contentType(APPLICATION_JSON)
@@ -159,7 +159,7 @@ class MemberControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						post("/form-signup")
+						post("/api/members")
 								.with(csrf())
 								.content(objectMapper.writeValueAsString(memberJoinForm))
 								.contentType(APPLICATION_JSON)
@@ -187,7 +187,7 @@ class MemberControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						post("/form-signup")
+						post("/api/members")
 								.with(csrf())
 								.content(objectMapper.writeValueAsString(memberJoinForm))
 								.contentType(APPLICATION_JSON)
@@ -211,7 +211,7 @@ class MemberControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						delete("/members")
+						delete("/api/members")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 								.content(objectMapper.writeValueAsString(memberWithdrawForm))
@@ -235,7 +235,7 @@ class MemberControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						delete("/members")
+						delete("/api/members")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 								.content(objectMapper.writeValueAsString(memberWithdrawForm))
@@ -261,7 +261,7 @@ class MemberControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						delete("/members")
+						delete("/api/members")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 								.content(objectMapper.writeValueAsString(memberWithdrawForm))
@@ -285,7 +285,7 @@ class MemberControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						get("/members?searchText=text&page=0&size=20")
+						get("/api/members?searchText=text&page=0&size=20")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 				)
@@ -302,7 +302,7 @@ class MemberControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						get("/members/1")
+						get("/api/members/1")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 				)
@@ -333,7 +333,7 @@ class MemberControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						multipart(HttpMethod.PUT, "/members")
+						multipart(HttpMethod.PUT, "/api/members")
 								.file(imageFile)
 								.file(json)
 								.contentType("multipart/form-data")
@@ -368,7 +368,7 @@ class MemberControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						multipart(HttpMethod.PUT, "/members")
+						multipart(HttpMethod.PUT, "/api/members")
 								.file(imageFile)
 								.file(json)
 								.contentType("multipart/form-data")
@@ -405,7 +405,7 @@ class MemberControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						multipart(HttpMethod.PUT, "/members")
+						multipart(HttpMethod.PUT, "/api/members")
 								.file(imageFile)
 								.file(json)
 								.contentType("multipart/form-data")
@@ -432,7 +432,7 @@ class MemberControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						put("/members/password")
+						put("/api/members/password")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 								.content(objectMapper.writeValueAsString(memberPasswordModifiedForm))
@@ -457,7 +457,7 @@ class MemberControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						put("/members/password")
+						put("/api/members/password")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 								.content(objectMapper.writeValueAsString(memberPasswordModifiedForm))
@@ -484,7 +484,7 @@ class MemberControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						put("/members/password")
+						put("/api/members/password")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 								.content(objectMapper.writeValueAsString(memberPasswordModifiedForm))
@@ -511,7 +511,7 @@ class MemberControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						put("/members/password")
+						put("/api/members/password")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 								.content(objectMapper.writeValueAsString(memberPasswordModifiedForm))
@@ -536,7 +536,7 @@ class MemberControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						put("/members/oauth2-password")
+						put("/api/members/oauth2-password")
 								.with(csrf())
 								.with(user(oauth2MemberPrincipalDetails))
 								.content(objectMapper.writeValueAsString(oauth2PasswordForm))
@@ -560,7 +560,7 @@ class MemberControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						put("/members/oauth2-password")
+						put("/api/members/oauth2-password")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 								.content(objectMapper.writeValueAsString(oauth2PasswordForm))
@@ -586,7 +586,7 @@ class MemberControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						put("/members/oauth2-password")
+						put("/api/members/oauth2-password")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 								.content(objectMapper.writeValueAsString(oauth2PasswordForm))

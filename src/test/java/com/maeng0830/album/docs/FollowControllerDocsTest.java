@@ -82,7 +82,7 @@ public class FollowControllerDocsTest extends DocsTestSupport {
 
 		// then
 		mockMvc.perform(
-						RestDocumentationRequestBuilders.post("/follows/{followingId}", 2)
+						RestDocumentationRequestBuilders.post("/api/follows/{followingId}", 2)
 								.with(user(memberPrincipalDetails))
 								.with(csrf())
 				)
@@ -205,7 +205,7 @@ public class FollowControllerDocsTest extends DocsTestSupport {
 
 		// then
 		mockMvc.perform(
-						RestDocumentationRequestBuilders.delete("/follows/{followingId}", 2)
+						RestDocumentationRequestBuilders.delete("/api/follows/{followingId}", 2)
 								.with(user(memberPrincipalDetails))
 								.with(csrf())
 				)
@@ -273,7 +273,7 @@ public class FollowControllerDocsTest extends DocsTestSupport {
 		// then
 		mockMvc.perform(
 						RestDocumentationRequestBuilders
-								.get("/follows/following/{followerId}", 1)
+								.get("/api/follows/following/{followerId}", 1)
 								.queryParam("searchText", "nickname")
 								.queryParam("page", "0")
 								.queryParam("size", "20")
@@ -456,7 +456,7 @@ public class FollowControllerDocsTest extends DocsTestSupport {
 		// then
 		mockMvc.perform(
 						RestDocumentationRequestBuilders
-								.get("/follows/follower/{followingId}", 1)
+								.get("/api/follows/follower/{followingId}", 1)
 								.queryParam("searchText", "nickname")
 								.queryParam("page", "0")
 								.queryParam("size", "20")

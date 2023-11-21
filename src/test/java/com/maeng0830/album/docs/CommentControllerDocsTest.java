@@ -132,7 +132,7 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 
 		// then
 		mockMvc.perform(
-						RestDocumentationRequestBuilders.get("/comments")
+						RestDocumentationRequestBuilders.get("/api/comments")
 								.with(csrf().asHeader())
 								.queryParam("feedId", "1")
 								.queryParam("page", "0")
@@ -234,7 +234,7 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 
 		// then
 		mockMvc.perform(
-						RestDocumentationRequestBuilders.get("/comments/{commentId}", 1)
+						RestDocumentationRequestBuilders.get("/api/comments/{commentId}", 1)
 								.with(csrf())
 				)
 				.andDo(print())
@@ -306,7 +306,7 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 
 		// then
 		mockMvc.perform(
-						post("/comments")
+						post("/api/comments")
 								.with(user(memberPrincipalDetails))
 								.with(csrf())
 								.content(objectMapper.writeValueAsString(commentPostForm))
@@ -383,7 +383,7 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 
 		// then
 		mockMvc.perform(
-						put("/comments")
+						put("/api/comments")
 								.with(user(memberPrincipalDetails))
 								.with(csrf())
 								.content(objectMapper.writeValueAsString(commentModifiedForm))
@@ -462,7 +462,7 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 
 		// then
 		mockMvc.perform(
-						RestDocumentationRequestBuilders.put("/comments/accuse")
+						RestDocumentationRequestBuilders.put("/api/comments/accuse")
 								.with(user(memberPrincipalDetails))
 								.with(csrf())
 								.content(objectMapper.writeValueAsString(commentAccuseForm))
@@ -531,7 +531,7 @@ public class CommentControllerDocsTest extends DocsTestSupport {
 
 		// then
 		mockMvc.perform(
-						RestDocumentationRequestBuilders.delete("/comments/{commentId}", 1)
+						RestDocumentationRequestBuilders.delete("/api/comments/{commentId}", 1)
 								.with(user(memberPrincipalDetails))
 								.with(csrf())
 				)
