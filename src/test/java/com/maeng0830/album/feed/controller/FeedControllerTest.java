@@ -40,7 +40,7 @@ class FeedControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						get("/feeds?searchText=nickname&page=0&size=20")
+						get("/api/feeds?searchText=nickname&page=0&size=20")
 								.with(csrf())
 				)
 				.andDo(print())
@@ -56,7 +56,7 @@ class FeedControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						get("/feeds/1")
+						get("/api/feeds/1")
 								.with(csrf())
 				)
 				.andDo(print())
@@ -85,7 +85,7 @@ class FeedControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						multipart(HttpMethod.POST, "/feeds")
+						multipart(HttpMethod.POST, "/api/feeds")
 								.file(imageFiles.get(0))
 								.file(imageFiles.get(1))
 								.file(json)
@@ -117,7 +117,7 @@ class FeedControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						multipart(HttpMethod.POST, "/feeds")
+						multipart(HttpMethod.POST, "/api/feeds")
 								.file(imageFiles.get(0))
 								.file(imageFiles.get(1))
 								.file(json)
@@ -151,7 +151,7 @@ class FeedControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						multipart(HttpMethod.POST, "/feeds")
+						multipart(HttpMethod.POST, "/api/feeds")
 								.file(imageFiles.get(0))
 								.file(imageFiles.get(1))
 								.file(json)
@@ -174,7 +174,7 @@ class FeedControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						delete("/feeds/1")
+						delete("/api/feeds/1")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 				)
@@ -205,7 +205,7 @@ class FeedControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						multipart(HttpMethod.PUT, "/feeds")
+						multipart(HttpMethod.PUT, "/api/feeds")
 								.file(imageFiles.get(0))
 								.file(imageFiles.get(1))
 								.file(json)
@@ -238,7 +238,7 @@ class FeedControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						multipart(HttpMethod.PUT, "/feeds")
+						multipart(HttpMethod.PUT, "/api/feeds")
 								.file(imageFiles.get(0))
 								.file(imageFiles.get(1))
 								.file(json)
@@ -273,7 +273,7 @@ class FeedControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						multipart(HttpMethod.PUT, "/feeds")
+						multipart(HttpMethod.PUT, "/api/feeds")
 								.file(imageFiles.get(0))
 								.file(imageFiles.get(1))
 								.file(json)
@@ -308,7 +308,7 @@ class FeedControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						multipart(HttpMethod.PUT, "/feeds")
+						multipart(HttpMethod.PUT, "/api/feeds")
 								.file(imageFiles.get(0))
 								.file(imageFiles.get(1))
 								.file(json)
@@ -334,7 +334,7 @@ class FeedControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						put("/feeds/accuse")
+						put("/api/feeds/accuse")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 								.content(objectMapper.writeValueAsString(feedAccuseRequestForm))
@@ -356,7 +356,7 @@ class FeedControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						put("/feeds/accuse")
+						put("/api/feeds/accuse")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 								.content(objectMapper.writeValueAsString(feedAccuseRequestForm))
@@ -378,7 +378,7 @@ class FeedControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						get("/feeds/members/1?page=0&size=20")
+						get("/api/feeds/members/1?page=0&size=20")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 				)

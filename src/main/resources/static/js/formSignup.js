@@ -13,7 +13,7 @@ $('#signup-form').submit(function (event) {
 
   $.ajax({
     type: 'POST',
-    url: '/form-signup',
+    url: '/api/members',
     data: JSON.stringify(memberJoinForm),
     contentType: 'application/json',
     success: function (response) {

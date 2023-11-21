@@ -106,7 +106,7 @@ public class MemberControllerDocsTest extends DocsTestSupport {
 				);
 
 		mockMvc.perform(
-						post("/form-signup")
+						post("/api/members")
 								.content(objectMapper.writeValueAsString(memberJoinForm))
 								.contentType(APPLICATION_JSON)
 								.with(csrf())
@@ -199,7 +199,7 @@ public class MemberControllerDocsTest extends DocsTestSupport {
 
 		// then
 		mockMvc.perform(
-						delete("/members")
+						delete("/api/members")
 								.with(user(memberPrincipalDetails))
 								.with(csrf())
 								.content(objectMapper.writeValueAsString(memberWithdrawForm))
@@ -290,7 +290,7 @@ public class MemberControllerDocsTest extends DocsTestSupport {
 
 		// then
 		mockMvc.perform(
-						get("/members")
+						get("/api/members")
 								.queryParam("searchText", "nickname")
 								.queryParam("page", "0")
 								.queryParam("size", "20")
@@ -394,7 +394,7 @@ public class MemberControllerDocsTest extends DocsTestSupport {
 
 		// then
 		mockMvc.perform(
-						RestDocumentationRequestBuilders.get("/members/{id}", 1)
+						RestDocumentationRequestBuilders.get("/api/members/{id}", 1)
 								.with(csrf().asHeader())
 				)
 				.andDo(print())
@@ -473,7 +473,7 @@ public class MemberControllerDocsTest extends DocsTestSupport {
 
 		// then
 		mockMvc.perform(
-						multipart(HttpMethod.PUT, "/members")
+						multipart(HttpMethod.PUT, "/api/members")
 								.file(imageFile)
 								.file(json)
 								.contentType("multipart/form-data")
@@ -554,7 +554,7 @@ public class MemberControllerDocsTest extends DocsTestSupport {
 
 		// then
 		mockMvc.perform(
-						put("/members/password")
+						put("/api/members/password")
 								.with(user(memberPrincipalDetails))
 								.with(csrf())
 								.content(objectMapper.writeValueAsString(memberPasswordModifiedForm))
@@ -629,7 +629,7 @@ public class MemberControllerDocsTest extends DocsTestSupport {
 
 		// then
 		mockMvc.perform(
-						put("/members/oauth2-password")
+						put("/api/members/oauth2-password")
 								.with(user(memberPrincipalDetails))
 								.with(csrf())
 								.content(objectMapper.writeValueAsString(oauth2PasswordForm))

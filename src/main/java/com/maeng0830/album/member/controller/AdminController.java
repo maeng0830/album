@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @AdminCheck
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/api/admin")
 @RequiredArgsConstructor
 public class AdminController {
 

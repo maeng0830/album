@@ -5,7 +5,7 @@ let searchTextForChangeStatus = null; // 상태 변경 후, 페이지 리로드�
 // 목록 가져오기
 function getAdminFeeds(currentPage, searchText) {
   console.log('getFeeds 호출');
-  let url = '/admin/feeds' + '?page=' + currentPage + '&size=' + pageSize;
+  let url = '/api/admin/feeds' + '?page=' + currentPage + '&size=' + pageSize;
 
   if (searchText != null) {
     console.log("searchText Not Null. add searchText Param.");
@@ -140,7 +140,7 @@ function pageLink(currentPage, totalPage, searchText, funcName) {
 function changeStatus(feedId, status) {
   console.log('changeStatus 호출');
 
-  var url = `/admin/feeds/status`;
+  var url = `/api/admin/feeds/status`;
 
   var feedStatus = {
     id: feedId,
@@ -171,7 +171,7 @@ function changeStatus(feedId, status) {
 function showAccuses(feedId) {
   console.log('showAccuses 호출');
 
-  var url = `/admin/feeds/${feedId}/accuses`;
+  var url = `/api/admin/feeds/${feedId}/accuses`;
 
   $.ajax({
     type: 'GET',

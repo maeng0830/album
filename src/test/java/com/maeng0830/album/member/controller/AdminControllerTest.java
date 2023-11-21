@@ -30,7 +30,7 @@ class AdminControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						get("/admin/feeds?searchText=nickname&page=0&size=20")
+						get("/api/admin/feeds?searchText=nickname&page=0&size=20")
 								.with(csrf())
 								.with(user(adminPrincipalDetails))
 				)
@@ -47,7 +47,7 @@ class AdminControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						get("/admin/feeds/1/accuses")
+						get("/api/admin/feeds/1/accuses")
 								.with(csrf())
 								.with(user(adminPrincipalDetails))
 				)
@@ -68,7 +68,7 @@ class AdminControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						put("/admin/feeds/status")
+						put("/api/admin/feeds/status")
 								.with(csrf())
 								.with(user(adminPrincipalDetails))
 								.content(objectMapper.writeValueAsString(feedChangeStatusForm))
@@ -89,7 +89,7 @@ class AdminControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						get("/admin/comments?searchText=nickname&page=0&size=20")
+						get("/api/admin/comments?searchText=nickname&page=0&size=20")
 								.with(csrf())
 								.with(user(adminPrincipalDetails))
 				)
@@ -106,7 +106,7 @@ class AdminControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						get("/admin/comments/1/accuses")
+						get("/api/admin/comments/1/accuses")
 								.with(csrf())
 								.with(user(adminPrincipalDetails))
 				)
@@ -128,7 +128,7 @@ class AdminControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						put("/admin/comments/status")
+						put("/api/admin/comments/status")
 								.with(csrf())
 								.with(user(adminPrincipalDetails))
 								.content(objectMapper.writeValueAsString(commentChangeStatusForm))
@@ -149,7 +149,7 @@ class AdminControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						get("/admin/members?searchText=nickname&page=0&size=20")
+						get("/api/admin/members?searchText=nickname&page=0&size=20")
 								.with(csrf())
 								.with(user(adminPrincipalDetails))
 				)
@@ -170,7 +170,7 @@ class AdminControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						put("/admin/members/status")
+						put("/api/admin/members/status")
 								.with(csrf())
 								.with(user(adminPrincipalDetails))
 								.content(objectMapper.writeValueAsString(memberChangeStatusForm))

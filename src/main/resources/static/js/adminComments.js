@@ -5,7 +5,7 @@ let searchTextForChangeStatus = null; // 상태 변경 후, 페이지 리로드�
 // 목록 가져오기
 function getAdminComments(currentPage, searchText) {
   console.log('getAdminComments 호출');
-  let url = '/admin/comments' + '?page=' + currentPage + '&size=' + pageSize;
+  let url = '/api/admin/comments' + '?page=' + currentPage + '&size=' + pageSize;
 
   if (searchText != null) {
     console.log("searchText Not Null. add searchText Param.");
@@ -141,7 +141,7 @@ function pageLink(currentPage, totalPage, searchText, funcName) {
 function changeStatus(commentId, status, feedId) {
   console.log('changeStatus 호출');
 
-  var url = `/admin/comments/status`;
+  var url = `/api/admin/comments/status`;
 
   var commentStatus = {
     id: commentId,
@@ -173,7 +173,7 @@ function changeStatus(commentId, status, feedId) {
 function showAccuses(commentId) {
   console.log('showAccuses 호출');
 
-  var url = `/admin/comments/${commentId}/accuses`;
+  var url = `/api/admin/comments/${commentId}/accuses`;
 
   $.ajax({
     type: 'GET',

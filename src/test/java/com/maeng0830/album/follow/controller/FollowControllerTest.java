@@ -23,7 +23,7 @@ class FollowControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						post("/follows/1")
+						post("/api/follows/1")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 				)
@@ -40,7 +40,7 @@ class FollowControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						delete("/follows/1")
+						delete("/api/follows/1")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 				)
@@ -59,7 +59,7 @@ class FollowControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						get("/follows/following/1?searchText=nickname&page=0&size=20")
+						get("/api/follows/following/1?searchText=nickname&page=0&size=20")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 				)
@@ -78,7 +78,7 @@ class FollowControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						get("/follows/follower/1?searchText=nickname&page=0&size=20")
+						get("/api/follows/follower/1?searchText=nickname&page=0&size=20")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 				)

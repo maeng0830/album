@@ -28,8 +28,7 @@ public class SecurityConfig {
 		http.csrf().disable();
 
 		http.authorizeRequests()
-//				.antMatchers("/members/**").access("hasRole('ADMIN') or hasRole('MEMBER')")
-				.antMatchers("/follows/**").access("hasRole('ADMIN') or hasRole('MEMBER')")
+				.antMatchers("/members/**").access("hasRole('ADMIN') or hasRole('MEMBER')")
 				.antMatchers("/admin/**").access("hasRole('ADMIN')")
 				.antMatchers("/static/css/**").permitAll()
 				.antMatchers("/static/js/**").permitAll()

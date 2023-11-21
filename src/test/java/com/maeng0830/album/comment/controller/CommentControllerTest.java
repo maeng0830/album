@@ -30,7 +30,7 @@ class CommentControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						get("/comments?feedId=1&page=0&size=20")
+						get("/api/comments?feedId=1&page=0&size=20")
 								.with(csrf())
 				)
 				.andDo(print())
@@ -46,7 +46,7 @@ class CommentControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						get("/comments/1")
+						get("/api/comments/1")
 								.with(csrf())
 				)
 				.andDo(print())
@@ -68,7 +68,7 @@ class CommentControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						post("/comments")
+						post("/api/comments")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 								.content(objectMapper.writeValueAsString(commentPostForm))
@@ -92,7 +92,7 @@ class CommentControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						post("/comments")
+						post("/api/comments")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 								.content(objectMapper.writeValueAsString(commentPostForm))
@@ -118,7 +118,7 @@ class CommentControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						post("/comments")
+						post("/api/comments")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 								.content(objectMapper.writeValueAsString(commentPostForm))
@@ -144,7 +144,7 @@ class CommentControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						put("/comments")
+						put("/api/comments")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 								.content(objectMapper.writeValueAsString(commentModifiedForm))
@@ -167,7 +167,7 @@ class CommentControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						put("/comments")
+						put("/api/comments")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 								.content(objectMapper.writeValueAsString(commentModifiedForm))
@@ -192,7 +192,7 @@ class CommentControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						put("/comments")
+						put("/api/comments")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 								.content(objectMapper.writeValueAsString(commentModifiedForm))
@@ -217,7 +217,7 @@ class CommentControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						put("/comments")
+						put("/api/comments")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 								.content(objectMapper.writeValueAsString(commentModifiedForm))
@@ -242,7 +242,7 @@ class CommentControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						put("/comments/accuse")
+						put("/api/comments/accuse")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 								.content(objectMapper.writeValueAsString(commentAccuseForm))
@@ -264,7 +264,7 @@ class CommentControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						put("/comments/accuse")
+						put("/api/comments/accuse")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 								.content(objectMapper.writeValueAsString(commentAccuseForm))
@@ -288,7 +288,7 @@ class CommentControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						put("/comments/accuse")
+						put("/api/comments/accuse")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 								.content(objectMapper.writeValueAsString(commentAccuseForm))
@@ -310,7 +310,7 @@ class CommentControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						RestDocumentationRequestBuilders.delete("/comments/{commentId}", 1)
+						RestDocumentationRequestBuilders.delete("/api/comments/{commentId}", 1)
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 				)
@@ -327,7 +327,7 @@ class CommentControllerTest extends ControllerTestSupport {
 
 		// then
 		mockMvc.perform(
-						RestDocumentationRequestBuilders.delete("/comments")
+						RestDocumentationRequestBuilders.delete("/api/comments")
 								.with(csrf())
 								.with(user(memberPrincipalDetails))
 				)

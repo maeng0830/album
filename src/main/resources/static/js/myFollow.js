@@ -10,7 +10,7 @@ function getFollow(currentPage, searchText, memberId) {
 function follow(followingId) {
   console.log('follow 호출');
 
-  let url = `/follows/${followingId}`;
+  let url = `/api/follows/${followingId}`;
 
   $.ajax({
     type: 'POST',
@@ -35,7 +35,7 @@ function follow(followingId) {
 function cancelFollow(followingId) {
   console.log('cancelFollow 호출');
 
-  let url = `/follows/${followingId}`;
+  let url = `/api/follows/${followingId}`;
 
   $.ajax({
     type: 'DELETE',
@@ -57,7 +57,7 @@ function cancelFollow(followingId) {
 function getFollowings(currentPage, searchText, followerId) {
   console.log('getFollowing 호출');
 
-  let url = `/follows/following/${followerId}?`;
+  let url = `/api/follows/following/${followerId}?`;
 
   if (searchText !== null && searchText.length) {
     url += `searchText=${searchText}&`;
@@ -126,7 +126,7 @@ function getFollowings(currentPage, searchText, followerId) {
 function getFollowers(currentPage, searchText, followingId) {
   console.log('getFollowers 호출');
 
-  let url = `/follows/follower/${followingId}?`;
+  let url = `/api/follows/follower/${followingId}?`;
 
   if (searchText !== null && searchText.length) {
     url += `searchText=${searchText}&`;
@@ -243,7 +243,7 @@ function pageLink(memberId, currentPage, totalPage, searchText, funcName) {
 // 팔로우 리스트
 function showFollowList(memberId, currentPage, funcName) {
   if (funcName === 'getFollowings') {
-    var urlForFollowing = `/follows/following/${memberId}?page=0&size=${pageSize}`
+    var urlForFollowing = `/api/follows/following/${memberId}?page=0&size=${pageSize}`
     var followingListHtml = ``;
 
     $.ajax({
@@ -282,7 +282,7 @@ function showFollowList(memberId, currentPage, funcName) {
       }
     })
   } else if (funcName === 'getFollowers') {
-      var urlForFollower = `/follows/follower/${memberId}?page=0&size=${pageSize}`;
+      var urlForFollower = `/api/follows/follower/${memberId}?page=0&size=${pageSize}`;
       var followerListHtml = ``;
 
       $.ajax({

@@ -35,12 +35,12 @@ public class viewController {
 		return "formSignup";
 	}
 
-	@GetMapping("/withdraw")
+	@GetMapping("/members/withdraw")
 	public String withdraw() {
 		return "withdraw";
 	}
 
-	@GetMapping("/set-password-oauth2")
+	@GetMapping("/members/set-password-oauth2")
 	public String setPasswordOauth2() {
 		return "setPasswordOauth2";
 	}

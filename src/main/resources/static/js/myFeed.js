@@ -8,7 +8,7 @@ function getMyFeeds(memberId) {
 
   $.ajax({
     type: 'GET',
-    url: `/feeds/members/${memberId}` + param,
+    url: `/api/feeds/members/${memberId}` + param,
     success: function (response) {
       var feeds = response.content;
 
@@ -72,7 +72,7 @@ function getMyFeeds(memberId) {
 function follow(followingId) {
   console.log('follow 호출');
 
-  let url = `/follows/${followingId}`;
+  let url = `/api/follows/${followingId}`;
 
   $.ajax({
     type: 'POST',

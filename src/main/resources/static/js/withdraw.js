@@ -8,7 +8,7 @@ $('#memberWithdraw-form').submit(function (event) {
 
   $.ajax({
     type: 'DELETE',
-    url: '/members',
+    url: '/api/members',
     data: JSON.stringify(memberWithdrawForm),
     contentType: 'application/json',
     success: function (response) {
