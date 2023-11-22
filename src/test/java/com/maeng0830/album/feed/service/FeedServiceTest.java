@@ -488,28 +488,6 @@ class FeedServiceTest extends ServiceTestSupport {
 				);
 	}
 
-	@DisplayName("비로그인 상태인 경우, 피드 등록을 할 때 예외가 발생합니다.")
-	@Test
-	void feed_noLogin() throws IOException {
-		// given
-		FeedPostForm feedPostForm = FeedPostForm.builder()
-				.title("testTitle")
-				.content("testContent")
-				.build();
-
-		MemberDto memberDto = null;
-
-		List<MultipartFile> imageFiles = createImageFiles("imageFile", "testImage.PNG",
-				"multipart/mixed", fileDir, 3);
-
-		// when
-
-		// then
-		assertThatThrownBy(() -> feedService.feed(feedPostForm, imageFiles, memberDto))
-				.isInstanceOf(AlbumException.class)
-				.hasMessage(REQUIRED_LOGIN.getMessage());
-	}
-
 	@DisplayName("작성자인 경우, 피드를 삭제할 수 있습니다(FeedStatus: DELETE).")
 	@Test
 	void deleteFeed_writer() {
@@ -885,10 +863,8 @@ class FeedServiceTest extends ServiceTestSupport {
 		PageRequest pageRequest = PageRequest.of(0, 20);
 
 		// when
-		Page<FeedResponse> result1 = feedService.getMyFeeds(member1.getId(),
-				MemberDto.from(member1), pageRequest);
-		Page<FeedResponse> result2 = feedService.getMyFeeds(member2.getId(),
-				MemberDto.from(member2), pageRequest);
+		Page<FeedResponse> result1 = feedService.getMyFeeds(member1.getId(), pageRequest);
+		Page<FeedResponse> result2 = feedService.getMyFeeds(member2.getId(), pageRequest);
 
 		// then
 		assertThat(result1.getContent()).hasSize(2)

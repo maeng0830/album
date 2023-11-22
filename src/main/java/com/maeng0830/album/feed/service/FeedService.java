@@ -187,10 +187,6 @@ public class FeedService {
 	// 피드 등록
 	public FeedResponse feed(FeedPostForm feedPostForm, List<MultipartFile> imageFiles,
 							 MemberDto memberDto) {
-		if (memberDto == null) {
-			throw new AlbumException(REQUIRED_LOGIN);
-		}
-
 		Member loginMember = memberRepository.findById(memberDto.getId())
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_MEMBER));
 
@@ -217,12 +213,6 @@ public class FeedService {
 	@CacheEvict(value = "feed", key = "#feedId")
 	@Transactional
 	public FeedDto deleteFeed(Long feedId, MemberDto memberDto) {
-
-		// 로그인 여부 확인
-		if (memberDto == null) {
-			throw new AlbumException(REQUIRED_LOGIN);
-		}
-
 		// 목표 피드 데이터 조회
 		Feed findFeed = feedRepository.findById(feedId)
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_FEED));
@@ -245,12 +235,6 @@ public class FeedService {
 	@Transactional
 	public FeedResponse modifiedFeed(FeedModifiedForm feedModifiedForm, List<MultipartFile> imageFiles,
 									 MemberDto memberDto) {
-
-		// 로그인 여부 확인
-		if (memberDto == null) {
-			throw new AlbumException(REQUIRED_LOGIN);
-		}
-
 		// 목표 피드 데이터 조회
 		Feed findFeed = feedRepository.findById(feedModifiedForm.getId())
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_FEED));
@@ -277,12 +261,6 @@ public class FeedService {
 	@CachePut(value = "feed", key = "#feedAccuseRequestForm.id")
 	@Transactional
 	public FeedResponse accuseFeed(FeedAccuseRequestForm feedAccuseRequestForm, MemberDto memberDto) {
-
-		// 로그인 여부 확인
-		if (memberDto == null) {
-			throw new AlbumException(REQUIRED_LOGIN);
-		}
-
 		// 신고 피드 조회 및 상태 변경
 		Feed findFeed = feedRepository.findById(feedAccuseRequestForm.getId())
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_FEED));
@@ -329,12 +307,7 @@ public class FeedService {
 		return feedAccuses.stream().map(FeedAccuseResponse::from).collect(Collectors.toList());
 	}
 
-	public Page<FeedResponse> getMyFeeds(Long memberId, MemberDto memberDto, Pageable pageable) {
-		// 로그인 여부 확인
-		if (memberDto == null) {
-			throw new AlbumException(REQUIRED_LOGIN);
-		}
-
+	public Page<FeedResponse> getMyFeeds(Long memberId, Pageable pageable) {
 		List<FeedStatus> statuses = List.of(NORMAL, ACCUSE);
 
 		Page<Feed> feeds = feedRepository.findByStatusInAndMember_Id(statuses,

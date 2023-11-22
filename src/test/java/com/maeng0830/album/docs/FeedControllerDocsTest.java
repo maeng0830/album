@@ -781,7 +781,7 @@ public class FeedControllerDocsTest extends DocsTestSupport {
 
 		Page<FeedResponse> feedResponses = new PageImpl<>(content, pageRequest, 2);
 
-		given(feedService.getMyFeeds(any(Long.class), any(), any(Pageable.class)))
+		given(feedService.getMyFeeds(any(Long.class), any(Pageable.class)))
 				.willReturn(
 						feedResponses
 				);

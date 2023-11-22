@@ -1,5 +1,6 @@
 package com.maeng0830.album.feed.controller;
 
+import com.maeng0830.album.common.aop.annotation.MemberCheck;
 import com.maeng0830.album.common.util.AlbumUtil;
 import com.maeng0830.album.feed.dto.FeedDto;
 import com.maeng0830.album.feed.dto.response.FeedResponse;
@@ -31,7 +32,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class FeedController {
 
 	private final FeedService feedService;
-	private final AlbumUtil albumUtil;
 
 	// 메인 페이지 전체 피드 목록 조회, 로그인 여부에 따라 다른 피드 목록 반환
 	// searchText(회원 닉네임) != null -> 해당 닉네임이 작성자인 피드 목록 반환
@@ -39,7 +39,11 @@ public class FeedController {
 	public Page<FeedResponse> getFeedsForMain(@AuthenticationPrincipal PrincipalDetails principalDetails,
 											  String searchText, Pageable pageable) {
 		if (searchText == null) {
-			return feedService.getFeedsForMain(albumUtil.checkLogin(principalDetails), pageable);
+			if (principalDetails != null) {
+				return feedService.getFeedsForMain(principalDetails.getMemberDto(), pageable);
+			} else {
+				return feedService.getFeedsForAdmin(null, pageable);
+			}
 		} else {
 			return feedService.getFeedsForMainWithSearchText(searchText, pageable);
 		}
@@ -50,37 +54,41 @@ public class FeedController {
 		return feedService.getFeed(feedId);
 	}
 
+	@MemberCheck
 	@PostMapping
 	public FeedResponse feed(@Valid @RequestPart FeedPostForm feedPostForm,
 							 @RequestPart(required = false) List<MultipartFile> imageFiles,
 							 @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return feedService.feed(feedPostForm, imageFiles, albumUtil.checkLogin(principalDetails));
+		return feedService.feed(feedPostForm, imageFiles, principalDetails.getMemberDto());
 	}
 
+	@MemberCheck
 	@DeleteMapping("/{feedId}")
 	public FeedDto deleteFeed(@PathVariable Long feedId,
 							  @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return feedService.deleteFeed(feedId, albumUtil.checkLogin(principalDetails));
+		return feedService.deleteFeed(feedId, principalDetails.getMemberDto());
 	}
 
+	@MemberCheck
 	@PutMapping
 	public FeedResponse modifiedFeed(@Valid @RequestPart FeedModifiedForm feedModifiedForm,
 									 @RequestPart(required = false) List<MultipartFile> imageFiles,
 									 @AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return feedService.modifiedFeed(feedModifiedForm, imageFiles,
-				albumUtil.checkLogin(principalDetails));
+		return feedService.modifiedFeed(feedModifiedForm, imageFiles, principalDetails.getMemberDto());
 	}
 
+	@MemberCheck
 	@PutMapping("/accuse")
 	public FeedResponse accuseFeed(@Valid @RequestBody FeedAccuseRequestForm feedAccuseRequestForm,
 									@AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return feedService.accuseFeed(feedAccuseRequestForm, albumUtil.checkLogin(principalDetails));
+		return feedService.accuseFeed(feedAccuseRequestForm, principalDetails.getMemberDto());
 	}
 
+	@MemberCheck
 	@GetMapping("/members/{memberId}")
 	public Page<FeedResponse> getMyFeeds(@PathVariable Long memberId,
 										 @AuthenticationPrincipal PrincipalDetails principalDetails,
 										 Pageable pageable) {
-		return feedService.getMyFeeds(memberId, albumUtil.checkLogin(principalDetails), pageable);
+		return feedService.getMyFeeds(memberId, pageable);
 	}
 }
