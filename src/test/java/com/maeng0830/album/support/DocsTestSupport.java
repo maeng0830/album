@@ -84,8 +84,6 @@ public abstract class DocsTestSupport {
 	@MockBean
 	protected CommentService commentService;
 	@MockBean
-	protected AlbumUtil albumUtil;
-	@MockBean
 	protected FormLoginSuccessHandler formLoginSuccessHandler;
 	@MockBean
 	protected FormLoginFailureHandler formLoginFailureHandler;
