@@ -85,12 +85,6 @@ public class CommentService {
 
 	@Transactional
 	public BasicComment comment(CommentPostForm commentPostForm, MemberDto memberDto) {
-
-		// 로그인 여부 확인
-		if (memberDto == null) {
-			throw new AlbumException(REQUIRED_LOGIN);
-		}
-
 		// 작성자 조회
 		Member loginMember = memberRepository.findById(memberDto.getId())
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_MEMBER));
@@ -135,12 +129,6 @@ public class CommentService {
 	@Transactional
 	public BasicComment modifiedComment(CommentModifiedForm commentModifiedForm,
 										MemberDto memberDto) {
-
-		// 로그인 여부 확인
-		if (memberDto == null) {
-			throw new AlbumException(REQUIRED_LOGIN);
-		}
-
 		Comment findComment = commentRepository.findById(commentModifiedForm.getId())
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_COMMENT));
 
@@ -155,12 +143,6 @@ public class CommentService {
 
 	@Transactional
 	public BasicComment accuseComment(CommentAccuseForm commentAccuseForm, MemberDto memberDto) {
-
-		// 로그인 여부 확인
-		if (memberDto == null) {
-			throw new AlbumException(REQUIRED_LOGIN);
-		}
-
 		Member findMember = memberRepository.findById(memberDto.getId())
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_MEMBER));
 
@@ -182,11 +164,6 @@ public class CommentService {
 
 	@Transactional
 	public BasicComment deleteComment(Long commentId, MemberDto memberDto) {
-		// 로그인 여부 확인
-		if (memberDto == null) {
-			throw new AlbumException(REQUIRED_LOGIN);
-		}
-
 		Comment findComment = commentRepository.findById(commentId)
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_COMMENT));
 
@@ -228,13 +205,5 @@ public class CommentService {
 
 		// 데이터 변환 및 반환
 		return commentAccuses.stream().map(CommentAccuseResponse::from).collect(Collectors.toList());
-	}
-
-	public Long getCommentFeedId(Long commentId) {
-		Comment comment = commentRepository.findById(commentId)
-				.orElseThrow(() -> new AlbumException(
-						NOT_EXIST_COMMENT));
-
-		return comment.getFeed().getId();
 	}
 }
