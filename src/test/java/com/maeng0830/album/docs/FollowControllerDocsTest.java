@@ -262,7 +262,7 @@ public class FollowControllerDocsTest extends DocsTestSupport {
 
 		Page<FollowDto> followDtoPage = new PageImpl<>(followDtos, pageRequest, 2);
 
-		given(followService.getFollowings(any(Long.class), any(), any(String.class),
+		given(followService.getFollowings(any(Long.class), any(String.class),
 				any(Pageable.class)))
 				.willReturn(
 						followDtoPage
@@ -445,7 +445,7 @@ public class FollowControllerDocsTest extends DocsTestSupport {
 
 		Page<FollowDto> followDtoPage = new PageImpl<>(followDtos, pageRequest, 2);
 
-		given(followService.getFollowers(any(Long.class), any(), any(String.class),
+		given(followService.getFollowers(any(Long.class), any(String.class),
 				any(Pageable.class)))
 				.willReturn(
 						followDtoPage

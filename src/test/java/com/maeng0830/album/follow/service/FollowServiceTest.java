@@ -180,8 +180,7 @@ class FollowServiceTest extends ServiceTestSupport {
 		PageRequest pageRequest = PageRequest.of(0, 20);
 
 		// when
-		Page<FollowDto> findFollows = followService.getFollowings(follower.getId(),
-				MemberDto.from(follower), searchText, pageRequest);
+		Page<FollowDto> findFollows = followService.getFollowings(follower.getId(), searchText, pageRequest);
 
 		// then
 		assertThat(findFollows.getContent()).hasSize(size);
@@ -237,8 +236,7 @@ class FollowServiceTest extends ServiceTestSupport {
 		PageRequest pageRequest = PageRequest.of(0, 20);
 
 		// when
-		Page<FollowDto> findFollows = followService.getFollowers(following.getId(),
-				MemberDto.from(following), searchText, pageRequest);
+		Page<FollowDto> findFollows = followService.getFollowers(following.getId(), searchText, pageRequest);
 
 		// then
 		assertThat(findFollows.getContent()).hasSize(size);

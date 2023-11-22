@@ -95,24 +95,14 @@ public class FollowService {
 		}
 	}
 
-	public Page<FollowDto> getFollowings(Long followerId, MemberDto memberDto, String searchText,
-										 Pageable pageable) {
-		if (memberDto == null) {
-			throw new AlbumException(REQUIRED_LOGIN);
-		}
-
+	public Page<FollowDto> getFollowings(Long followerId, String searchText, Pageable pageable) {
 		Page<Follow> followings = followRepository.searchForMyFollowings(followerId, searchText,
 				pageable);
 
 		return followings.map(FollowDto::from);
 	}
 
-	public Page<FollowDto> getFollowers(Long followingId, MemberDto memberDto, String searchText,
-										Pageable pageable) {
-		if (memberDto == null) {
-			throw new AlbumException(REQUIRED_LOGIN);
-		}
-
+	public Page<FollowDto> getFollowers(Long followingId, String searchText, Pageable pageable) {
 		Page<Follow> followers = followRepository.searchForMyFollowers(followingId, searchText,
 				pageable);
 
