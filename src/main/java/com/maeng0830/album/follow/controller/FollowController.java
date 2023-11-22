@@ -1,5 +1,6 @@
 package com.maeng0830.album.follow.controller;
 
+import com.maeng0830.album.common.aop.annotation.MemberCheck;
 import com.maeng0830.album.common.util.AlbumUtil;
 import com.maeng0830.album.follow.dto.FollowDto;
 import com.maeng0830.album.follow.service.FollowService;
@@ -23,37 +24,39 @@ public class FollowController {
 
 	private final FollowService followService;
 
-	private final AlbumUtil albumUtil;
-
 	// 팔로우 하기
+	@MemberCheck
 	@PostMapping("/{followingId}")
 	public FollowDto follow(@PathVariable Long followingId,
 							@AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return followService.follow(followingId, albumUtil.checkLogin(principalDetails));
+		return followService.follow(followingId, principalDetails.getMemberDto());
 	}
 
 	// 팔로우 취소
+	@MemberCheck
 	@DeleteMapping("/{followingId}")
 	public Map<String, String> cancelFollow(@PathVariable Long followingId,
 											@AuthenticationPrincipal PrincipalDetails principalDetails) {
-		return followService.cancelFollow(followingId, albumUtil.checkLogin(principalDetails));
+		return followService.cancelFollow(followingId, principalDetails.getMemberDto());
 	}
 
 	// 팔로잉 목록
+	@MemberCheck
 	@GetMapping("/following/{followerId}")
 	public Page<FollowDto> getFollowings(@PathVariable Long followerId,
 										 @AuthenticationPrincipal PrincipalDetails principalDetails,
 										 String searchText,
 										 Pageable pageable) {
-		return followService.getFollowings(followerId, albumUtil.checkLogin(principalDetails), searchText, pageable);
+		return followService.getFollowings(followerId, searchText, pageable);
 	}
 
 	// 팔로워 목록
+	@MemberCheck
 	@GetMapping("/follower/{followingId}")
 	public Page<FollowDto> getFollowers(@PathVariable Long followingId,
 										 @AuthenticationPrincipal PrincipalDetails principalDetails,
 										 String searchText,
 										 Pageable pageable) {
-		return followService.getFollowers(followingId, albumUtil.checkLogin(principalDetails), searchText, pageable);
+		return followService.getFollowers(followingId, searchText, pageable);
 	}
 }
