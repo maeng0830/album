@@ -74,8 +74,6 @@ public abstract class ControllerTestSupport {
 	@MockBean
 	protected CommentService commentService;
 	@MockBean
-	protected AlbumUtil albumUtil;
-	@MockBean
 	protected FormLoginSuccessHandler formLoginSuccessHandler;
 	@MockBean
 	protected FormLoginFailureHandler formLoginFailureHandler;
