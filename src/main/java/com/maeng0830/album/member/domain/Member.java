@@ -51,32 +51,12 @@ public class Member extends BaseEntity {
 	private LoginType loginType;
 
 	@Builder.Default
-	@JsonManagedReference
 	@OneToMany(mappedBy = "follower")
 	private List<Follow> followers = new ArrayList<>();
 
 	@Builder.Default
-	@JsonManagedReference
 	@OneToMany(mappedBy = "following")
-	private List<Follow> followees = new ArrayList<>();
-
-	public static Member from(MemberDto memberDto) {
-		return Member.builder()
-				.id(memberDto.getId())
-				.username(memberDto.getUsername())
-				.nickname(memberDto.getNickname())
-				.password(memberDto.getPassword())
-				.phone(memberDto.getPhone())
-				.birthDate(memberDto.getBirthDate())
-				.status(memberDto.getStatus())
-				.role(memberDto.getRole())
-				.loginType(memberDto.getLoginType())
-				.image(memberDto.getImage())
-				.createdAt(memberDto.getCreatedAt())
-				.modifiedAt(memberDto.getModifiedAt())
-				.modifiedBy(memberDto.getModifiedBy())
-				.build();
-	}
+	private List<Follow> followings = new ArrayList<>();
 
 	public void changeStatus(MemberStatus status) {
 		this.status = status;
