@@ -19,10 +19,7 @@ function follow(followingId) {
       if (response.code && response.message) {
         alert(response.message);
       } else {
-        var follower = response.follower.nickname;
-        var following = response.following.nickname;
-
-        alert(`${follower}님이 ${following}님을 팔로우 했습니다.`);
+        alert(response.message);
       }
     },
     error: function () {
@@ -48,7 +45,7 @@ function cancelFollow(followingId) {
       }
     },
     error: function () {
-      alert("팔로우를 취소를 실패했습니다.");
+      alert("팔로우 취소를 실패했습니다.");
     }
   })
 }
@@ -78,9 +75,9 @@ function getFollowings(currentPage, searchText, followerId) {
       } else {
         var followingHtml = `<div id="following-list">`;
         var follows = response.content;
-        follows.forEach(follow => {
-          var followingId = follow.following.id;
-          var followingNickname = follow.following.nickname;
+        follows.forEach(following => {
+          var followingId = following.followingId;
+          var followingNickname = following.followingNickname;
 
           followingHtml += `<div class="row row-cols-12 justify-content-center text-center">
             <div class="col-3 align-self-center">
@@ -147,9 +144,9 @@ function getFollowers(currentPage, searchText, followingId) {
       } else {
         var followerHtml = `<div id="follower-list">`;
         var follows = response.content;
-        follows.forEach(follow => {
-          var followerId = follow.follower.id;
-          var followerNickname = follow.follower.nickname;
+        follows.forEach(follower => {
+          var followerId = follower.followerId;
+          var followerNickname = follower.followerNickname;
 
           followerHtml += `<div class="row row-cols-12 justify-content-center text-center">
             <div class="col-3 align-self-center">
@@ -257,9 +254,9 @@ function showFollowList(memberId, currentPage, funcName) {
         } else {
           var totalPage = response.totalPages;
           var follows = response.content;
-          follows.forEach(follow => {
-            var followingId = follow.following.id;
-            var followingNickname = follow.following.nickname;
+          follows.forEach(following => {
+            var followingId = following.followingId;
+            var followingNickname = following.followingNickname;
 
             followingListHtml += `<div class="row row-cols-4 justify-content-md-center text-center">
                                   <div class="col-2 align-self-center">${followingNickname}</div>
@@ -296,9 +293,9 @@ function showFollowList(memberId, currentPage, funcName) {
           } else {
             var totalPage = response.totalPages;
             var follows = response.content;
-            follows.forEach(follow => {
-              var followerId = follow.follower.id;
-              var followerNickname = follow.follower.nickname;
+            follows.forEach(follower => {
+              var followerId = follower.followerId;
+              var followerNickname = follower.followerNickname;
 
               followerListHtml += `<div class="row row-cols-4 justify-content-md-center text-center">
                                     <div class="col-2 align-self-center">${followerNickname}</div>

@@ -3,6 +3,8 @@ package com.maeng0830.album.follow.controller;
 import com.maeng0830.album.common.aop.annotation.MemberCheck;
 import com.maeng0830.album.common.util.AlbumUtil;
 import com.maeng0830.album.follow.dto.FollowDto;
+import com.maeng0830.album.follow.dto.response.FollowerResponse;
+import com.maeng0830.album.follow.dto.response.FollowingResponse;
 import com.maeng0830.album.follow.service.FollowService;
 import com.maeng0830.album.security.formlogin.PrincipalDetails;
 import java.util.Map;
@@ -27,8 +29,8 @@ public class FollowController {
 	// 팔로우 하기
 	@MemberCheck
 	@PostMapping("/{followingId}")
-	public FollowDto follow(@PathVariable Long followingId,
-							@AuthenticationPrincipal PrincipalDetails principalDetails) {
+	public Map<String, String> follow(@PathVariable Long followingId,
+									  @AuthenticationPrincipal PrincipalDetails principalDetails) {
 		return followService.follow(followingId, principalDetails.getMemberDto());
 	}
 
@@ -43,20 +45,20 @@ public class FollowController {
 	// 팔로잉 목록
 	@MemberCheck
 	@GetMapping("/following/{followerId}")
-	public Page<FollowDto> getFollowings(@PathVariable Long followerId,
-										 @AuthenticationPrincipal PrincipalDetails principalDetails,
-										 String searchText,
-										 Pageable pageable) {
+	public Page<FollowingResponse> getFollowings(@PathVariable Long followerId,
+												 @AuthenticationPrincipal PrincipalDetails principalDetails,
+												 String searchText,
+												 Pageable pageable) {
 		return followService.getFollowings(followerId, searchText, pageable);
 	}
 
 	// 팔로워 목록
 	@MemberCheck
 	@GetMapping("/follower/{followingId}")
-	public Page<FollowDto> getFollowers(@PathVariable Long followingId,
-										 @AuthenticationPrincipal PrincipalDetails principalDetails,
-										 String searchText,
-										 Pageable pageable) {
+	public Page<FollowerResponse> getFollowers(@PathVariable Long followingId,
+											   @AuthenticationPrincipal PrincipalDetails principalDetails,
+											   String searchText,
+											   Pageable pageable) {
 		return followService.getFollowers(followingId, searchText, pageable);
 	}
 }

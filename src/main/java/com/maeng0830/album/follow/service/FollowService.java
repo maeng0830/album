@@ -7,6 +7,8 @@ import static com.maeng0830.album.member.exception.MemberExceptionCode.REQUIRED_
 import com.maeng0830.album.common.exception.AlbumException;
 import com.maeng0830.album.follow.domain.Follow;
 import com.maeng0830.album.follow.dto.FollowDto;
+import com.maeng0830.album.follow.dto.response.FollowerResponse;
+import com.maeng0830.album.follow.dto.response.FollowingResponse;
 import com.maeng0830.album.follow.exception.FollowExceptionCode;
 import com.maeng0830.album.follow.repository.FollowRepository;
 import com.maeng0830.album.member.domain.Member;
@@ -34,7 +36,7 @@ public class FollowService {
 	private final MemberRepository memberRepository;
 
 	@Transactional
-	public FollowDto follow(Long followingId, MemberDto memberDto) {
+	public Map<String, String> follow(Long followingId, MemberDto memberDto) {
 		// 로그인 여부 확인
 		if (memberDto == null) {
 			throw new AlbumException(REQUIRED_LOGIN);
@@ -45,42 +47,45 @@ public class FollowService {
 			throw new AlbumException(NOT_ALLOW_FOLLOW_YOURSELF);
 		}
 
-		log.info("본인 조회");
+		// 본인 조회
 		Member follower = memberRepository.findById(memberDto.getId())
 				.orElseThrow(() -> new AlbumException(
 						NOT_EXIST_MEMBER));
 
-		log.info("타인 조회");
+		// 대상 조회
 		Member following = memberRepository.findById(followingId)
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_MEMBER));
 
-		log.info("팔로우 저장");
 		// 이미 팔로우 관계가 존재하는 지 확인
 		followRepository
 				.findByFollower_IdAndFollowing_Id(follower.getId(), following.getId())
 				.ifPresent(f -> {throw new AlbumException(ALREADY_EXIST_FOLLOW);});
 
+		// 팔로우 저장
 		Follow follow = followRepository.save(Follow.builder()
 				.follower(follower)
 				.following(following)
 				.build());
 
-		return FollowDto.from(follow);
+		Map<String, String> map = new HashMap<>();
+		String value = String.format("%s님이 %s님을 팔로우 합니다.", follower.getUsername(), following.getUsername());
+		map.put("message", value);
+
+		return map;
 	}
 
 	public Map<String, String> cancelFollow(Long followingId, MemberDto memberDto) {
 
-		log.info("본인 조회");
+		// 본인 조회
 		Member follower = memberRepository.findById(memberDto.getId())
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_MEMBER));
 
-		log.info("타인 조회");
+		// 대상 조회
 		Member following = memberRepository.findById(followingId)
 				.orElseThrow(() -> new AlbumException(NOT_EXIST_MEMBER));
 
-		log.info("팔로우 삭제");
+		// 팔로우 삭제
 		int count = followRepository.deleteByFollowerAndFollowing(follower, following);
-		System.out.println("count = " + count);
 
 		if (count == 0) {
 			throw new AlbumException(NOT_EXIST_FOLLOW);
@@ -95,17 +100,17 @@ public class FollowService {
 		}
 	}
 
-	public Page<FollowDto> getFollowings(Long followerId, String searchText, Pageable pageable) {
+	public Page<FollowingResponse> getFollowings(Long followerId, String searchText, Pageable pageable) {
 		Page<Follow> followings = followRepository.searchForMyFollowings(followerId, searchText,
 				pageable);
 
-		return followings.map(FollowDto::from);
+		return followings.map(FollowingResponse::from);
 	}
 
-	public Page<FollowDto> getFollowers(Long followingId, String searchText, Pageable pageable) {
+	public Page<FollowerResponse> getFollowers(Long followingId, String searchText, Pageable pageable) {
 		Page<Follow> followers = followRepository.searchForMyFollowers(followingId, searchText,
 				pageable);
 
-		return followers.map(FollowDto::from);
+		return followers.map(FollowerResponse::from);
 	}
 }

@@ -84,10 +84,7 @@ function follow(followingId) {
       if (response.code && response.message) {
         alert(response.message);
       } else {
-        var follower = response.follower.nickname;
-        var following = response.following.nickname;
-
-        alert(`${follower}님이 ${following}님을 팔로우 했습니다.`);
+        alert(response.message);
       }
     },
     error: function () {
