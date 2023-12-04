@@ -8,6 +8,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.maeng0830.album.common.exception.AlbumException;
 import com.maeng0830.album.follow.domain.Follow;
 import com.maeng0830.album.follow.dto.FollowDto;
+import com.maeng0830.album.follow.dto.response.FollowerResponse;
+import com.maeng0830.album.follow.dto.response.FollowingResponse;
 import com.maeng0830.album.follow.repository.FollowRepository;
 import com.maeng0830.album.member.domain.Member;
 import com.maeng0830.album.member.dto.MemberDto;
@@ -46,13 +48,12 @@ class FollowServiceTest extends ServiceTestSupport {
 		MemberDto followerDto = MemberDto.from(follower);
 
 		//when
-		FollowDto result = followService.follow(following.getId(), followerDto);
+		Map<String, String> result = followService.follow(following.getId(), followerDto);
 
 		//then
-		assertThat(result.getFollower()).usingRecursiveComparison()
-				.isEqualTo(MemberDto.from(follower));
-		assertThat(result.getFollowing()).usingRecursiveComparison()
-				.isEqualTo(MemberDto.from(following));
+		assertThat(result.get("message")).isEqualTo(
+				String.format("%s님이 %s님을 팔로우 합니다.", follower.getUsername(),
+						following.getUsername()));
 	}
 
 	@DisplayName("이미 팔로우 관계가 존재하는 경우, 주어진 ID의 회원에게 팔로우를 시도할 때 예외가 발생한다.")
@@ -180,7 +181,7 @@ class FollowServiceTest extends ServiceTestSupport {
 		PageRequest pageRequest = PageRequest.of(0, 20);
 
 		// when
-		Page<FollowDto> findFollows = followService.getFollowings(follower.getId(), searchText, pageRequest);
+		Page<FollowingResponse> findFollows = followService.getFollowings(follower.getId(), searchText, pageRequest);
 
 		// then
 		assertThat(findFollows.getContent()).hasSize(size);
@@ -236,7 +237,7 @@ class FollowServiceTest extends ServiceTestSupport {
 		PageRequest pageRequest = PageRequest.of(0, 20);
 
 		// when
-		Page<FollowDto> findFollows = followService.getFollowers(following.getId(), searchText, pageRequest);
+		Page<FollowerResponse> findFollows = followService.getFollowers(following.getId(), searchText, pageRequest);
 
 		// then
 		assertThat(findFollows.getContent()).hasSize(size);
