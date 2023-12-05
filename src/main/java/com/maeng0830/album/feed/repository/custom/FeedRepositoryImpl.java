@@ -29,9 +29,8 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom {
 										Collection<String> createdBy, Pageable pageable) {
 
 		List<Feed> content = jpaQueryFactory
-				.select(feed).distinct()
+				.select(feed)
 				.from(feed)
-				.leftJoin(feed.feedImages, feedImage).fetchJoin()
 				.leftJoin(feed.member, member).fetchJoin()
 				.where(searchByCreatedByCondition(status, createdBy))
 				.orderBy(albumUtil.getOrderSpecifier(pageable.getSort(), feed))
@@ -51,9 +50,8 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom {
 	public Page<Feed> searchBySearchText(Collection<FeedStatus> status, String searchText,
 										 Pageable pageable) {
 		List<Feed> content = jpaQueryFactory
-				.select(feed).distinct()
+				.select(feed)
 				.from(feed)
-				.leftJoin(feed.feedImages, feedImage).fetchJoin()
 				.leftJoin(feed.member, member).fetchJoin()
 				.where(searchBySearchTextCondition(status, searchText))
 				.orderBy(albumUtil.getOrderSpecifier(pageable.getSort(), feed))
