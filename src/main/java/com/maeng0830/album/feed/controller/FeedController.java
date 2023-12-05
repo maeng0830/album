@@ -42,7 +42,7 @@ public class FeedController {
 			if (principalDetails != null) {
 				return feedService.getFeedsForMain(principalDetails.getMemberDto(), pageable);
 			} else {
-				return feedService.getFeedsForAdmin(null, pageable);
+				return feedService.getFeedsForMain(null, pageable);
 			}
 		} else {
 			return feedService.getFeedsForMainWithSearchText(searchText, pageable);
