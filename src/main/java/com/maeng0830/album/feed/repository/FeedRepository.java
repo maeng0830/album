@@ -14,6 +14,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface FeedRepository extends JpaRepository<Feed, Long>, FeedRepositoryCustom {
 
-	@EntityGraph(attributePaths = {"member", "feedImages"})
+	@EntityGraph(attributePaths = {"member"})
 	Page<Feed> findByStatusInAndMember_Id(Collection<FeedStatus> statuses, Long memberId, Pageable pageable);
 }
